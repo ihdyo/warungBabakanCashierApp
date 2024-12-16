@@ -1,4 +1,4 @@
-package com.babakan.cashier.ui.theme
+package com.babakan.cashier.utils.theme
 
 import androidx.compose.ui.graphics.Color
 
