@@ -1,5 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.main
 
+import Admin
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -16,12 +17,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -44,9 +48,12 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +64,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Velocity
@@ -68,7 +76,9 @@ import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
 import com.babakan.cashier.data.ui.listOfNavigationItems
 import com.babakan.cashier.presentation.cashier.screen.home.Home
-import com.babakan.cashier.presentation.owner.screen.admin.Admin
+import com.babakan.cashier.presentation.owner.screen.admin.cashier.AdminCashier
+import com.babakan.cashier.presentation.owner.screen.admin.category.AdminCategory
+import com.babakan.cashier.presentation.owner.screen.admin.product.AdminProduct
 import com.babakan.cashier.presentation.owner.screen.report.Report
 import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.Size
@@ -86,6 +96,8 @@ fun MainNavigation() {
     val navController = rememberNavController()
     var isSearchActive by remember { mutableStateOf(false) }
 
+    var selectedAdminTabIndex by remember { mutableIntStateOf(0) }
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
     val isHome = currentDestination == MainScreenState.HOME.name
@@ -97,7 +109,23 @@ fun MainNavigation() {
     val cartItemCount = testNumber
     val isCartEmpty = cartItemCount == 0
 
+    val tabs = listOf(R.string.product, R.string.category, R.string.cashier)
+    val pagerState = rememberPagerState(
+        selectedAdminTabIndex,
+        pageCount = { tabs.size }
+    )
+    val onSelectedAdminTabIndex: (Int) -> Unit = { index ->
+        scope.launch {
+            pagerState.scrollToPage(index)
+        }
+        selectedAdminTabIndex = index
+    }
+
     var isScrolledDown by remember { mutableStateOf(true) }
+
+    if (isHome || isReport || isAdmin) {
+        isScrolledDown = true
+    }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -131,7 +159,7 @@ fun MainNavigation() {
         Scaffold(
             topBar = {
                 AnimatedVisibility(
-                    visible = isHome || isReport,
+                    visible = isHome || isReport || isAdmin,
                     enter = slideInVertically(initialOffsetY = { -it }, animationSpec = tween(200, easing = LinearOutSlowInEasing)),
                     exit = slideOutVertically(targetOffsetY = { -it }, animationSpec = tween(200, easing = LinearOutSlowInEasing))
                 ) {
@@ -149,6 +177,14 @@ fun MainNavigation() {
                                     Text(stringResource(R.string.productSearch))
                                 } else if (isReport) {
                                     Text(stringResource(R.string.reportSearch))
+                                } else if (isAdmin) {
+                                    if (selectedAdminTabIndex == 0) {
+                                        Text(stringResource(R.string.productSearch))
+                                    } else if (selectedAdminTabIndex == 1) {
+                                        Text(stringResource(R.string.categorySearch))
+                                    } else if (selectedAdminTabIndex == 2) {
+                                        Text(stringResource(R.string.cashierSearch))
+                                    }
                                 }
                             },
                             leadingIcon = {
@@ -214,25 +250,65 @@ fun MainNavigation() {
                                 .padding(bottom = Size.BETWEEN_ITEMS.dp),
                         ) { }
 
-                        var selectedChipIndex by remember { mutableIntStateOf(0) }
                         AnimatedVisibility(
                             visible = isScrolledDown && isHome,
                         ) {
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(Size.BETWEEN_ITEMS.dp),
-                                contentPadding = PaddingValues(horizontal = Size.DEFAULT_SPACE.dp)
-                            ) {
-                                itemsIndexed((0..3).toList()) { index, _ ->
-                                    val isSelected = selectedChipIndex == index
+                            var selectedChipIndex by remember { mutableIntStateOf(0) }
 
-                                    FilterChip(
+                            Column {
+                                Text(
+                                    stringResource(R.string.product),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier
+                                        .padding(vertical = Size.SMALL_SPACE.dp)
+                                        .padding(start = Size.DEFAULT_SPACE.dp)
+                                )
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(Size.BETWEEN_ITEMS.dp),
+                                    contentPadding = PaddingValues(horizontal = Size.DEFAULT_SPACE.dp)
+                                ) {
+                                    itemsIndexed((0..3).toList()) { index, _ ->
+                                        val isSelected = selectedChipIndex == index
+
+                                        FilterChip(
+                                            onClick = {
+                                                selectedChipIndex = index
+                                            },
+                                            label = {
+                                                Text(stringResource(R.string.placeholder))
+                                            },
+                                            selected = isSelected,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visible = isScrolledDown && isReport,
+                        ) {
+                            Text(
+                                stringResource(R.string.report),
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .padding(vertical = Size.SMALL_SPACE.dp)
+                                    .padding(start = Size.DEFAULT_SPACE.dp)
+                            )
+                        }
+
+                        AnimatedVisibility(
+                            visible = isScrolledDown && isAdmin,
+                        ) {
+                            TabRow(pagerState.currentPage) {
+                                tabs.forEachIndexed { index, name ->
+                                    Tab(
+                                        selected = pagerState.currentPage == index,
                                         onClick = {
-                                            selectedChipIndex = index
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(index)
+                                            }
                                         },
-                                        label = {
-                                            Text(stringResource(R.string.placeholder))
-                                        },
-                                        selected = isSelected,
+                                        text = { Text(stringResource(name)) }
                                     )
                                 }
                             }
@@ -242,7 +318,7 @@ fun MainNavigation() {
             },
             floatingActionButton = {
                 AnimatedVisibility(
-                    visible = !isCartEmpty && isHome && !isSearchActive,
+                    visible = !isSearchActive && ((isHome && !isCartEmpty) || isAdmin),
                     enter = slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }),
                     exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
                 ) {
@@ -305,17 +381,15 @@ fun MainNavigation() {
                 exitTransition = { scaleOut(tween(200), 0.96f) + fadeOut(tween(200)) },
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable(MainScreenState.HOME.name) {
-                    Home(
-                        nestedScrollConnection
+                composable(MainScreenState.HOME.name) { Home(nestedScrollConnection) }
+                composable(MainScreenState.REPORT.name) { Report(nestedScrollConnection) }
+                composable(MainScreenState.ADMIN.name) {
+                    Admin(
+                        nestedScrollConnection,
+                        pagerState,
+                        onSelectedAdminTabIndex
                     )
                 }
-                composable(MainScreenState.REPORT.name) {
-                    Report(
-                        nestedScrollConnection
-                    )
-                }
-                composable(MainScreenState.ADMIN.name) { Admin() }
             }
         }
     }

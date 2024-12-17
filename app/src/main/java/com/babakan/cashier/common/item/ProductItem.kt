@@ -1,4 +1,4 @@
-package com.babakan.cashier.common.composable
+package com.babakan.cashier.common.item
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +46,6 @@ fun ProductItem(
     productImage: Int,
     productPrice: Int,
     productName: String,
-    onImageClick: () -> Unit,
     textValue: String,
     onValueChange: (String) -> Unit,
     onSubtract: () -> Unit,
@@ -67,7 +67,6 @@ fun ProductItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(Size.IMAGE_THUMBNAIL_HEIGHT.dp)
-                        .clickable(onClick = onImageClick)
                 )
                 Card(
                     modifier = Modifier
@@ -76,9 +75,7 @@ fun ProductItem(
                 ) {
                     Text(
                         Formatter.currency(productPrice.toLong()),
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(horizontal = Size.SIZE_LG.dp, vertical = Size.SIZE_XS.dp)
                     )
                 }
@@ -89,9 +86,12 @@ fun ProductItem(
             ) {
                 Text(
                     productName,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 2,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis
+                )
+                HorizontalDivider(
+                    Modifier.padding(vertical = Size.BETWEEN_TEXTS.dp)
                 )
                 Card(
                     colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)

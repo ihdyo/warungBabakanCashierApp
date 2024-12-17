@@ -1,21 +1,11 @@
 package com.babakan.cashier
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.*
-import com.babakan.cashier.presentation.authentication.screen.login.Login
-import com.babakan.cashier.presentation.authentication.screen.register.Register
 import com.babakan.cashier.presentation.navigation.screen.main.MainNavigation
-import com.babakan.cashier.utils.constant.Route
 import com.babakan.cashier.utils.theme.CashierTheme
 
 @ExperimentalMaterial3Api

@@ -6,7 +6,7 @@ enum class MainScreenState {
     ADMIN
 }
 
-enum class Route {
+enum class RouteState {
     LOGIN,
     REGISTER,
     MAIN

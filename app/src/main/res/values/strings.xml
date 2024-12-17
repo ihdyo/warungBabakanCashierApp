@@ -22,24 +22,33 @@
     <string name="home">Beranda</string>
     <string name="report">Laporan</string>
     <string name="admin">Admin Panel</string>
+    <string name="product">Produk</string>
+    <string name="category">Kategori</string>
+    <string name="owner">Owner</string>
+    <string name="cashier">Kasir</string>
 
     <string name="productSearch">Cari Produk</string>
+    <string name="categorySearch">Cari Kategori</string>
+    <string name="cashierSearch">Cari Kasir</string>
     <string name="reportSearch">Cari Laporan</string>
-    <string name="cashier">Kasir</string>
     <string name="transactionNumber">No. Transaksi</string>
     <string name="date">Tanggal</string>
     <string name="paid">Lunas</string>
     <string name="number">No. %1$s</string>
-    <string name="totalItem">%1$s barang</string>
+    <string name="totalItem">Total (%1$s barang)</string>
     <string name="countItem">x%1$s</string>
 
+    <string name="expand">Perluas</string>
+    <string name="collapse">Perkecil</string>
     <string name="back">Kembali</string>
     <string name="done">Selesai</string>
     <string name="add">Tambahkan</string>
     <string name="remove">Kurangi</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Hapus</string>
     <string name="menu">Menu</string>
     <string name="cart">Keranjang Belanja</string>
-    <string name="product">Produk</string>
     <string name="productImage">Gambar Produk</string>
     <string name="search">Cari</string>
+    <string name="status">Status</string>
 </resources>

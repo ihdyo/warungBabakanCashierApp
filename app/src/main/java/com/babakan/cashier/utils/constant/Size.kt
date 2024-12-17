@@ -18,18 +18,22 @@ object Size {
     const val SIZE_8XL = 80
     const val SIZE_9XL = 96
 
-    const val BETWEEN_TEXTS = 8
+    const val BETWEEN_TEXTS = 4
     const val BETWEEN_ITEMS = 12
     const val BETWEEN_SECTIONS = 24
 
     const val SMALL_SPACE = 8
     const val DEFAULT_SPACE = 16
+    const val NAV_BAR_HEIGHT = 72
 
     const val SMALL_TEXT_FIELD = 36
     const val SMALL_ICON_BUTTON = 36
 
-    const val NAV_BAR_HEIGHT = 72
+    const val ICON_SMALL = 12
+    const val ICON_MEDIUM = 20
+    const val ICON_LARGE = 24
     const val IMAGE_LIST_HEIGHT = 48
+    const val IMAGE_ADMIN_HEIGHT = 72
     const val IMAGE_THUMBNAIL_HEIGHT = 124
     const val IMAGE_EXPANDED_HEIGHT = 360
 }
