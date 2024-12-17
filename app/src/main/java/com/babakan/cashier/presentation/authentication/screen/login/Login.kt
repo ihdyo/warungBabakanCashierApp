@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
-import com.babakan.cashier.utils.constant.Size
+import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
 fun Login(
@@ -18,7 +18,7 @@ fun Login(
     Column(
         Modifier
             .fillMaxSize()
-            .padding(PaddingValues(Size.DEFAULT_SPACE.dp)),
+            .padding(PaddingValues(SizeChart.DEFAULT_SPACE.dp)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -26,9 +26,9 @@ fun Login(
             stringResource(R.string.registerGreeting),
             style = MaterialTheme.typography.headlineLarge
         )
-        Spacer(modifier = Modifier.height(Size.BETWEEN_SECTIONS.dp))
+        Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
         Column(
-            verticalArrangement = Arrangement.spacedBy(Size.BETWEEN_ITEMS.dp)
+            verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp)
         ) {
             OutlinedTextField(
                 "",
@@ -44,7 +44,7 @@ fun Login(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            Spacer(modifier = Modifier.height(Size.BETWEEN_ITEMS.dp))
+            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
             Button(
                 {
                     // TODO Login Logic

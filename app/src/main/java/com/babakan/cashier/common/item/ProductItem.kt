@@ -2,7 +2,6 @@ package com.babakan.cashier.common.item
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
-import com.babakan.cashier.utils.constant.Size
+import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
@@ -66,23 +65,24 @@ fun ProductItem(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(Size.IMAGE_THUMBNAIL_HEIGHT.dp)
+                        .height(SizeChart.IMAGE_THUMBNAIL_HEIGHT.dp)
                 )
                 Card(
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(Size.SMALL_SPACE.dp)
+                        .padding(SizeChart.SMALL_SPACE.dp)
                 ) {
                     Text(
                         Formatter.currency(productPrice.toLong()),
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(horizontal = Size.SIZE_LG.dp, vertical = Size.SIZE_XS.dp)
+                        modifier = Modifier.padding(horizontal = SizeChart.SIZE_LG.dp, vertical = SizeChart.SIZE_XS.dp)
                     )
                 }
             }
             Column(
-                verticalArrangement = Arrangement.spacedBy(Size.BETWEEN_TEXTS.dp),
-                modifier = Modifier.padding(Size.SMALL_SPACE.dp)
+                verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_TEXTS.dp),
+                modifier = Modifier.padding(SizeChart.SMALL_SPACE.dp)
             ) {
                 Text(
                     productName,
@@ -91,7 +91,7 @@ fun ProductItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 HorizontalDivider(
-                    Modifier.padding(vertical = Size.BETWEEN_TEXTS.dp)
+                    Modifier.padding(vertical = SizeChart.BETWEEN_TEXTS.dp)
                 )
                 Card(
                     colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
@@ -104,7 +104,7 @@ fun ProductItem(
                         IconButton(
                             enabled = onValueChangeToLong > 0,
                             onClick = onSubtract,
-                            modifier = Modifier.size(Size.SMALL_ICON_BUTTON.dp)
+                            modifier = Modifier.size(SizeChart.SMALL_ICON_BUTTON.dp)
                         ) {
                             Icon(
                                 Icons.Default.Remove,
@@ -136,7 +136,7 @@ fun ProductItem(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(vertical = Size.SMALL_SPACE.dp),
+                                        .padding(vertical = SizeChart.SMALL_SPACE.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (textValue.isEmpty()) {
@@ -150,14 +150,14 @@ fun ProductItem(
                                 }
                             },
                             modifier = Modifier
-                                .height(Size.SMALL_TEXT_FIELD.dp)
+                                .height(SizeChart.SMALL_TEXT_FIELD.dp)
                                 .weight(1f)
                                 .background(MaterialTheme.colorScheme.secondaryContainer)
-                                .padding(horizontal = Size.SMALL_SPACE.dp)
+                                .padding(horizontal = SizeChart.SMALL_SPACE.dp)
                         )
                         IconButton(
                             onClick = onAdd,
-                            Modifier.size(Size.SMALL_ICON_BUTTON.dp)
+                            Modifier.size(SizeChart.SMALL_ICON_BUTTON.dp)
                         ) {
                             Icon(
                                 Icons.Default.Add,

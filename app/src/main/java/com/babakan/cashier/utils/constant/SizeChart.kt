@@ -1,6 +1,6 @@
 package com.babakan.cashier.utils.constant
 
-object Size {
+object SizeChart {
     const val SIZE_0 = 0
 
     const val SIZE_2XS = 2

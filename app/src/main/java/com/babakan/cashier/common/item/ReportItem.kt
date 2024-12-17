@@ -1,15 +1,12 @@
 package com.babakan.cashier.common.item
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material3.Card
@@ -26,13 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.CategoryComponent
-import com.babakan.cashier.utils.constant.Size
+import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
@@ -52,9 +47,9 @@ fun ReportItem() {
             shape = MaterialTheme.shapes.large
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(Size.DEFAULT_SPACE.dp),
+                verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp),
                 modifier = Modifier
-                    .padding(Size.DEFAULT_SPACE.dp)
+                    .padding(SizeChart.DEFAULT_SPACE.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -63,7 +58,7 @@ fun ReportItem() {
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(Size.SMALL_SPACE.dp),
+                        horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
@@ -79,7 +74,7 @@ fun ReportItem() {
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     color = MaterialTheme.colorScheme.onPrimary
                                 ),
-                                modifier = Modifier.padding(horizontal = Size.SIZE_XS.dp, vertical = Size.SIZE_2XS.dp)
+                                modifier = Modifier.padding(horizontal = SizeChart.SIZE_XS.dp, vertical = SizeChart.SIZE_2XS.dp)
                             )
                         }
                     }
@@ -90,7 +85,7 @@ fun ReportItem() {
                 }
                 AnimatedVisibility(!isExpanded) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(Size.DEFAULT_SPACE.dp)
+                        verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp)
                     ) {
                         Text(
                             Formatter.currency(10000),
@@ -110,7 +105,7 @@ fun ReportItem() {
                                     Text(
                                         stringResource(R.string.number, 2).uppercase(),
                                         style = MaterialTheme.typography.labelMedium,
-                                        modifier = Modifier.padding(horizontal = Size.SIZE_SM.dp, vertical = Size.SIZE_2XS.dp)
+                                        modifier = Modifier.padding(horizontal = SizeChart.SIZE_SM.dp, vertical = SizeChart.SIZE_2XS.dp)
                                     )
                                 }
                                 Text("Lorem Ipsum")
@@ -140,12 +135,12 @@ fun ReportItem() {
         }
         AnimatedVisibility (isExpanded) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(Size.SMALL_SPACE.dp),
+                verticalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Size.DEFAULT_SPACE.dp)
-                    .padding(top = Size.DEFAULT_SPACE.dp, bottom = Size.SMALL_SPACE.dp)
+                    .padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
+                    .padding(top = SizeChart.DEFAULT_SPACE.dp, bottom = SizeChart.SMALL_SPACE.dp)
             ) {
                 for (categoryIndex in 0 until 2) {
                     Spacer(Modifier.weight(1f))
