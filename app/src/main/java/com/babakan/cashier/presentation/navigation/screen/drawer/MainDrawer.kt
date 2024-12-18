@@ -36,7 +36,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
+import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -44,6 +46,7 @@ import kotlin.random.Random
 
 @Composable
 fun MainDrawer(
+    authViewModel: AuthViewModel = viewModel(),
     authScope: CoroutineScope,
     mainScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
@@ -56,7 +59,6 @@ fun MainDrawer(
     // TODO Change this
     val name = stringResource(R.string.placeholder)
     val isOwner = Random.nextBoolean()
-    val onLogout = false
 
     ModalDrawerSheet {
         Column(
@@ -134,20 +136,22 @@ fun MainDrawer(
             confirmButton = {
                 Button(
                     {
+                        authViewModel.signOut(
+                            onSuccess = {
+                                onNavigateToLogin()
+                                authScope.launch {
+                                    snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
+                                }
+                            },
+                            onError = { errorMessage ->
+                                mainScope.launch {
+                                    snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
+                                }
+                            }
+                        )
+
                         dialogState = !dialogState
                         onDrawerStateChange(DrawerValue.Closed)
-
-                        if (onLogout) {
-                            onNavigateToLogin()
-                            authScope.launch {
-                                snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
-                            }
-                            return@Button
-                        } else {
-                            mainScope.launch {
-                                snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
-                            }
-                        }
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,

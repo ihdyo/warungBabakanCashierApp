@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.babakan.cashier" />
+                  <option name="mobileSdkAppId" value="1:745976052374:android:fa4f8997520e731b7a60b7" />
+                  <option name="projectId" value="warungbabakan-a3f35" />
+                  <option name="projectNumber" value="745976052374" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

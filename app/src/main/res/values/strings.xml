@@ -14,6 +14,7 @@
     <string name="username">Nama Pengguna</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="showPassword">Tampilkan Password</string>
     <string name="confirmPassword">Konfirmasi Password</string>
     <string name="login">Masuk</string>
     <string name="loginPrompt">Sudah memiliki akun</string>
@@ -28,6 +29,13 @@
     <string name="clearCartConfirmation">Apakah anda yakin ingin mengosongkan keranjang?</string>
     <string name="clearCartSuccess">Keranjang berhasil dikosongkan</string>
     <string name="clearCartFailed">Keranjang gagal dikosongkan</string>
+
+    <string name="cannotEmpty">%1$s tidak boleh kosong</string>
+    <string name="invalidEmail">Email tidak valid</string>
+    <string name="shortPassword">Password terlalu pendek (minimal 6 karakter)</string>
+    <string name="passwordNotMatch">Password tidak sesuai</string>
+    <string name="invalidUsername">Username tidak boleh mengandung karakter khusus atau spasi</string>
+    <string name="fillInAllFields">Mohon isi semua data dengan benar</string>
 
     <string name="home">Beranda</string>
     <string name="report">Laporan</string>

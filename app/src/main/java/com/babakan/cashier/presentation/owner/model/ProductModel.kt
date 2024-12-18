@@ -19,7 +19,7 @@ val dummyProductList = listOf(
         updateAt = Timestamp(System.currentTimeMillis()),
         name = "Indomie",
         category = "Food",
-        imageUrl = "https://img.freepik.com/premium-vector/window-operating-system-error-warning-dialog-window-popup-message-with-system-failure-flat-design_812892-54.jpg",
+        imageUrl = "https://cdn.antaranews.com/cache/1200x800/2024/07/08/indomie-bangladesh.jpg",
         price = 3500
     ),
     ProductModel(
@@ -28,7 +28,7 @@ val dummyProductList = listOf(
         updateAt = Timestamp(System.currentTimeMillis()),
         name = "Kopi",
         category = "Drink",
-        imageUrl = "https://images.unsplash.com/photo-1675435644687-562e8042b9db",
+        imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/800px-A_small_cup_of_coffee.JPG",
         price = 2500
     ),
     ProductModel(
@@ -37,7 +37,7 @@ val dummyProductList = listOf(
         updateAt = Timestamp(System.currentTimeMillis()),
         name = "Teh",
         category = "Drink",
-        imageUrl = "https://firebasestorage.googleapis.com/v0/b/never-ending-cf10b.appspot.com/o/image%2F3ToEINm9nkvs2YnVnWYg%2Fimg_0.jpg?alt=media&token=1140909e-d4cf-4952-a2de-d207782f00b8",
+        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIgsZv19mTG2mMCSneHlnFRrswXhHho2usvA&s",
         price = 1500
     ),
     ProductModel(
@@ -46,25 +46,25 @@ val dummyProductList = listOf(
         updateAt = Timestamp(System.currentTimeMillis()),
         name = "Roti",
         category = "Food",
-        imageUrl = "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        imageUrl = "https://www.allrecipes.com/thmb/CjzJwg2pACUzGODdxJL1BJDRx9Y=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/6788-amish-white-bread-DDMFS-4x3-6faa1e552bdb4f6eabdd7791e59b3c84.jpg",
         price = 2000
     ),
     ProductModel(
-        documentId = "51",
+        documentId = "5",
         createdAt = Timestamp(System.currentTimeMillis()),
         updateAt = Timestamp(System.currentTimeMillis()),
-        name = "Kopi",
-        category = "Drink",
-        imageUrl = "https://images.unsplash.com/photo-1675435644687-562e8042b9db",
+        name = "Nasi Goreng",
+        category = "Food",
+        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdQ2BQLtpdIm5FgecGcx-1ZjDd_g2bM5TtlQ&s",
         price = 2500
     ),
     ProductModel(
-        documentId = "61",
+        documentId = "6",
         createdAt = Timestamp(System.currentTimeMillis()),
         updateAt = Timestamp(System.currentTimeMillis()),
-        name = "Teh",
+        name = "Thai Tea",
         category = "Drink",
-        imageUrl = "https://firebasestorage.googleapis.com/v0/b/never-ending-cf10b.appspot.com/o/image%2F3ToEINm9nkvs2YnVnWYg%2Fimg_0.jpg?alt=media&token=1140909e-d4cf-4952-a2de-d207782f00b8",
+        imageUrl = "https://flash-coffee.com/id/wp-content/uploads/sites/13/2023/06/THAI-TEA.png",
         price = 1500
     ),
 )

@@ -19,6 +19,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.EmojiFoodBeverage
+import androidx.compose.material.icons.filled.FoodBank
+import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -108,15 +111,27 @@ fun MainTopBar(
                         horizontalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
                         contentPadding = PaddingValues(horizontal = SizeChart.DEFAULT_SPACE.dp)
                     ) {
-                        itemsIndexed((0..3).toList()) { index, _ ->
+                        val dummyCategoryList = listOf(
+                            Pair("Semua", Icons.Default.Menu),
+                            Pair("Makanan", Icons.Default.FoodBank),
+                            Pair("Minuman", Icons.Default.LocalDrink),
+                            Pair("Snack", Icons.Default.EmojiFoodBeverage)
+                        )
+                        itemsIndexed(dummyCategoryList) { index, item ->
                             val isSelected = selectedChipIndex == index
 
                             FilterChip(
                                 onClick = {
                                     selectedChipIndex = index
                                 },
+                                leadingIcon = {
+                                    Icon(
+                                        item.second,
+                                        item.first
+                                    )
+                                },
                                 label = {
-                                    Text(stringResource(R.string.placeholder))
+                                    Text(text = item.first)
                                 },
                                 selected = isSelected,
                             )
