@@ -31,16 +31,15 @@ import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.CategoryComponent
 import com.babakan.cashier.common.component.EditButton
+import com.babakan.cashier.common.style.tabContentPadding
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
-fun AdminProduct(
-    nestedScrollConnection: NestedScrollConnection
-) {
+fun AdminProduct(nestedScrollConnection: NestedScrollConnection) {
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
-            contentPadding = PaddingValues(SizeChart.DEFAULT_SPACE.dp),
+            contentPadding = tabContentPadding(),
             verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
             modifier = Modifier
                 .align(Alignment.TopCenter)

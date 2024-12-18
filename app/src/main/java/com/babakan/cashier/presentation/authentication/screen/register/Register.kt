@@ -9,78 +9,86 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.utils.constant.SizeChart
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun Register(
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit
 ) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(PaddingValues(SizeChart.DEFAULT_SPACE.dp)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            stringResource(R.string.registerGreeting),
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackBarHostState) }
+    ) { innerPadding ->
         Column(
-            verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp)
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(PaddingValues(SizeChart.DEFAULT_SPACE.dp)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.name)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+            Text(
+                stringResource(R.string.registerGreeting),
+                style = MaterialTheme.typography.headlineLarge
             )
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.username)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.email)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.password)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.confirmPassword)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
-            Button(
-                {
-                    // TODO Register Logic
-                    onNavigateToMain()
-                },
+            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp)
+            ) {
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.username)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.email)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.password)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.confirmPassword)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
+                Button(
+                    {
+                        // TODO Register Logic
+                        onNavigateToMain()
+                    },
+                    Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.register))
+                }
+            }
+            TextButton(
+                { onNavigateToLogin() },
                 Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.register))
+                Text(stringResource(R.string.loginPrompt))
             }
-        }
-        TextButton(
-            { onNavigateToLogin() },
-            Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.loginPrompt))
         }
     }
 }

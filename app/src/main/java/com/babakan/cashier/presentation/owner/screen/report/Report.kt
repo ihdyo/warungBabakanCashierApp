@@ -12,12 +12,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.common.item.ReportItem
+import com.babakan.cashier.common.style.pageContentPadding
 import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
-fun Report(
-    nestedScrollConnection: NestedScrollConnection
-) {
+fun Report(nestedScrollConnection: NestedScrollConnection) {
     LazyColumn(
         contentPadding = PaddingValues(SizeChart.DEFAULT_SPACE.dp),
         verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),

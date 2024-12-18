@@ -2,8 +2,10 @@ package com.babakan.cashier.presentation.cashier.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,31 +19,31 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.common.item.ProductItem
+import com.babakan.cashier.common.style.pageContentPadding
+import com.babakan.cashier.presentation.owner.model.dummyProductList
+import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 
 @ExperimentalMaterial3Api
 @Composable
 fun Home(
-    nestedScrollConnection: NestedScrollConnection
+    temporaryCartViewModel: TemporaryCartViewModel,
+    nestedScrollConnection: NestedScrollConnection,
+    isFabShown: Boolean
 ) {
     LazyVerticalGrid(
         GridCells.Fixed(2),
-        contentPadding = PaddingValues(SizeChart.DEFAULT_SPACE.dp),
+        contentPadding = pageContentPadding(isFabShown),
         verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
         horizontalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
-        modifier = Modifier.nestedScroll(nestedScrollConnection)
+        modifier = Modifier
+            .nestedScroll(nestedScrollConnection)
     ) {
-        items(10) {
-            var textValue by remember { mutableStateOf(TextFieldValue("")) }
-            
+        itemsIndexed(dummyProductList) { index, item ->
             ProductItem(
-                textValue = textValue.text,
-                onValueChange = { textValue = TextFieldValue(it) },
-                productImage = R.drawable.img_placeholder,
-                productPrice = 10000,
-                productName = "Product $it",
-                onSubtract = { },
-                onAdd = { }
+                temporaryCartViewModel = temporaryCartViewModel,
+                index = index,
+                item = item
             )
         }
     }

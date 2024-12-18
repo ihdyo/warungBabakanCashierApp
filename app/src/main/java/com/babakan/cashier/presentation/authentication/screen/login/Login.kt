@@ -9,57 +9,65 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.utils.constant.SizeChart
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun Login(
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
     onNavigateToRegister: () -> Unit,
     onNavigateToMain: () -> Unit
 ) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(PaddingValues(SizeChart.DEFAULT_SPACE.dp)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            stringResource(R.string.registerGreeting),
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackBarHostState) }
+    ) { innerPadding ->
         Column(
-            verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp)
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(PaddingValues(SizeChart.DEFAULT_SPACE.dp)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.email)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+            Text(
+                stringResource(R.string.loginGreeting),
+                style = MaterialTheme.typography.headlineLarge
             )
-            OutlinedTextField(
-                "",
-                onValueChange = {},
-                label = { Text(stringResource(R.string.password)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
-            Button(
-                {
-                    // TODO Login Logic
-                    onNavigateToMain()
-                },
+            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp)
+            ) {
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.email)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    "",
+                    onValueChange = {},
+                    label = { Text(stringResource(R.string.password)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
+                Button(
+                    {
+                        // TODO Login Logic
+                        onNavigateToMain()
+                    },
+                    Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.login))
+                }
+            }
+            TextButton(
+                { onNavigateToRegister() },
                 Modifier.fillMaxWidth(),
             ) {
-                Text(stringResource(R.string.login))
+                Text(stringResource(R.string.registerPrompt))
             }
-        }
-        TextButton(
-            { onNavigateToRegister() },
-            Modifier.fillMaxWidth(),
-        ) {
-            Text(stringResource(R.string.registerPrompt))
         }
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerState
@@ -22,9 +23,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
@@ -45,10 +48,13 @@ fun MainSearchBar(
     isAdminCategory: Boolean,
     isAdminCashier: Boolean,
     isSearchActive: Boolean,
+    snackBarHostState: SnackbarHostState,
     onSearchActiveChange: (Boolean) -> Unit,
     isCartEmpty: Boolean,
     cartItemCount: Int
 ) {
+    val context = LocalContext.current
+
     SearchBar(
         query = "",
         onQueryChange = {},
@@ -75,7 +81,7 @@ fun MainSearchBar(
             if (isSearchActive) {
                 IconButton({ onSearchActiveChange(false) }) {
                     Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
+                        Icons.AutoMirrored.Default.ArrowBack,
                         stringResource(R.string.back)
                     )
                 }
@@ -106,7 +112,7 @@ fun MainSearchBar(
                         {
                             if (!isCartEmpty) {
                                 Badge(
-                                    Modifier.offset(-SizeChart.SIZE_3XL.dp, SizeChart.SIZE_XS.dp)
+                                    Modifier.offset(-SizeChart.SIZE_3XL.dp)
                                 ) {
                                     Text(cartItemCount.toString())
                                 }
@@ -121,6 +127,25 @@ fun MainSearchBar(
                         }
                     }
                 }
+                AnimatedVisibility(
+                    visible = isAdmin,
+                    enter = fadeIn(animationSpec = tween(Constant.ANIMATION_SHORT, easing = LinearOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(Constant.ANIMATION_SHORT, easing = LinearOutSlowInEasing))
+                ) {
+                    IconButton(
+                        {
+                            scope.launch {
+                                snackBarHostState.showSnackbar(context.getString(R.string.loginAsOwner))
+                            }
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.VerifiedUser,
+                            stringResource(R.string.admin),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
         },
         modifier = Modifier
@@ -133,6 +158,6 @@ fun MainSearchBar(
             )
             .padding(bottom = SizeChart.BETWEEN_ITEMS.dp),
     ) {
-
+     // TODO Search Page
     }
 }

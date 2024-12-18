@@ -8,6 +8,7 @@
     <string name="greeting">Halo,</string>
     <string name="loginGreeting">Selamat Datang!</string>
     <string name="registerGreeting">Silakan Daftar</string>
+    <string name="loginAsOwner">Anda masuk sebagai pemilik dan memiliki akses penuh.</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>
@@ -19,6 +20,14 @@
     <string name="register">Daftar</string>
     <string name="registerPrompt">Daftar akun</string>
     <string name="logout">Keluar</string>
+    <string name="logoutConfirmation">Apakah anda yakin ingin keluar?</string>
+    <string name="logoutSuccess">Anda telah berhasil keluar</string>
+    <string name="logoutFailed">Anda gagal keluar</string>
+    <string name="clear">Kosongkan</string>
+    <string name="clearCart">Kosongkan Keranjang</string>
+    <string name="clearCartConfirmation">Apakah anda yakin ingin mengosongkan keranjang?</string>
+    <string name="clearCartSuccess">Keranjang berhasil dikosongkan</string>
+    <string name="clearCartFailed">Keranjang gagal dikosongkan</string>
 
     <string name="home">Beranda</string>
     <string name="report">Laporan</string>
@@ -38,6 +47,12 @@
     <string name="number">No. %1$s</string>
     <string name="totalItem">Total (%1$s barang)</string>
     <string name="countItem">x%1$s</string>
+
+    <string name="cancel">Batal</string>
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="ok">OK</string>
+    <string name="close">Tutup</string>
 
     <string name="expand">Perluas</string>
     <string name="collapse">Perkecil</string>

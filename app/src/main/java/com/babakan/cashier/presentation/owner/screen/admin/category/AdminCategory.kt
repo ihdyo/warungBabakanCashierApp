@@ -28,16 +28,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.EditButton
+import com.babakan.cashier.common.style.pageContentPadding
+import com.babakan.cashier.common.style.tabContentPadding
 import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
-fun AdminCategory(
-    nestedScrollConnection: NestedScrollConnection
-) {
+fun AdminCategory(nestedScrollConnection: NestedScrollConnection) {
     Box(Modifier.fillMaxSize()) {
         LazyVerticalGrid(
             GridCells.Fixed(2),
-            contentPadding = PaddingValues(SizeChart.DEFAULT_SPACE.dp),
+            contentPadding = tabContentPadding(),
             verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
             horizontalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
             modifier = Modifier.nestedScroll(nestedScrollConnection)
@@ -62,7 +62,7 @@ fun AdminCategory(
                                     stringResource(R.string.category),
                                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                     modifier = Modifier
-                                        .padding(vertical = SizeChart.SMALL_SPACE.dp)
+                                        .padding(SizeChart.SMALL_SPACE.dp)
                                         .size(SizeChart.ICON_MEDIUM.dp)
                                 )
                             }

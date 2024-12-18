@@ -25,6 +25,8 @@ object SizeChart {
     const val SMALL_SPACE = 8
     const val DEFAULT_SPACE = 16
     const val NAV_BAR_HEIGHT = 72
+    const val FAB_HEIGHT = 96
+    const val DUAL_FAB_HEIGHT = 136
 
     const val SMALL_TEXT_FIELD = 36
     const val SMALL_ICON_BUTTON = 36

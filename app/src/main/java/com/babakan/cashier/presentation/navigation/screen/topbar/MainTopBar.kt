@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -59,6 +60,7 @@ fun MainTopBar(
     isAdminCategory: Boolean,
     isAdminCashier: Boolean,
     isSearchActive: Boolean,
+    snackBarHostState: SnackbarHostState,
     onSearchActiveChange: (Boolean) -> Unit,
     drawerState: DrawerState,
     scope: CoroutineScope,
@@ -84,6 +86,7 @@ fun MainTopBar(
                 isAdminCategory = isAdminCategory,
                 isAdminCashier = isAdminCashier,
                 isSearchActive = isSearchActive,
+                snackBarHostState = snackBarHostState,
                 onSearchActiveChange = onSearchActiveChange,
                 isCartEmpty = isCartEmpty,
                 cartItemCount = cartItemCount

@@ -1,5 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.drawer
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,34 +8,55 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getString
 import com.babakan.cashier.R
 import com.babakan.cashier.utils.constant.SizeChart
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
-fun MainDrawer() {
+fun MainDrawer(
+    authScope: CoroutineScope,
+    mainScope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
+    onDrawerStateChange: (DrawerValue) -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
+    val context = LocalContext.current
+    var dialogState by remember { mutableStateOf(false) }
 
     // TODO Change this
     val name = stringResource(R.string.placeholder)
     val isOwner = Random.nextBoolean()
-
-    val onLogout: () -> Unit = {}
+    val onLogout = false
 
     ModalDrawerSheet {
         Column(
@@ -76,7 +98,7 @@ fun MainDrawer() {
                 )
             }
             TextButton(
-                { onLogout() },
+                { dialogState = !dialogState },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.error
@@ -89,5 +111,60 @@ fun MainDrawer() {
                 )
             }
         }
+    }
+
+    if (dialogState) {
+        AlertDialog(
+            icon = {
+                Icon(
+                    Icons.AutoMirrored.Default.Logout,
+                    stringResource(R.string.logout),
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            title = { Text(stringResource(R.string.logout)) },
+            text = {
+                Text(
+                    stringResource(R.string.logoutConfirmation),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            },
+            onDismissRequest = { dialogState = !dialogState },
+            confirmButton = {
+                Button(
+                    {
+                        dialogState = !dialogState
+                        onDrawerStateChange(DrawerValue.Closed)
+
+                        if (onLogout) {
+                            onNavigateToLogin()
+                            authScope.launch {
+                                snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
+                            }
+                            return@Button
+                        } else {
+                            mainScope.launch {
+                                snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(stringResource(R.string.logout))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    { dialogState = !dialogState },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                ) { Text(stringResource(R.string.cancel),) }
+            }
+        )
     }
 }
