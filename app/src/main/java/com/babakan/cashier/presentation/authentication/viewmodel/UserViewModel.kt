@@ -16,8 +16,8 @@ class UserViewModel : ViewModel() {
 
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    private val _userDocument = MutableStateFlow<UserModel?>(null)
-    val userDocument: StateFlow<UserModel?> = _userDocument
+    private val _userDocument = MutableStateFlow<UiState<UserModel>>(UiState.Idle)
+    val userDocument: StateFlow<UiState<UserModel>> = _userDocument
 
     suspend fun fetchUser(
         userId: String
@@ -39,12 +39,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun createUser(
-        userId: String,
-        name: String,
-        username: String,
-        email: String
-    ) {
+    fun createUser(userId: String, name: String, username: String, email: String) {
         val userData = UserModel(
             id = userId,
             createdAt = Timestamp.now(),

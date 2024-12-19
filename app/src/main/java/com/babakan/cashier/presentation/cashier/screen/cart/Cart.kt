@@ -85,6 +85,8 @@ fun Cart(
     var tableNumberError by remember { mutableStateOf<String?>(null) }
 
     val productOut = dummyProductOutList
+    val totalItem = productOut.sumOf { it.quantity }
+    val totalPrice = productOut.sumOf { it.price * it.quantity }
 
     Box(Modifier.fillMaxSize()) {
         Column(
@@ -154,9 +156,14 @@ fun Cart(
                                 if (notes.isNotBlank()) {
                                     HorizontalDivider(
                                         thickness = 1.dp,
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = SizeChart.BETWEEN_TEXTS.dp)
                                     )
-                                    Text(notes)
+                                    Text(
+                                        notes,
+                                        Modifier.padding(bottom = SizeChart.SMALL_SPACE.dp)
+                                    )
                                 }
                             }
                         }
@@ -279,10 +286,10 @@ fun Cart(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        stringResource(R.string.totalItem, 45)
+                        stringResource(R.string.totalItem, totalItem)
                     )
                     Text(
-                        Formatter.currency(10000.0),
+                        Formatter.currency(totalPrice),
                         style = MaterialTheme.typography.titleLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         )

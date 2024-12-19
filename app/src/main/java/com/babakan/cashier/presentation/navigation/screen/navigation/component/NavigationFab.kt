@@ -74,8 +74,8 @@ fun NavigationFab(
                     {
                         dialogState = !dialogState
                     },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.tertiary
                 ) {
                     Icon(
                         Icons.Default.Clear,

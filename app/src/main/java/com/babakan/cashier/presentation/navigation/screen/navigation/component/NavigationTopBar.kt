@@ -93,7 +93,7 @@ fun NavigationTopBar(
             ) {
                 val category = dummyCategoryList
 
-                var selectedChipIndex by remember { mutableIntStateOf(0) }
+                var selectedChipIndex by remember { mutableIntStateOf(-1) }
 
                 Column {
                     Text(

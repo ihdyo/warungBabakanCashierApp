@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.coil.network.ktor2)
     implementation(libs.coil.network.ktor3)
     implementation(libs.coil.svg)
+    implementation(libs.androidx.core.splashscreen)
 }

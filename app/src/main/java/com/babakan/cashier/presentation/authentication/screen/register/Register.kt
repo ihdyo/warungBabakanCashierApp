@@ -204,6 +204,7 @@ fun Register(
                     snackBarHostState.showSnackbar(error.message)
                 }
             }
+            else -> {}
         }
 
     }

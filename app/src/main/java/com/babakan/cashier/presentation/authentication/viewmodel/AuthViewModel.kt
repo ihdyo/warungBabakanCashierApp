@@ -17,10 +17,10 @@ class AuthViewModel(
 
     private val auth = FirebaseAuth.getInstance()
 
-    private val _uiState = MutableStateFlow<UiState<String>>(UiState.Loading)
+    private val _uiState = MutableStateFlow<UiState<String>>(UiState.Idle)
     val uiState: StateFlow<UiState<String>> get() = _uiState
 
-    private val _currentUserState = MutableStateFlow<UiState<UserModel>>(UiState.Loading)
+    private val _currentUserState = MutableStateFlow<UiState<UserModel>>(UiState.Idle)
     val currentUserState: StateFlow<UiState<UserModel>> get() = _currentUserState
 
     fun getCurrentUser() {
@@ -32,15 +32,13 @@ class AuthViewModel(
                     val userState = userViewModel.fetchUser(userId)
                     _currentUserState.value = userState
                 } else {
-                    _currentUserState.value = UiState.Error("Tidak ditemukan", "Tidak ada data untuk pengguna dengan ID: $userId")
+                    _currentUserState.value = UiState.Error("Tidak ditemukan", "Tidak ada data untuk pengguna.")
                 }
             } catch (e: Exception) {
                 _currentUserState.value = UiState.Error("Terjadi kesalahan", e.message.toString())
             }
         }
     }
-
-
 
     fun register(
         name: String,
@@ -59,7 +57,7 @@ class AuthViewModel(
                     }
                     _uiState.value = UiState.Success("Registrasi Berhasil!")
                 } else {
-                    _uiState.value = UiState.Error("Registrasi Gagal!", "Coba lagi nanti.")
+                    _uiState.value = UiState.Error("Registrasi Gagal", "Coba lagi nanti.")
                 }
             } catch (e: Exception) {
                 _uiState.value = UiState.Error("Terjadi kesalahan", e.message.toString())

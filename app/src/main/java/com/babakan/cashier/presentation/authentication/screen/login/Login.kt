@@ -140,7 +140,7 @@ fun Login(
                     snackBarHostState.showSnackbar(error.message)
                 }
             }
-            is UiState.Success -> {}
+            else -> {}
         }
     }
 }

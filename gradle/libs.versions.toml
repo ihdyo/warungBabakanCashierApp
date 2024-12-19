@@ -2,6 +2,7 @@
 agp = "8.7.3"
 coilCompose = "3.0.4"
 coilOkhttp = "3.0.0"
+coreSplashscreen = "1.0.1"
 firebaseAuth = "23.1.0"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -19,6 +20,7 @@ firebaseFirestore = "25.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilCompose" }
