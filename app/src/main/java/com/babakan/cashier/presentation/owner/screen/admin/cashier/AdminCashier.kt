@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -31,11 +32,15 @@ import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.EditButton
 import com.babakan.cashier.common.style.tabContentPadding
+import com.babakan.cashier.data.dummy.dummyUserList
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlin.random.Random
 
 @Composable
 fun AdminCashier(nestedScrollConnection: NestedScrollConnection) {
+
+    val cashier = dummyUserList
+
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = tabContentPadding(),
@@ -44,9 +49,9 @@ fun AdminCashier(nestedScrollConnection: NestedScrollConnection) {
                 .align(Alignment.TopCenter)
                 .nestedScroll(nestedScrollConnection)
         ) {
-            items(6) {
-                val isActive = Random.nextBoolean()
-                val isOwner = Random.nextBoolean()
+            itemsIndexed(cashier) { index, item ->
+                val isActive = item.isActive
+                val isOwner = item.isOwner
 
                 Card(colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)) {
                     Column(
@@ -59,7 +64,7 @@ fun AdminCashier(nestedScrollConnection: NestedScrollConnection) {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                "lorem_ipsum",
+                                item.username,
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 maxLines = 1,
@@ -78,14 +83,14 @@ fun AdminCashier(nestedScrollConnection: NestedScrollConnection) {
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    "Lorem Ipsum",
+                                    item.name,
                                     style = MaterialTheme.typography.titleLarge,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis,
                                 )
                                 Text(
-                                    "loremipsum@gmail.com",
-                                    style = MaterialTheme.typography.labelLarge
+                                    item.email,
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
                             }
                             Row (

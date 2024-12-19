@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -26,13 +27,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
-import com.babakan.cashier.common.component.CategoryComponent
+import com.babakan.cashier.common.list.ProductOutList
+import com.babakan.cashier.data.dummy.dummyProductOutList
+import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.presentation.owner.model.TransactionModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
-fun ReportItem() {
+fun ReportItem(
+    index: Int,
+    transactionItem: TransactionModel,
+    userItem: UserModel
+) {
     var isExpanded by remember { mutableStateOf(false) }
+
+    val productOut = dummyProductOutList
+
+    val totalItem = 5
 
     Column {
         Card(
@@ -62,7 +74,7 @@ fun ReportItem() {
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            "3249VIY3429",
+                            transactionItem.transactionId,
                             style = MaterialTheme.typography.titleLarge
                         )
                         Card(
@@ -79,7 +91,7 @@ fun ReportItem() {
                         }
                     }
                     Text(
-                        Formatter.date(System.currentTimeMillis()),
+                        Formatter.date(transactionItem.createdAt),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -88,7 +100,7 @@ fun ReportItem() {
                         verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp)
                     ) {
                         Text(
-                            Formatter.currency(10000),
+                            Formatter.currency(transactionItem.totalPrice),
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -100,15 +112,17 @@ fun ReportItem() {
                         ) {
                             Column(Modifier.weight(1f)) {
                                 Card(
-                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
                                 ) {
                                     Text(
-                                        stringResource(R.string.number, 2).uppercase(),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        modifier = Modifier.padding(horizontal = SizeChart.SIZE_SM.dp, vertical = SizeChart.SIZE_2XS.dp)
+                                        stringResource(R.string.numberOrder, transactionItem.tableNumber).uppercase(),
+                                        style = MaterialTheme.typography.labelLarge.copy(
+                                            color = MaterialTheme.colorScheme.secondary
+                                        ),
+                                        modifier = Modifier.padding(horizontal = SizeChart.SIZE_SM.dp, vertical = SizeChart.SIZE_2XS.dp),
                                     )
                                 }
-                                Text("Lorem Ipsum")
+                                Text(transactionItem.customerName)
                             }
                             Column(
                                 horizontalAlignment = Alignment.End,
@@ -120,55 +134,47 @@ fun ReportItem() {
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
-                                Text("Lorem Ipsum")
+                                Text(userItem.name)
                             }
                         }
                         HorizontalDivider(
                             thickness = 1.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        Text("Lorem Ipsum")
+                        Text(transactionItem.notes)
                     }
                 }
             }
         }
         AnimatedVisibility (isExpanded) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
-                    .padding(top = SizeChart.DEFAULT_SPACE.dp, bottom = SizeChart.SMALL_SPACE.dp)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(
+                    vertical = SizeChart.SMALL_SPACE.dp,
+                    horizontal = SizeChart.DEFAULT_SPACE.dp
+                )
             ) {
-                for (categoryIndex in 0 until 2) {
-                    Spacer(Modifier.weight(1f))
-                    CategoryComponent()
-                    for (productIndex in 0 until 3) {
-                        OrderedProductItem()
-                    }
-                }
-                Spacer(Modifier.weight(1f))
+                ProductOutList(
+                    isEditable = false,
+                    productOutItem = productOut
+                )
+                Spacer(Modifier.height(SizeChart.DEFAULT_SPACE.dp))
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        stringResource(R.string.totalItem, 4),
+                        stringResource(R.string.totalItem, totalItem),
                     )
                     Text(
-                        Formatter.currency(10000),
+                        Formatter.currency(transactionItem.totalPrice),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
                 }
-                IconButton(
-                    {isExpanded = !isExpanded},
-                    Modifier.align(Alignment.CenterHorizontally)
-                ) {
+                IconButton({isExpanded = !isExpanded}) {
                     Icon(
                         Icons.Default.ExpandLess,
                         stringResource(R.string.collapse),

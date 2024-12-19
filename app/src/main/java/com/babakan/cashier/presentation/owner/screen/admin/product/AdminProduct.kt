@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -29,14 +30,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
+import com.babakan.cashier.common.builder.ImageLoader
 import com.babakan.cashier.common.component.CategoryComponent
 import com.babakan.cashier.common.component.EditButton
 import com.babakan.cashier.common.style.tabContentPadding
+import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.data.dummy.dummyProductList
+import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
-fun AdminProduct(nestedScrollConnection: NestedScrollConnection) {
+fun AdminProduct(
+    nestedScrollConnection: NestedScrollConnection
+) {
+
+    val product = dummyProductList
+    val category = dummyCategoryList
+
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = tabContentPadding(),
@@ -45,7 +56,9 @@ fun AdminProduct(nestedScrollConnection: NestedScrollConnection) {
                 .align(Alignment.TopCenter)
                 .nestedScroll(nestedScrollConnection)
         ) {
-            items(6) {
+            itemsIndexed(product) {index, item ->
+                val itemCategory = category.find { it.id == item.categoryId } ?: CategoryModel()
+
                 Card(colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)) {
                     Row(
                         verticalAlignment = Alignment.Top,
@@ -62,13 +75,10 @@ fun AdminProduct(nestedScrollConnection: NestedScrollConnection) {
                             Card(
                                 shape = MaterialTheme.shapes.small
                             ) {
-                                Image(
-                                    painterResource(R.drawable.img_placeholder),
-                                    stringResource(R.string.productImage),
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(SizeChart.IMAGE_ADMIN_HEIGHT.dp)
-                                        .fillMaxHeight()
+                                ImageLoader(
+                                    item.imageUrl,
+                                    SizeChart.IMAGE_ADMIN_HEIGHT.dp,
+                                    SizeChart.IMAGE_ADMIN_HEIGHT.dp
                                 )
                             }
                             Column(
@@ -77,15 +87,18 @@ fun AdminProduct(nestedScrollConnection: NestedScrollConnection) {
                                     .fillMaxHeight()
                                     .weight(1f)
                             ) {
-                                CategoryComponent()
+                                CategoryComponent(
+                                    name = itemCategory.name,
+                                    iconUrl = itemCategory.iconUrl
+                                )
                                 Text(
-                                    "Lorem Ipsum",
+                                    item.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    Formatter.currency(10000),
+                                    Formatter.currency(item.price),
                                     style = MaterialTheme.typography.bodyLarge.copy(
                                         color = MaterialTheme.colorScheme.primary
                                     )

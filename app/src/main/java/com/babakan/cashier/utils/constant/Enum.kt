@@ -3,7 +3,8 @@ package com.babakan.cashier.utils.constant
 enum class MainScreenState {
     HOME,
     REPORT,
-    ADMIN
+    ADMIN,
+    CART
 }
 
 enum class RouteState {

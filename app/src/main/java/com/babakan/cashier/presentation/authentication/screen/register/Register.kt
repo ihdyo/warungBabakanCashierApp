@@ -39,6 +39,8 @@ fun Register(
 ) {
     val context = LocalContext.current
 
+    val uiState by authViewModel.uiState.collectAsState()
+
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -53,23 +55,6 @@ fun Register(
 
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
-
-    val uiState by authViewModel.uiState.collectAsState()
-
-    when (uiState) {
-        is UiState.Loading -> {
-            Box(Modifier.fillMaxSize()) { CircularProgressIndicator() }
-        }
-        is UiState.Success -> {
-            onNavigateToMain()
-        }
-        is UiState.Error -> {
-            val error = (uiState as UiState.Error)
-            LaunchedEffect(error.message) {
-                snackBarHostState.showSnackbar(error.message)
-            }
-        }
-    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
@@ -93,7 +78,6 @@ fun Register(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.name)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     leadingIcon = { Icon(Icons.Outlined.Person, stringResource(R.string.name)) },
@@ -103,14 +87,14 @@ fun Register(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     isError = usernameError != null,
                     value = username,
                     onValueChange = { username = it },
                     label = { Text(stringResource(R.string.username)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     leadingIcon = { Icon(Icons.Outlined.AlternateEmail, stringResource(R.string.name)) },
@@ -120,14 +104,14 @@ fun Register(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     isError = emailError != null,
                     value = email,
                     onValueChange = { email = it },
                     label = { Text(stringResource(R.string.email)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     leadingIcon = { Icon(Icons.Outlined.Email, stringResource(R.string.name)) },
@@ -137,7 +121,8 @@ fun Register(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 OutlinedTextField(
@@ -145,7 +130,6 @@ fun Register(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text(stringResource(R.string.password)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -157,14 +141,14 @@ fun Register(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     isError = confirmPasswordError != null,
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
                     label = { Text(stringResource(R.string.confirmPassword)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -176,7 +160,8 @@ fun Register(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
@@ -201,5 +186,25 @@ fun Register(
                 Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.loginPrompt)) }
         }
+        when (uiState) {
+            is UiState.Loading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is UiState.Success -> {
+                onNavigateToMain()
+            }
+            is UiState.Error -> {
+                val error = (uiState as UiState.Error)
+                LaunchedEffect(error.message) {
+                    snackBarHostState.showSnackbar(error.message)
+                }
+            }
+        }
+
     }
 }

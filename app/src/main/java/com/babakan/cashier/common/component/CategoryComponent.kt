@@ -17,29 +17,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
+import com.babakan.cashier.common.builder.IconLoader
 import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
-fun CategoryComponent() {
+fun CategoryComponent(
+    name: String,
+    iconUrl: String
+) {
     Card(
         shape = MaterialTheme.shapes.small,
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
+            horizontalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_TEXTS.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = SizeChart.SIZE_SM.dp, vertical = SizeChart.SIZE_2XS.dp)
         ) {
-            Image(
-                painterResource(R.drawable.ic_placeholder),
-                stringResource(R.string.category),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                modifier = Modifier.size(SizeChart.ICON_SMALL.dp)
+            IconLoader(
+                iconUrl,
+                SizeChart.ICON_SMALL.dp,
+                MaterialTheme.colorScheme.secondary
             )
             Text(
-                "Kategori",
+                name,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.secondary
                 ),
             )
         }

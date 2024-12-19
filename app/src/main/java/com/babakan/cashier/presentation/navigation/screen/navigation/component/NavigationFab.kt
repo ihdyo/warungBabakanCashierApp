@@ -88,9 +88,7 @@ fun NavigationFab(
                     this@Column.AnimatedVisibility(
                         visible = isHome
                     ) {
-                        Badge(Modifier.offset(-SizeChart.SIZE_4XL.dp)) {
-                            Text(temporaryTotalQuantity.toString())
-                        }
+                        Badge { Text(temporaryTotalQuantity.toString()) }
                     }
                 },
             ) {
@@ -129,7 +127,12 @@ fun NavigationFab(
                     stringResource(R.string.clearCart)
                 )
             },
-            title = { Text(stringResource(R.string.clearCart)) },
+            title = {
+                Text(
+                    stringResource(R.string.clearCart),
+                    textAlign = TextAlign.Center
+                )
+            },
             text = {
                 Text(
                     stringResource(R.string.clearCartConfirmation),

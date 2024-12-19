@@ -3,8 +3,10 @@ package com.babakan.cashier.presentation.navigation.screen.navigation.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -14,6 +16,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -56,8 +59,8 @@ fun NavigationDrawer(
     var dialogState by remember { mutableStateOf(false) }
 
     // TODO Change this
-    val name = stringResource(R.string.placeholder)
-    val isOwner = Random.nextBoolean()
+    val name = "Kadek Michella"
+    val isOwner = true
 
     ModalDrawerSheet {
         Column(
@@ -71,10 +74,11 @@ fun NavigationDrawer(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp),
                 ) {
-                    Card {
+                    Card(colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)) {
                         Icon(
                             if (isOwner) Icons.Default.Verified else Icons.Default.Store,
                             stringResource(R.string.cashier),
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(SizeChart.SMALL_SPACE.dp)
                         )
                     }
@@ -92,10 +96,10 @@ fun NavigationDrawer(
                     }
                 }
                 HorizontalDivider(Modifier.padding(vertical = SizeChart.DEFAULT_SPACE.dp))
+                Spacer(Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
                 Text(
                     stringResource(R.string.brandName),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    Modifier.align(Alignment.CenterHorizontally)
                 )
             }
             TextButton(
@@ -123,7 +127,12 @@ fun NavigationDrawer(
                     tint = MaterialTheme.colorScheme.error
                 )
             },
-            title = { Text(stringResource(R.string.logout)) },
+            title = {
+                Text(
+                    stringResource(R.string.logout),
+                    textAlign = TextAlign.Center
+                )
+            },
             text = {
                 Text(
                     stringResource(R.string.logoutConfirmation),

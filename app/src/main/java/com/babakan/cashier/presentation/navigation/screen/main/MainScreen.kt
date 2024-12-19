@@ -3,14 +3,25 @@ package com.babakan.cashier.presentation.navigation.screen.main
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,15 +64,36 @@ fun MainScreen(
 
     if (!isInternetAvailable.value) {
         AlertDialog(
+            icon = {
+                Icon(
+                    Icons.Default.WifiOff,
+                    stringResource(R.string.noConnection)
+                )
+            },
+            title = {
+                Text(
+                    stringResource(R.string.noConnection),
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Text(
+                    stringResource(R.string.noConnectionMessage),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            },
             onDismissRequest = {},
-            title = { Text(stringResource(R.string.placeholder)) },
-            text = { Text(stringResource(R.string.placeholder)) },
             confirmButton = {
-                Button(onClick = { android.os.Process.killProcess(android.os.Process.myPid()) }) {
-                    Text(stringResource(R.string.placeholder))
+                TextButton({ android.os.Process.killProcess(android.os.Process.myPid()) }) {
+                    Text(
+                        stringResource(R.string.exit),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         )
+
     }
 
     LaunchedEffect(isLoggedIn, isUserActive) {
@@ -83,23 +115,45 @@ fun MainScreen(
 
     if (showInactiveUserDialog) {
         AlertDialog(
+            icon = {
+                Icon(
+                    Icons.Default.Block,
+                    stringResource(R.string.inactive)
+                )
+            },
+            title = {
+                Text(
+                    stringResource(R.string.inactive),
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Text(
+                    stringResource(R.string.inactiveMessage),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            },
             onDismissRequest = {},
-            title = { Text(stringResource(R.string.logout)) },
-            text = { Text(stringResource(R.string.logoutConfirmation)) },
             confirmButton = {
-                Button(onClick = {
-                    authScope.launch {
-                        authViewModel.signOut(
-                            {
-                                navController.navigate(RouteState.LOGIN.name) {
-                                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                                }
-                            }
-                        )
-                    }
-                    showInactiveUserDialog = false
-                }) {
-                    Text(stringResource(R.string.logout))
+                TextButton(
+                    {
+                        authScope.launch {
+                            authViewModel.signOut(
+                                onSuccess = {
+                                    navController.navigate(RouteState.LOGIN.name) {
+                                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                    }
+                                },
+                                onError = { android.os.Process.killProcess(android.os.Process.myPid()) }
+                            )
+                        }
+                        showInactiveUserDialog = false
+                    }) {
+                    Text(
+                        stringResource(R.string.exit),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         )

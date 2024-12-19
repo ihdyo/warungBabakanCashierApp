@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
+import com.babakan.cashier.presentation.cashier.screen.cart.Cart
 import com.babakan.cashier.presentation.cashier.screen.home.Home
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationBottomBar
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationDrawer
@@ -45,7 +46,6 @@ import com.babakan.cashier.utils.constant.Constant
 import com.babakan.cashier.utils.constant.MainScreenState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @ExperimentalMaterial3Api
 @Composable
@@ -77,6 +77,7 @@ fun MainNavigation(
     val isHome = currentDestination == MainScreenState.HOME.name
     val isReport = currentDestination == MainScreenState.REPORT.name
     val isAdmin = currentDestination == MainScreenState.ADMIN.name
+    val isCart = currentDestination == MainScreenState.CART.name
 
     val isAdminProduct = pagerState.currentPage == 0
     val isAdminCategory = pagerState.currentPage == 1
@@ -115,12 +116,10 @@ fun MainNavigation(
     }
 
     val isOwner = true // TODO Change this
-    val testNumber = Random.nextInt(0, 10) // TODO Change this
-    val cartItemCount = testNumber
-    val isCartEmpty = cartItemCount == 0
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = currentDestination != MainScreenState.CART.name,
         drawerContent = {
             NavigationDrawer(
                 authScope = authScope,
@@ -138,6 +137,7 @@ fun MainNavigation(
                     isHome = isHome,
                     isReport = isReport,
                     isAdmin = isAdmin,
+                    isCart = isCart,
                     isAdminProduct = isAdminProduct,
                     isAdminCategory = isAdminCategory,
                     isAdminCashier = isAdminCashier,
@@ -146,11 +146,10 @@ fun MainNavigation(
                     onSearchActiveChange = { isSearchActive = it },
                     drawerState = drawerState,
                     scope = mainScope,
-                    isCartEmpty = isCartEmpty,
-                    cartItemCount = cartItemCount,
                     isScrolledDown = isScrolledDown,
                     pagerState = pagerState,
-                    tabs = tabs
+                    tabs = tabs,
+                    navController = navController,
                 )
             },
             floatingActionButton = {
@@ -201,6 +200,14 @@ fun MainNavigation(
                         nestedScrollConnection,
                         pagerState,
                         onSelectedAdminTabIndex
+                    )
+                }
+                composable(MainScreenState.CART.name) {
+                    Cart(
+                        nestedScrollConnection,
+                        snackBarHostState,
+                        isScrolledDown,
+                        {}
                     )
                 }
             }

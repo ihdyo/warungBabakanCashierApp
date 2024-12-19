@@ -1,6 +1,6 @@
 <resources>
     <string name="appName">Cashier</string>
-    <string name="brandName">Warung Kampung Babakan</string>
+    <string name="brandName">- Warung Kampung Babakan -</string>
 
     <string name="placeholder">Lorem Ipsum</string>
     <string name="placeholderLong">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat</string>
@@ -10,12 +10,6 @@
     <string name="registerGreeting">Silakan Daftar</string>
     <string name="loginAsOwner">Anda masuk sebagai pemilik dan memiliki akses penuh.</string>
 
-    <string name="name">Nama</string>
-    <string name="username">Nama Pengguna</string>
-    <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="showPassword">Tampilkan Password</string>
-    <string name="confirmPassword">Konfirmasi Password</string>
     <string name="login">Masuk</string>
     <string name="loginPrompt">Sudah memiliki akun</string>
     <string name="register">Daftar</string>
@@ -29,15 +23,35 @@
     <string name="clearCartConfirmation">Apakah anda yakin ingin mengosongkan keranjang?</string>
     <string name="clearCartSuccess">Keranjang berhasil dikosongkan</string>
     <string name="clearCartFailed">Keranjang gagal dikosongkan</string>
-    <string name="error">Terjadi kesalahan</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="confirmMessage">Pesanan Anda telah dikonfirmasi, cetak bukti pembayaran?</string>
+    <string name="confirmSuccess">Konfirmasi pesanan berhasil</string>
+    <string name="confirmFailed">Konfirmasi pesanangagal</string>
+    <string name="inactive">Akun Nonaktif</string>
+    <string name="inactiveMessage">Akun anda tidak aktif, silakan hubungi admin</string>
+    <string name="noConnection">Tidak ada koneksi</string>
+    <string name="noConnectionMessage">Tidak ada koneksi internet, periksa ulang koneksi anda</string>
+    <string name="printSuccess">Bukti pembayaran berhasil dicetak</string>
+    <string name="printFailed">Bukti pembayaran gagal dicetak</string>
 
+    <string name="name">Nama</string>
+    <string name="username">Nama Pengguna</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="showPassword">Tampilkan Password</string>
+    <string name="confirmPassword">Konfirmasi Password</string>
+    <string name="customerData">Data Pelanggan</string>
+    <string name="customerName">Nama</string>
+    <string name="tableNumber">Nomor Meja</string>
+    <string name="notes">Catatan</string>
+
+    <string name="error">Terjadi kesalahan</string>
     <string name="cannotEmpty">%1$s tidak boleh kosong</string>
     <string name="invalidEmail">Email tidak valid</string>
     <string name="shortPassword">Password terlalu pendek (minimal 6 karakter)</string>
     <string name="passwordNotMatch">Password tidak sesuai</string>
     <string name="invalidUsername">Username tidak boleh mengandung karakter khusus atau spasi</string>
-    <string name="fillInAllFields">Mohon isi semua data dengan benar</string>
-    <string name="inactiveUser">Akun Anda sudah tidak aktif.</string>
+    <string name="fillInAllFields">Mohon isi data dengan benar</string>
 
     <string name="home">Beranda</string>
     <string name="report">Laporan</string>
@@ -47,6 +61,7 @@
     <string name="owner">Owner</string>
     <string name="cashier">Kasir</string>
 
+    <string name="all">Semua</string>
     <string name="productSearch">Cari Produk</string>
     <string name="categorySearch">Cari Kategori</string>
     <string name="cashierSearch">Cari Kasir</string>
@@ -54,7 +69,8 @@
     <string name="transactionNumber">No. Transaksi</string>
     <string name="date">Tanggal</string>
     <string name="paid">Lunas</string>
-    <string name="number">No. %1$s</string>
+    <string name="number">No.</string>
+    <string name="numberOrder">No. %1$s</string>
     <string name="totalItem">Total (%1$s barang)</string>
     <string name="countItem">x%1$s</string>
 
@@ -64,6 +80,7 @@
     <string name="ok">OK</string>
     <string name="close">Tutup</string>
     <string name="exit">Exit</string>
+    <string name="print">Cetak</string>
 
     <string name="expand">Perluas</string>
     <string name="collapse">Perkecil</string>

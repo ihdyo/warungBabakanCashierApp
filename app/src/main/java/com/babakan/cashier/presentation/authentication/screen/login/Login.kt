@@ -43,19 +43,6 @@ fun Login(
 
     var passwordVisible by remember { mutableStateOf(false) }
 
-    when (uiState) {
-        is UiState.Loading -> {
-            Box(Modifier.fillMaxSize()) { CircularProgressIndicator() }
-        }
-        is UiState.Error -> {
-            val error = (uiState as UiState.Error)
-            LaunchedEffect(error.message) {
-                snackBarHostState.showSnackbar(error.message)
-            }
-        }
-        is UiState.Success -> {}
-    }
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
@@ -80,7 +67,6 @@ fun Login(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text(stringResource(R.string.email)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     leadingIcon = { Icon(Icons.Outlined.Email, stringResource(R.string.email)) },
@@ -90,14 +76,14 @@ fun Login(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     isError = passwordError != null,
                     value = password,
                     onValueChange = { password = it },
                     label = { Text(stringResource(R.string.password)) },
-                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -116,7 +102,8 @@ fun Login(
                         unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
             Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
@@ -137,6 +124,23 @@ fun Login(
                 onClick = { onNavigateToRegister() },
                 Modifier.fillMaxWidth(),
             ) { Text(stringResource(R.string.registerPrompt)) }
+        }
+        when (uiState) {
+            is UiState.Loading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is UiState.Error -> {
+                val error = (uiState as UiState.Error)
+                LaunchedEffect(error.message) {
+                    snackBarHostState.showSnackbar(error.message)
+                }
+            }
+            is UiState.Success -> {}
         }
     }
 }

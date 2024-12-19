@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -15,8 +14,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,8 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.babakan.cashier.R
 import com.babakan.cashier.utils.constant.Constant
+import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -50,8 +49,7 @@ fun MainSearchBar(
     isSearchActive: Boolean,
     snackBarHostState: SnackbarHostState,
     onSearchActiveChange: (Boolean) -> Unit,
-    isCartEmpty: Boolean,
-    cartItemCount: Int
+    navController: NavController
 ) {
     val context = LocalContext.current
 
@@ -108,23 +106,15 @@ fun MainSearchBar(
                     enter = fadeIn(animationSpec = tween(Constant.ANIMATION_SHORT, easing = LinearOutSlowInEasing)),
                     exit = fadeOut(animationSpec = tween(Constant.ANIMATION_SHORT, easing = LinearOutSlowInEasing))
                 ) {
-                    BadgedBox(
-                        {
-                            if (!isCartEmpty) {
-                                Badge(
-                                    Modifier.offset(-SizeChart.SIZE_3XL.dp)
-                                ) {
-                                    Text(cartItemCount.toString())
-                                }
-                            }
-                        },
-                    ) {
-                        IconButton({ /*TODO*/ }) {
-                            Icon(
-                                Icons.Default.ShoppingCart,
-                                stringResource(R.string.cart)
-                            )
+                    IconButton({
+                        scope.launch {
+                            navController.navigate(MainScreenState.CART.name)
                         }
+                    }) {
+                        Icon(
+                            Icons.Default.ShoppingCart,
+                            stringResource(R.string.cart)
+                        )
                     }
                 }
                 AnimatedVisibility(
