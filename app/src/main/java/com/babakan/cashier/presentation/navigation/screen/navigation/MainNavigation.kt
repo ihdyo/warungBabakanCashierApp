@@ -1,4 +1,4 @@
-package com.babakan.cashier.presentation.navigation.screen.main
+package com.babakan.cashier.presentation.navigation.screen.navigation
 
 import Admin
 import androidx.compose.animation.core.tween
@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -36,10 +35,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
 import com.babakan.cashier.presentation.cashier.screen.home.Home
-import com.babakan.cashier.presentation.navigation.screen.bottombar.MainBottomBar
-import com.babakan.cashier.presentation.navigation.screen.drawer.MainDrawer
-import com.babakan.cashier.presentation.navigation.screen.fab.MainFab
-import com.babakan.cashier.presentation.navigation.screen.topbar.MainTopBar
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationBottomBar
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationDrawer
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationFab
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationTopBar
 import com.babakan.cashier.presentation.owner.screen.report.Report
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.constant.Constant
@@ -123,7 +122,7 @@ fun MainNavigation(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            MainDrawer(
+            NavigationDrawer(
                 authScope = authScope,
                 mainScope = mainScope,
                 snackBarHostState = snackBarHostState,
@@ -135,7 +134,7 @@ fun MainNavigation(
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState) },
             topBar = {
-                MainTopBar(
+                NavigationTopBar(
                     isHome = isHome,
                     isReport = isReport,
                     isAdmin = isAdmin,
@@ -155,7 +154,7 @@ fun MainNavigation(
                 )
             },
             floatingActionButton = {
-                MainFab(
+                NavigationFab(
                     temporaryCartViewModel = temporaryCartViewModel,
                     isHome = isHome,
                     isAdminProduct = isAdminProduct,
@@ -170,7 +169,7 @@ fun MainNavigation(
             },
             bottomBar = {
                 if (isOwner) {
-                    MainBottomBar(
+                    NavigationBottomBar(
                         navController = navController,
                         currentDestination = currentDestination,
                         isSearchActive = isSearchActive

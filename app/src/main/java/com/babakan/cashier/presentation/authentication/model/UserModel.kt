@@ -17,7 +17,7 @@ data class UserModel(
     
     fun toJson(): Map<String, Any> {
         return mapOf(
-            RemoteData.FIELD_DOCUMENT_ID to id,
+            RemoteData.FIELD_ID to id,
             RemoteData.FIELD_CREATED_AT to createdAt,
             RemoteData.FIELD_UPDATE_AT to updateAt,
             RemoteData.FIELD_USERNAME to username,
@@ -30,7 +30,7 @@ data class UserModel(
     
     companion object {
         fun fromDocumentSnapshot(documentSnapshot: DocumentSnapshot): UserModel {
-            val id = documentSnapshot.getString(RemoteData.FIELD_DOCUMENT_ID) ?: ""
+            val id = documentSnapshot.getString(RemoteData.FIELD_ID) ?: ""
             val createdAt = documentSnapshot.getTimestamp(RemoteData.FIELD_CREATED_AT) ?: Timestamp.now()
             val updateAt = documentSnapshot.getTimestamp(RemoteData.FIELD_UPDATE_AT) ?: Timestamp.now()
             val username = documentSnapshot.getString(RemoteData.FIELD_USERNAME) ?: ""

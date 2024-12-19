@@ -29,29 +29,23 @@ import kotlinx.coroutines.launch
 @Composable
 fun Login(
     authViewModel: AuthViewModel = viewModel(),
-    scope: CoroutineScope,
+    authScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
-    onNavigateToRegister: () -> Unit,
-    onNavigateToMain: () -> Unit
+    onNavigateToRegister: () -> Unit
 ) {
     val context = LocalContext.current
+    val uiState by authViewModel.uiState.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
 
     var passwordVisible by remember { mutableStateOf(false) }
 
-    val uiState by authViewModel.uiState.collectAsState()
-
     when (uiState) {
         is UiState.Loading -> {
             Box(Modifier.fillMaxSize()) { CircularProgressIndicator() }
-        }
-        is UiState.Success -> {
-            onNavigateToMain()
         }
         is UiState.Error -> {
             val error = (uiState as UiState.Error)
@@ -59,6 +53,7 @@ fun Login(
                 snackBarHostState.showSnackbar(error.message)
             }
         }
+        is UiState.Success -> {}
     }
 
     Scaffold(
@@ -133,7 +128,7 @@ fun Login(
                     if (emailError == null && passwordError == null) {
                         authViewModel.login(email, password)
                     } else {
-                        scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.fillInAllFields)) }
+                        authScope.launch { snackBarHostState.showSnackbar(context.getString(R.string.fillInAllFields)) }
                     }
                 },
                 Modifier.fillMaxWidth()

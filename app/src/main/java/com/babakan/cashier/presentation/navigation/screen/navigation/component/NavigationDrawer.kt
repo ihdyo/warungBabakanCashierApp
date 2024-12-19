@@ -1,6 +1,5 @@
-package com.babakan.cashier.presentation.navigation.screen.drawer
+package com.babakan.cashier.presentation.navigation.screen.navigation.component
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,7 +44,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
-fun MainDrawer(
+fun NavigationDrawer(
     authViewModel: AuthViewModel = viewModel(),
     authScope: CoroutineScope,
     mainScope: CoroutineScope,

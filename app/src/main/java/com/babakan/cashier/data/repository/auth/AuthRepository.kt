@@ -1,19 +1,14 @@
 package com.babakan.cashier.data.repository.auth
 
 import com.babakan.cashier.presentation.authentication.model.UserModel
-import com.babakan.cashier.utils.constant.RemoteData
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
-class AuthRepository {
-
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-    private val userCollection = firestore.collection(RemoteData.COLLECTION_USERS)
+class AuthRepository(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val userRepository: UserRepository = UserRepository()
+) {
 
     suspend fun signUp(
         name: String,
@@ -36,8 +31,8 @@ class AuthRepository {
                 isActive = true
             )
 
-            userCollection.document(userId).set(userModel.toJson(), SetOptions.merge()).await()
-            true
+            val saveResult = userRepository.setUserDocument(userId, userModel)
+            saveResult is com.babakan.cashier.data.state.UiState.Success
         } catch (e: Exception) {
             false
         }
@@ -55,3 +50,4 @@ class AuthRepository {
         }
     }
 }
+

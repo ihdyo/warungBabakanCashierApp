@@ -1,39 +1,27 @@
-package com.babakan.cashier.presentation.navigation.screen.topbar
+package com.babakan.cashier.presentation.navigation.screen.navigation.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.EmojiFoodBeverage
 import androidx.compose.material.icons.filled.FoodBank
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -47,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
-import com.babakan.cashier.presentation.navigation.screen.searchbar.MainSearchBar
 import com.babakan.cashier.utils.constant.Constant
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +42,7 @@ import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainTopBar(
+fun NavigationTopBar(
     isHome: Boolean,
     isReport: Boolean,
     isAdmin: Boolean,

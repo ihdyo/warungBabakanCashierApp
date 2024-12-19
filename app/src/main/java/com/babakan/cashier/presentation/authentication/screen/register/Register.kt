@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Register(
     authViewModel: AuthViewModel = viewModel(),
-    scope: CoroutineScope,
+    authScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit
@@ -191,7 +191,7 @@ fun Register(
                     if (nameError == null && usernameError == null && emailError == null && passwordError == null && confirmPasswordError == null) {
                         authViewModel.register(name, username, email, password)
                     } else {
-                        scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.fillInAllFields)) }
+                        authScope.launch { snackBarHostState.showSnackbar(context.getString(R.string.fillInAllFields)) }
                     }
                 },
                 Modifier.fillMaxWidth()

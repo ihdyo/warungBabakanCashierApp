@@ -29,6 +29,7 @@
     <string name="clearCartConfirmation">Apakah anda yakin ingin mengosongkan keranjang?</string>
     <string name="clearCartSuccess">Keranjang berhasil dikosongkan</string>
     <string name="clearCartFailed">Keranjang gagal dikosongkan</string>
+    <string name="error">Terjadi kesalahan</string>
 
     <string name="cannotEmpty">%1$s tidak boleh kosong</string>
     <string name="invalidEmail">Email tidak valid</string>
@@ -36,6 +37,7 @@
     <string name="passwordNotMatch">Password tidak sesuai</string>
     <string name="invalidUsername">Username tidak boleh mengandung karakter khusus atau spasi</string>
     <string name="fillInAllFields">Mohon isi semua data dengan benar</string>
+    <string name="inactiveUser">Akun Anda sudah tidak aktif.</string>
 
     <string name="home">Beranda</string>
     <string name="report">Laporan</string>
@@ -61,6 +63,7 @@
     <string name="no">Tidak</string>
     <string name="ok">OK</string>
     <string name="close">Tutup</string>
+    <string name="exit">Exit</string>
 
     <string name="expand">Perluas</string>
     <string name="collapse">Perkecil</string>

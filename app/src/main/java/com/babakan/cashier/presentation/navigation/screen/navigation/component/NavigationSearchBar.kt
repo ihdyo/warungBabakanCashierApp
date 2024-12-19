@@ -1,4 +1,4 @@
-package com.babakan.cashier.presentation.navigation.screen.searchbar
+package com.babakan.cashier.presentation.navigation.screen.navigation.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing

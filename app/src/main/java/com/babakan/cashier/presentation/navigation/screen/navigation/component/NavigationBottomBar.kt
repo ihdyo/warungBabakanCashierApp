@@ -1,6 +1,5 @@
-package com.babakan.cashier.presentation.navigation.screen.bottombar
+package com.babakan.cashier.presentation.navigation.screen.navigation.component
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -23,7 +22,7 @@ import com.babakan.cashier.utils.constant.Constant
 import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
-fun MainBottomBar(
+fun NavigationBottomBar(
     navController: NavController,
     currentDestination: String?,
     isSearchActive: Boolean
