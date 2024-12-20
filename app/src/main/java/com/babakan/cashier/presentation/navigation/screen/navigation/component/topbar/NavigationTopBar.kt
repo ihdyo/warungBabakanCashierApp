@@ -1,4 +1,4 @@
-package com.babakan.cashier.presentation.navigation.screen.navigation.component
+package com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -15,11 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.EmojiFoodBeverage
-import androidx.compose.material.icons.filled.FoodBank
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.LocalDrink
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -43,6 +39,7 @@ import androidx.navigation.NavController
 import com.babakan.cashier.R
 import com.babakan.cashier.common.builder.IconLoader
 import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.MainSearchBar
 import com.babakan.cashier.utils.constant.Constant
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope

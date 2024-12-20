@@ -5,12 +5,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,9 +39,9 @@ fun MainScreen(
     val context = LocalContext.current
     val authScope = rememberCoroutineScope()
 
-    val userId by mainViewModel.userId.collectAsState()
     val isLoggedIn by mainViewModel.isLoggedIn.collectAsState()
     val isUserActive by mainViewModel.isUserActive.collectAsState()
+    val isLoading by mainViewModel.isLoading.collectAsState()
 
     val snackBarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
@@ -64,76 +59,29 @@ fun MainScreen(
 
     if (!isInternetAvailable.value) {
         AlertDialog(
-            icon = {
-                Icon(
-                    Icons.Default.WifiOff,
-                    stringResource(R.string.noConnection)
-                )
-            },
-            title = {
-                Text(
-                    stringResource(R.string.noConnection),
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.noConnectionMessage),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            },
+            icon = { Icon(Icons.Default.WifiOff, stringResource(R.string.noConnection)) },
+            title = { Text(stringResource(R.string.noConnection), textAlign = TextAlign.Center) },
+            text = { Text(stringResource(R.string.noConnectionMessage), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center) },
             onDismissRequest = {},
             confirmButton = {
                 TextButton({ android.os.Process.killProcess(android.os.Process.myPid()) }) {
-                    Text(
-                        stringResource(R.string.exit),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Text(stringResource(R.string.exit), color = MaterialTheme.colorScheme.error)
                 }
             }
         )
-
     }
 
-    LaunchedEffect(isLoggedIn, isUserActive) {
-        if (!isLoggedIn) {
-            navController.navigate(RouteState.LOGIN.name) {
-                popUpTo(RouteState.LOGIN.name) { inclusive = true }
-            }
-        } else if (isUserActive == false) {
+    LaunchedEffect(isUserActive) {
+        if (isUserActive == false) {
             showInactiveUserDialog = true
-        } else {
-            if (userId != null) {
-                mainViewModel.observeIsActiveField(userId!!)
-                navController.navigate(RouteState.MAIN.name) {
-                    popUpTo(RouteState.MAIN.name) { inclusive = true }
-                }
-            }
         }
     }
 
     if (showInactiveUserDialog) {
         AlertDialog(
-            icon = {
-                Icon(
-                    Icons.Default.Block,
-                    stringResource(R.string.inactive)
-                )
-            },
-            title = {
-                Text(
-                    stringResource(R.string.inactive),
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.inactiveMessage),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            },
+            icon = { Icon(Icons.Default.Block, stringResource(R.string.inactive)) },
+            title = { Text(stringResource(R.string.inactive), textAlign = TextAlign.Center) },
+            text = { Text(stringResource(R.string.inactiveMessage), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center) },
             onDismissRequest = {},
             confirmButton = {
                 TextButton(
@@ -142,52 +90,52 @@ fun MainScreen(
                             authViewModel.signOut(
                                 onSuccess = {
                                     navController.navigate(RouteState.LOGIN.name) {
-                                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                        popUpTo(RouteState.LOGIN.name) { inclusive = true }
                                     }
                                 },
                                 onError = { android.os.Process.killProcess(android.os.Process.myPid()) }
                             )
                         }
                         showInactiveUserDialog = false
-                    }) {
-                    Text(
-                        stringResource(R.string.exit),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    }
+                ) {
+                    Text(stringResource(R.string.exit), color = MaterialTheme.colorScheme.error)
                 }
             }
         )
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = if (isLoggedIn) RouteState.MAIN.name else RouteState.LOGIN.name
-    ) {
-        composable(RouteState.LOGIN.name) {
-            Login(
-                authScope = authScope,
-                snackBarHostState = snackBarHostState,
-                onNavigateToRegister = { navController.navigate(RouteState.REGISTER.name) }
-            )
-        }
-        composable(RouteState.REGISTER.name) {
-            Register(
-                authScope = authScope,
-                snackBarHostState = snackBarHostState,
-                onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) },
-                onNavigateToMain = {
-                    navController.navigate(RouteState.MAIN.name) {
-                        popUpTo(RouteState.MAIN.name) { inclusive = true }
+    if (!isLoading) {
+        NavHost(
+            navController = navController,
+            startDestination = if (isLoggedIn) RouteState.MAIN.name else RouteState.LOGIN.name
+        ) {
+            composable(RouteState.LOGIN.name) {
+                Login(
+                    authScope = authScope,
+                    snackBarHostState = snackBarHostState,
+                    onNavigateToRegister = { navController.navigate(RouteState.REGISTER.name) }
+                )
+            }
+            composable(RouteState.REGISTER.name) {
+                Register(
+                    authScope = authScope,
+                    snackBarHostState = snackBarHostState,
+                    onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) },
+                    onNavigateToMain = {
+                        navController.navigate(RouteState.MAIN.name) {
+                            popUpTo(RouteState.MAIN.name) { inclusive = true }
+                        }
                     }
-                }
-            )
-        }
-        composable(RouteState.MAIN.name) {
-            MainNavigation(
-                authScope = authScope,
-                snackBarHostState = snackBarHostState,
-                onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) }
-            )
+                )
+            }
+            composable(RouteState.MAIN.name) {
+                MainNavigation(
+                    authScope = authScope,
+                    snackBarHostState = snackBarHostState,
+                    onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) }
+                )
+            }
         }
     }
 }

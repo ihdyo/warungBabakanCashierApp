@@ -36,10 +36,10 @@ import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
 import com.babakan.cashier.presentation.cashier.screen.cart.Cart
 import com.babakan.cashier.presentation.cashier.screen.home.Home
-import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationBottomBar
-import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationDrawer
-import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationFab
-import com.babakan.cashier.presentation.navigation.screen.navigation.component.NavigationTopBar
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.bottombar.NavigationBottomBar
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer.NavigationDrawer
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.fab.NavigationFab
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar.NavigationTopBar
 import com.babakan.cashier.presentation.owner.screen.report.Report
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.constant.Constant

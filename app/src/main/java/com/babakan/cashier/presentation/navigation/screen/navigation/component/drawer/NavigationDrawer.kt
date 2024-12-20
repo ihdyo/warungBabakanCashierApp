@@ -1,4 +1,4 @@
-package com.babakan.cashier.presentation.navigation.screen.navigation.component
+package com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Store
@@ -44,7 +45,6 @@ import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @Composable
 fun NavigationDrawer(
@@ -62,7 +62,7 @@ fun NavigationDrawer(
     val name = "Kadek Michella"
     val isOwner = true
 
-    ModalDrawerSheet {
+    ModalDrawerSheet(Modifier.width(SizeChart.DRAWER_WIDTH.dp)) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier

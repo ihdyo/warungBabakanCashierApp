@@ -13,6 +13,9 @@ class MainViewModel(
     private val userRepository: UserRepository = UserRepository()
 ) : ViewModel() {
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
@@ -32,12 +35,12 @@ class MainViewModel(
             if (user != null) {
                 _userId.value = user.uid
                 _isLoggedIn.value = true
-
                 observeIsActiveField(user.uid)
             } else {
                 _isLoggedIn.value = false
                 _userId.value = null
                 _isUserActive.value = null
+                _isLoading.value = false
             }
         }
     }
@@ -46,8 +49,11 @@ class MainViewModel(
         viewModelScope.launch {
             userRepository.observeIsActiveField(userId).collectLatest { isActive ->
                 _isUserActive.value = isActive
+                _isLoading.value = false
                 if (!isActive) {
                     FirebaseAuth.getInstance().signOut()
+                    _isLoggedIn.value = false
+                    _userId.value = null
                 }
             }
         }

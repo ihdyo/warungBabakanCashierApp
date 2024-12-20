@@ -71,8 +71,8 @@ fun ProductItem(
                 Modifier.clip(MaterialTheme.shapes.large)
             ) {
                 ImageLoader(
-                    productImageUrl,
-                    SizeChart.IMAGE_THUMBNAIL_HEIGHT.dp
+                    imageUrl = productImageUrl,
+                    height = SizeChart.IMAGE_THUMBNAIL_HEIGHT.dp
                 )
                 Card(
                     colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
