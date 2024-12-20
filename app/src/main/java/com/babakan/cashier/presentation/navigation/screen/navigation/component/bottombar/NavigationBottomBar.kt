@@ -18,7 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.babakan.cashier.data.ui.listOfNavigationItems
-import com.babakan.cashier.utils.constant.Constant
+import com.babakan.cashier.utils.animation.Duration
+import com.babakan.cashier.utils.animation.slideInTopAnimation
+import com.babakan.cashier.utils.animation.slideOutBottomAnimation
 import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
 
@@ -32,8 +34,8 @@ fun NavigationBottomBar(
 
     AnimatedVisibility(
         visible = isAdmin && !isSearchActive && currentDestination != MainScreenState.CART.name,
-        enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(Constant.ANIMATION_SHORT, easing = LinearOutSlowInEasing)),
-        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(Constant.ANIMATION_SHORT, easing = LinearOutSlowInEasing))
+        enter = slideInTopAnimation(Duration.ANIMATION_SHORT),
+        exit = slideOutBottomAnimation(Duration.ANIMATION_SHORT)
     ) {
         NavigationBar(
             Modifier

@@ -1,9 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation.component.fab
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
@@ -35,7 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
 import com.babakan.cashier.R
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
-import com.babakan.cashier.utils.constant.Constant
+import com.babakan.cashier.utils.animation.Duration
+import com.babakan.cashier.utils.animation.slideInRightAnimation
+import com.babakan.cashier.utils.animation.slideOutRightAnimation
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -43,12 +42,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationFab(
     temporaryCartViewModel: TemporaryCartViewModel,
+    temporaryTotalQuantity: Int,
     isHome: Boolean,
     isAdminProduct: Boolean,
     isAdminCategory: Boolean,
     isAdminCashier: Boolean,
     isFabShown: Boolean,
-    temporaryTotalQuantity: Int,
     mainScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     onDrawerStateChange: (DrawerValue) -> Unit,
@@ -58,8 +57,8 @@ fun NavigationFab(
 
     AnimatedVisibility(
         visible = isFabShown,
-        enter = slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }, animationSpec = tween(Constant.ANIMATION_SHORT)),
-        exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }, animationSpec = tween(Constant.ANIMATION_SHORT))
+        enter = slideInRightAnimation(Duration.ANIMATION_SHORT),
+        exit = slideOutRightAnimation(Duration.ANIMATION_SHORT)
     ) {
         Column(
             horizontalAlignment = Alignment.End,
@@ -84,7 +83,9 @@ fun NavigationFab(
             BadgedBox(
                 {
                     this@Column.AnimatedVisibility(
-                        visible = isHome
+                        isHome && temporaryTotalQuantity > 0,
+                        enter = slideInRightAnimation(Duration.ANIMATION_LONG),
+                        exit = slideOutRightAnimation(Duration.ANIMATION_LONG)
                     ) {
                         Badge { Text(temporaryTotalQuantity.toString()) }
                     }

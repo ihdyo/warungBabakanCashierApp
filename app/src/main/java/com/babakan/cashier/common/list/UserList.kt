@@ -1,0 +1,123 @@
+package com.babakan.cashier.common.list
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.babakan.cashier.R
+import com.babakan.cashier.common.component.EditButton
+import com.babakan.cashier.common.style.tabContentPadding
+import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.utils.constant.SizeChart
+
+@Composable
+fun UserList(
+    nestedScrollConnection: NestedScrollConnection,
+    users: List<UserModel>,
+    isAdmin: Boolean = false,
+    onAdminEdit: (UserModel) -> Unit = {}
+) {
+    LazyColumn(
+        contentPadding = tabContentPadding(),
+        verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
+        modifier = Modifier.nestedScroll(nestedScrollConnection)
+    ) {
+        itemsIndexed(users) { index, item ->
+            val isActive = item.isActive
+            val isOwner = item.isOwner
+
+            Card(colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
+                    modifier = Modifier.padding(SizeChart.SMALL_SPACE.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            item.username,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        if (isAdmin) { EditButton { onAdminEdit(item) } }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                item.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                item.email,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp)
+                        ) {
+                            if (isOwner) {
+                                Icon(
+                                    Icons.Default.Verified,
+                                    stringResource(R.string.edit),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(SizeChart.ICON_MEDIUM.dp)
+                                )
+                            }
+                            Text(
+                                if (isOwner) stringResource(R.string.owner) else stringResource(R.string.cashier),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Card(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                colors = CardDefaults.cardColors(if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer)
+                            ) {
+                                Icon(
+                                    if (isActive) Icons.Default.Check else Icons.Default.Close,
+                                    stringResource(R.string.status),
+                                    tint = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                    modifier = Modifier
+                                        .padding(SizeChart.SIZE_2XS.dp)
+                                        .size(SizeChart.ICON_SMALL.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

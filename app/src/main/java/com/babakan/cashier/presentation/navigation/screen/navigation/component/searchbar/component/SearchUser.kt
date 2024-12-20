@@ -2,26 +2,26 @@ package com.babakan.cashier.presentation.navigation.screen.navigation.component.
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import com.babakan.cashier.common.list.CategoryList
-import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.common.list.UserList
+import com.babakan.cashier.data.dummy.dummyUserList
 
 @Composable
-fun SearchCategory(
+fun SearchUser(
     nestedScrollConnection: NestedScrollConnection,
     query: String,
     onResultCountChange: (Int) -> Unit
 ) {
 
-    val categories = if (query.isNotBlank()) {
-        dummyCategoryList
+    val users = if (query.isNotBlank()) {
+        dummyUserList
     } else {
         emptyList()
     }
-    onResultCountChange(categories.size)
+    onResultCountChange(users.size)
 
-    CategoryList(
+    UserList(
         nestedScrollConnection = nestedScrollConnection,
-        categories = categories
+        users = users
     )
 
 }

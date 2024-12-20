@@ -22,8 +22,9 @@ fun ProductOutList(
     isEditable: Boolean,
     productOutItem: List<ProductOutModel>
 ) {
-    val product = dummyProductList
-    val category = dummyCategoryList
+
+    val products = dummyProductList
+    val categories = dummyCategoryList
 
     Column(
         verticalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
@@ -31,12 +32,12 @@ fun ProductOutList(
         modifier = Modifier.fillMaxWidth()
     ) {
         val groupedItems = productOutItem.groupBy { item ->
-            val productItem = product.find { it.id == item.id }
+            val productItem = products.find { it.id == item.id }
             productItem?.categoryId
         }
 
         for ((categoryId, groupedProducts) in groupedItems) {
-            val categoryItem = category.find { it.id == categoryId } ?: CategoryModel()
+            val categoryItem = categories.find { it.id == categoryId } ?: CategoryModel()
 
             Spacer(Modifier.weight(1f))
             CategoryComponent(
@@ -45,7 +46,8 @@ fun ProductOutList(
             )
 
             for (productOut in groupedProducts) {
-                val productItem = product.find { it.id == productOut.id } ?: ProductModel()
+                val productItem = products.find { it.id == productOut.id } ?: ProductModel()
+
                 ProductOutItem(
                     isEditable = isEditable,
                     imageUrl = productItem.imageUrl,
@@ -53,9 +55,9 @@ fun ProductOutList(
                     price = productItem.price,
                     quantity = productOut.quantity,
                     textValue = productOut.quantity.toString(),
-                    onTextChanged = { /* Handle quantity change */ },
-                    onSubtract = { /* Handle quantity subtraction */ },
-                    onAdd = { /* Handle quantity addition */ }
+                    onTextChanged = { productOut.quantity = it.toInt() },
+                    onSubtract = { productOut.quantity -= 1 },
+                    onAdd = { productOut.quantity += 1 },
                 )
             }
         }

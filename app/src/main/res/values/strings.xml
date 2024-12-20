@@ -33,6 +33,9 @@
     <string name="noConnectionMessage">Tidak ada koneksi internet, periksa ulang koneksi anda</string>
     <string name="printSuccess">Bukti pembayaran berhasil dicetak</string>
     <string name="printFailed">Bukti pembayaran gagal dicetak</string>
+    <string name="searchQuery">Hasil untuk \"%1$s\"</string>
+    <string name="noResult">Tidak ada hasil untuk \"%1$s\"</string>
+    <string name="showingResult">%d hasil</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>
@@ -65,7 +68,8 @@
     <string name="productSearch">Cari Produk</string>
     <string name="categorySearch">Cari Kategori</string>
     <string name="cashierSearch">Cari Kasir</string>
-    <string name="reportSearch">Cari Laporan</string>
+    <string name="dateSearch">Gunakan ikon kalender di samping</string>
+    <string name="reportSearch">Cari No. Transaksi</string>
     <string name="transactionNumber">No. Transaksi</string>
     <string name="date">Tanggal</string>
     <string name="paid">Lunas</string>

@@ -45,7 +45,7 @@ class MainViewModel(
         }
     }
 
-    fun observeIsActiveField(userId: String) {
+    private fun observeIsActiveField(userId: String) {
         viewModelScope.launch {
             userRepository.observeIsActiveField(userId).collectLatest { isActive ->
                 _isUserActive.value = isActive

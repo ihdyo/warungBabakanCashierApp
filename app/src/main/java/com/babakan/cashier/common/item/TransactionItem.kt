@@ -35,7 +35,7 @@ import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
-fun ReportItem(
+fun TransactionItem(
     index: Int,
     transactionItem: TransactionModel,
     userItem: UserModel

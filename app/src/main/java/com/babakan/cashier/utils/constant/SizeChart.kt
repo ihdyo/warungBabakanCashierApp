@@ -28,6 +28,7 @@ object SizeChart {
     const val FAB_HEIGHT = 96
     const val DUAL_FAB_HEIGHT = 136
     const val DRAWER_WIDTH = 236
+    const val RANGE_DATE_PICKER_HEIGHT = 500
 
     const val SMALL_TEXT_FIELD = 36
     const val SMALL_ICON_BUTTON = 36

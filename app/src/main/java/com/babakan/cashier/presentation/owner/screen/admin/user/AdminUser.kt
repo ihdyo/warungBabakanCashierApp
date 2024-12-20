@@ -1,22 +1,22 @@
-package com.babakan.cashier.presentation.owner.screen.admin.category
+package com.babakan.cashier.presentation.owner.screen.admin.user
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import com.babakan.cashier.common.list.CategoryList
-import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.common.list.UserList
+import com.babakan.cashier.data.dummy.dummyUserList
 
 @Composable
-fun AdminCategory(nestedScrollConnection: NestedScrollConnection) {
+fun AdminUser(nestedScrollConnection: NestedScrollConnection) {
 
-    val categories = dummyCategoryList
+    val cashier = dummyUserList
 
     Box(Modifier.fillMaxSize()) {
-        CategoryList(
+        UserList(
             nestedScrollConnection = nestedScrollConnection,
-            categories = categories,
+            users = cashier,
             isAdmin = true
         ) {
             // TODO: onAdminEdit

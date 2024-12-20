@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.babakan.cashier.common.item.ProductItem
+import com.babakan.cashier.common.item.ProductThumbnailItem
 import com.babakan.cashier.common.style.pageContentPadding
 import com.babakan.cashier.data.dummy.dummyCategoryList
 import com.babakan.cashier.data.dummy.dummyProductList
@@ -40,7 +40,7 @@ fun Home(
         itemsIndexed(product) { index, item ->
             val categoryItem = category.find { it.id == item.categoryId } ?: CategoryModel()
 
-            ProductItem(
+            ProductThumbnailItem(
                 temporaryCartViewModel = temporaryCartViewModel,
                 index = index,
                 productItem = item,

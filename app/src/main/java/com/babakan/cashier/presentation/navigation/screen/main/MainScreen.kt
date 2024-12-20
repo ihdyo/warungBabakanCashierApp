@@ -27,7 +27,13 @@ import com.babakan.cashier.presentation.authentication.screen.register.Register
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.presentation.navigation.screen.navigation.MainNavigation
 import com.babakan.cashier.presentation.navigation.viewmodel.MainViewModel
+import com.babakan.cashier.utils.animation.Duration
+import com.babakan.cashier.utils.animation.fadeInAnimation
+import com.babakan.cashier.utils.animation.fadeOutAnimation
+import com.babakan.cashier.utils.animation.scaleInAnimation
+import com.babakan.cashier.utils.animation.scaleOutAnimation
 import com.babakan.cashier.utils.constant.RouteState
+import com.babakan.cashier.utils.helper.isNetworkAvailable
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,15 +53,7 @@ fun MainScreen(
     val navController = rememberNavController()
 
     var showInactiveUserDialog by remember { mutableStateOf(false) }
-
-    val isInternetAvailable = remember {
-        derivedStateOf {
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.activeNetwork?.let {
-                connectivityManager.getNetworkCapabilities(it)
-            }?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
-        }
-    }
+    val isInternetAvailable = remember { derivedStateOf { isNetworkAvailable(context) } }
 
     if (!isInternetAvailable.value) {
         AlertDialog(
@@ -108,7 +106,9 @@ fun MainScreen(
     if (!isLoading) {
         NavHost(
             navController = navController,
-            startDestination = if (isLoggedIn) RouteState.MAIN.name else RouteState.LOGIN.name
+            startDestination = if (isLoggedIn) RouteState.MAIN.name else RouteState.LOGIN.name,
+            enterTransition = { fadeInAnimation(Duration.ANIMATION_LONG) },
+            exitTransition = { fadeOutAnimation(Duration.ANIMATION_LONG) },
         ) {
             composable(RouteState.LOGIN.name) {
                 Login(

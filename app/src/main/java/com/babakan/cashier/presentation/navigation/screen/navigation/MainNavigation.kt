@@ -1,11 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation
 
 import Admin
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -40,9 +35,13 @@ import com.babakan.cashier.presentation.navigation.screen.navigation.component.b
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer.NavigationDrawer
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.fab.NavigationFab
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar.NavigationTopBar
-import com.babakan.cashier.presentation.owner.screen.report.Report
+import com.babakan.cashier.presentation.owner.screen.transaction.Transaction
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
-import com.babakan.cashier.utils.constant.Constant
+import com.babakan.cashier.utils.animation.Duration
+import com.babakan.cashier.utils.animation.fadeInAnimation
+import com.babakan.cashier.utils.animation.fadeOutAnimation
+import com.babakan.cashier.utils.animation.scaleInAnimation
+import com.babakan.cashier.utils.animation.scaleOutAnimation
 import com.babakan.cashier.utils.constant.MainScreenState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -75,16 +74,16 @@ fun MainNavigation(
     }
 
     val isHome = currentDestination == MainScreenState.HOME.name
-    val isReport = currentDestination == MainScreenState.REPORT.name
+    val isTransaction = currentDestination == MainScreenState.REPORT.name
     val isAdmin = currentDestination == MainScreenState.ADMIN.name
     val isCart = currentDestination == MainScreenState.CART.name
 
     val isAdminProduct = pagerState.currentPage == 0
     val isAdminCategory = pagerState.currentPage == 1
-    val isAdminCashier = pagerState.currentPage == 2
+    val isAdminUser = pagerState.currentPage == 2
 
     var isScrolledDown by remember { mutableStateOf(false) }
-    if (isHome || isReport || isAdmin) {
+    if (isHome || isTransaction || isAdmin) {
         isScrolledDown = true
     }
     val nestedScrollConnection = remember {
@@ -111,7 +110,7 @@ fun MainNavigation(
     val temporaryTotalQuantity by temporaryCartViewModel.temporaryTotalQuantity.collectAsState()
     val isTemporaryProductEmpty = temporaryTotalQuantity == 0
     val isFabShown = !isSearchActive && ((isHome && !isTemporaryProductEmpty) || isAdmin)
-    if (isReport || isAdmin) {
+    if (isTransaction || isAdmin) {
         temporaryCartViewModel.clearTemporaryCart()
     }
 
@@ -134,18 +133,20 @@ fun MainNavigation(
             snackbarHost = { SnackbarHost(snackBarHostState) },
             topBar = {
                 NavigationTopBar(
+                    temporaryCartViewModel = temporaryCartViewModel,
                     isHome = isHome,
-                    isReport = isReport,
+                    isReport = isTransaction,
                     isAdmin = isAdmin,
                     isCart = isCart,
                     isAdminProduct = isAdminProduct,
                     isAdminCategory = isAdminCategory,
-                    isAdminCashier = isAdminCashier,
+                    isAdminUser = isAdminUser,
                     isSearchActive = isSearchActive,
                     snackBarHostState = snackBarHostState,
                     onSearchActiveChange = { isSearchActive = it },
                     drawerState = drawerState,
                     scope = mainScope,
+                    nestedScrollConnection = nestedScrollConnection,
                     isScrolledDown = isScrolledDown,
                     pagerState = pagerState,
                     tabs = tabs,
@@ -155,12 +156,12 @@ fun MainNavigation(
             floatingActionButton = {
                 NavigationFab(
                     temporaryCartViewModel = temporaryCartViewModel,
+                    temporaryTotalQuantity = temporaryTotalQuantity,
                     isHome = isHome,
                     isAdminProduct = isAdminProduct,
                     isAdminCategory = isAdminCategory,
-                    isAdminCashier = isAdminCashier,
+                    isAdminCashier = isAdminUser,
                     isFabShown = isFabShown,
-                    temporaryTotalQuantity = temporaryTotalQuantity,
                     mainScope = mainScope,
                     snackBarHostState = snackBarHostState,
                     onDrawerStateChange = { DrawerValue.Open },
@@ -179,8 +180,8 @@ fun MainNavigation(
             NavHost(
                 navController,
                 MainScreenState.HOME.name,
-                enterTransition = { scaleIn(tween(Constant.ANIMATION_SHORT), 0.96f) + fadeIn(tween(Constant.ANIMATION_SHORT)) },
-                exitTransition = { scaleOut(tween(Constant.ANIMATION_SHORT), 0.96f) + fadeOut(tween(Constant.ANIMATION_SHORT)) },
+                enterTransition = { scaleInAnimation(Duration.ANIMATION_MEDIUM) + fadeInAnimation(Duration.ANIMATION_MEDIUM) },
+                exitTransition = { scaleOutAnimation(Duration.ANIMATION_MEDIUM) + fadeOutAnimation(Duration.ANIMATION_MEDIUM) },
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(MainScreenState.HOME.name) {
@@ -191,7 +192,7 @@ fun MainNavigation(
                     )
                 }
                 composable(MainScreenState.REPORT.name) {
-                    Report(
+                    Transaction(
                         nestedScrollConnection
                     )
                 }
