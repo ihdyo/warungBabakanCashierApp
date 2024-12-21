@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -36,6 +37,12 @@ fun ItemCounterComponent(
     onSubtract: () -> Unit,
     onAdd: () -> Unit
 ) {
+
+//    {
+//        selectedCategory.setTextAndPlaceCursorAtEnd(item.name)
+//        showCategories = false
+//    },
+
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
     ) {

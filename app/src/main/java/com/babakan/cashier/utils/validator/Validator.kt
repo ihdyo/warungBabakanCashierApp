@@ -42,4 +42,21 @@ object Validator {
         val usernameRegex = "^[a-zA-Z0-9_]+$".toRegex()
         return if (!username.matches(usernameRegex)) context.getString(R.string.invalidUsername) else null
     }
+
+    fun isValidPrice(
+        context: Context,
+        price: String
+    ): String? {
+        val priceRegex = "^[0-9]+([.,][0-9]+)?$".toRegex()
+        return if (!price.matches(priceRegex) || price.replace("[.,]".toRegex(), "").toDouble() <= 0) context.getString(R.string.invalidPrice) else null
+    }
+
+    fun isValidUrl(
+        context: Context,
+        url: String
+    ): String? {
+        val urlRegex = "^(http|https)://[a-zA-Z0-9\\-\\.]+(?:\\.[a-zA-Z]{2,})?(?:/[^\\s]*)?$".toRegex()
+        return if (!url.matches(urlRegex)) context.getString(R.string.invalidUrl) else null
+    }
+
 }

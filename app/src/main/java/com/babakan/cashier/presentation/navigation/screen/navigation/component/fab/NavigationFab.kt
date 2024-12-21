@@ -6,19 +6,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,14 +23,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
 import com.babakan.cashier.R
+import com.babakan.cashier.common.ui.CommonDialog
+import com.babakan.cashier.data.sealed.AdminItem
+import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.presentation.owner.model.CategoryModel
+import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInRightAnimation
 import com.babakan.cashier.utils.animation.slideOutRightAnimation
+import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -46,11 +47,15 @@ fun NavigationFab(
     isHome: Boolean,
     isAdminProduct: Boolean,
     isAdminCategory: Boolean,
-    isAdminCashier: Boolean,
+    isAdminUser: Boolean,
     isFabShown: Boolean,
+    isScrolledDown: Boolean,
     mainScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     onDrawerStateChange: (DrawerValue) -> Unit,
+    onSelectedAuditItemChange: (AdminItem) -> Unit,
+    onAuditSheetStateChange: (AuditState) -> Unit,
+    onAddNewItemChange: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     var dialogState by remember { mutableStateOf(false) }
@@ -91,82 +96,66 @@ fun NavigationFab(
                     }
                 },
             ) {
-                FloatingActionButton(
-                    {
+                ExtendedFloatingActionButton(
+                    expanded = !isScrolledDown,
+                    onClick = {
                         when {
                             isHome -> {
-                                // TODO Add To Cart
-                            }
-                            isAdminCashier -> {
-                                // TODO Add Cashier
-                            }
-                            isAdminCategory -> {
-                                // TODO Add Category
+                                // TODO: Add To Cart
                             }
                             isAdminProduct -> {
-                                // TODO Add Product
+                                onSelectedAuditItemChange(AdminItem.Product(ProductModel()))
+                                onAuditSheetStateChange(AuditState.PRODUCT)
+                                onAddNewItemChange(true)
+                            }
+                            isAdminCategory -> {
+                                onSelectedAuditItemChange(AdminItem.Category(CategoryModel()))
+                                onAuditSheetStateChange(AuditState.CATEGORY)
+                                onAddNewItemChange(true)
+                            }
+                            isAdminUser -> {
+                                onSelectedAuditItemChange(AdminItem.User(UserModel()))
+                                onAuditSheetStateChange(AuditState.USER)
+                                onAddNewItemChange(true)
                             }
                         }
                     },
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        stringResource(R.string.add)
-                    )
-                }
+                    icon = {
+                        Icon(
+                            Icons.Default.Add,
+                            stringResource(R.string.add)
+                        )
+                    },
+                    text = {
+                        when {
+                            isHome -> Text(stringResource(R.string.add))
+                            isAdminProduct -> Text(stringResource(R.string.addMenu))
+                            isAdminCategory -> Text(stringResource(R.string.addCategory))
+                            isAdminUser -> Text(stringResource(R.string.addUser))
+                        }
+                    },
+                )
             }
         }
     }
 
     if (dialogState) {
-        AlertDialog(
-            icon = {
-                Icon(
-                    Icons.Default.Clear,
-                    stringResource(R.string.clearCart)
-                )
-            },
-            title = {
-                Text(
-                    stringResource(R.string.clearCart),
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.clearCartConfirmation),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            },
-            onDismissRequest = { dialogState = !dialogState },
-            confirmButton = {
-                Button(
-                    {
-                        dialogState = !dialogState
-                        onDrawerStateChange(DrawerValue.Closed)
+        CommonDialog(
+            icon = Icons.Default.Clear,
+            title = stringResource(R.string.clearCart),
+            body = stringResource(R.string.clearCartConfirmation),
+            onConfirm = {
+                dialogState = !dialogState
+                onDrawerStateChange(DrawerValue.Closed)
 
-                        mainScope.launch {
-                            temporaryCartViewModel.clearTemporaryCart()
-                            snackBarHostState.showSnackbar(getString(context, R.string.clearCartSuccess))
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text(stringResource(R.string.clear))
+                mainScope.launch {
+                    temporaryCartViewModel.clearTemporaryCart()
+                    snackBarHostState.showSnackbar(getString(context, R.string.clearCartSuccess))
                 }
             },
-            dismissButton = {
-                TextButton(
-                    { dialogState = !dialogState },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                ) { Text(stringResource(R.string.cancel),) }
-            }
+            confirmText = stringResource(R.string.clear),
+            onDismiss = { dialogState = !dialogState },
+            dismissText = stringResource(R.string.cancel)
         )
     }
 }

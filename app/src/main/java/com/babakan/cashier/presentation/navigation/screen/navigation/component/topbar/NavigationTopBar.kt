@@ -15,9 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,7 +24,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,17 +35,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.SearchChipComponent
+import com.babakan.cashier.common.ui.CommonDialog
 import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.data.sealed.AdminItem
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.MainSearchBar
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInBottomAnimation
 import com.babakan.cashier.utils.animation.slideOutTopAnimation
+import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -74,7 +72,9 @@ fun NavigationTopBar(
     isScrolledDown: Boolean,
     pagerState: PagerState,
     tabs: List<Int>,
-    navController : NavController
+    navController : NavController,
+    onAuditStateChange: (AuditState) -> Unit,
+    onItemSelected: (AdminItem) -> Unit
 ) {
 
     var dialogState by remember { mutableStateOf(false) }
@@ -100,7 +100,9 @@ fun NavigationTopBar(
                 onSearchActiveChange = onSearchActiveChange,
                 navController = navController,
                 nestedScrollConnection = nestedScrollConnection,
-                isScrolledDown = isScrolledDown
+                isScrolledDown = isScrolledDown,
+                onAuditStateChange = onAuditStateChange,
+                onItemSelected = onItemSelected
             )
             AnimatedVisibility(
                 visible = isScrolledDown && isHome,
@@ -111,7 +113,7 @@ fun NavigationTopBar(
 
                 Column {
                     Text(
-                        stringResource(R.string.product),
+                        stringResource(R.string.menu),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .padding(vertical = SizeChart.SMALL_SPACE.dp)
@@ -206,49 +208,17 @@ fun NavigationTopBar(
         )
     }
     if (dialogState) {
-        AlertDialog(
-            icon = {
-                Icon(
-                    Icons.Default.Clear,
-                    stringResource(R.string.clearCart)
-                )
+        CommonDialog(
+            icon = Icons.Default.Clear,
+            title = stringResource(R.string.clearCart),
+            body = stringResource(R.string.clearCartConfirmation),
+            onConfirm = {
+                // TODO Clear cart
+                dialogState = !dialogState
             },
-            title = {
-                Text(
-                    stringResource(R.string.clearCart),
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.clearCartConfirmation),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            },
-            onDismissRequest = { dialogState = !dialogState },
-            confirmButton = {
-                Button(
-                    {
-                        // TODO Clear cart
-                        dialogState = !dialogState
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text(stringResource(R.string.clear))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    { dialogState = !dialogState },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                ) { Text(stringResource(R.string.cancel),) }
-            }
+            confirmText = stringResource(R.string.clear),
+            onDismiss = { dialogState = !dialogState },
+            dismissText = stringResource(R.string.cancel)
         )
     }
 }

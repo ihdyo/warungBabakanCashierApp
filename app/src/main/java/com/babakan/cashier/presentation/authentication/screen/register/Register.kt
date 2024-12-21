@@ -22,8 +22,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.data.state.UiState
+import com.babakan.cashier.presentation.authentication.screen.register.component.RegisterForm
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.validator.Validator
 import kotlinx.coroutines.CoroutineScope
@@ -53,9 +55,6 @@ fun Register(
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
 
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { innerPadding ->
@@ -71,102 +70,27 @@ fun Register(
                 stringResource(R.string.registerGreeting),
                 style = MaterialTheme.typography.headlineLarge
             )
-            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
-            Column {
-                OutlinedTextField(
-                    isError = nameError != null,
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.name)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    leadingIcon = { Icon(Icons.Outlined.Person, stringResource(R.string.name)) },
-                    supportingText = { nameError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    isError = usernameError != null,
-                    value = username,
-                    onValueChange = { username = it },
-                    label = { Text(stringResource(R.string.username)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    leadingIcon = { Icon(Icons.Outlined.AlternateEmail, stringResource(R.string.name)) },
-                    supportingText = { usernameError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    isError = emailError != null,
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text(stringResource(R.string.email)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    leadingIcon = { Icon(Icons.Outlined.Email, stringResource(R.string.name)) },
-                    supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    isError = passwordError != null,
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text(stringResource(R.string.password)) },
-                    singleLine = true,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    leadingIcon = { Icon(Icons.Outlined.LockOpen, stringResource(R.string.name)) },
-                    trailingIcon = { IconButton({ passwordVisible = !passwordVisible }) { Icon(if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff, stringResource(R.string.name)) } },
-                    supportingText = { passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    isError = confirmPasswordError != null,
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = { Text(stringResource(R.string.confirmPassword)) },
-                    singleLine = true,
-                    visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    leadingIcon = { Icon(Icons.Outlined.Lock, stringResource(R.string.name)) },
-                    trailingIcon = { IconButton({ confirmPasswordVisible = !confirmPasswordVisible }) { Icon(if (confirmPasswordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff, stringResource(R.string.name)) } },
-                    supportingText = { confirmPasswordError?.let { Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+            Spacer(Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+            RegisterForm(
+                name = name,
+                username = username,
+                email = email,
+                password = password,
+                confirmPassword = confirmPassword,
+                nameError = nameError,
+                usernameError = usernameError,
+                emailError = emailError,
+                passwordError = passwordError,
+                confirmPasswordError = confirmPasswordError,
+                onNameChange = { name = it },
+                onUsernameChange = { username = it },
+                onEmailChange = { email = it },
+                onPasswordChange = { password = it },
+                onConfirmPasswordChange = { confirmPassword = it }
+            )
+            Spacer(Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
             Button(
-                onClick = {
+                {
                     nameError = Validator.isNotEmpty(context, name, context.getString(R.string.name))
                     usernameError = Validator.isNotEmpty(context, username, context.getString(R.string.username)) ?: Validator.isValidUsername(context, username)
                     emailError = Validator.isNotEmpty(context, email, context.getString(R.string.email)) ?: Validator.isValidEmail(context, email)
@@ -182,22 +106,13 @@ fun Register(
                 Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.register)) }
             TextButton(
-                onClick = { onNavigateToLogin() },
+                { onNavigateToLogin() },
                 Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.loginPrompt)) }
         }
         when (uiState) {
-            is UiState.Loading -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            is UiState.Success -> {
-                onNavigateToMain()
-            }
+            is UiState.Loading -> { FullscreenLoading() }
+            is UiState.Success -> { onNavigateToMain() }
             is UiState.Error -> {
                 val error = (uiState as UiState.Error)
                 LaunchedEffect(error.message) {

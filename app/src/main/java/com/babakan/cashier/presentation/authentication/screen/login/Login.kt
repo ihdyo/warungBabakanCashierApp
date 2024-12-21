@@ -19,8 +19,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.data.state.UiState
+import com.babakan.cashier.presentation.authentication.screen.login.component.LoginForm
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.validator.Validator
 import kotlinx.coroutines.CoroutineScope
@@ -38,14 +40,11 @@ fun Login(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
 
-    var passwordVisible by remember { mutableStateOf(false) }
-
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState) }
-    ) { innerPadding ->
+    Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -58,57 +57,18 @@ fun Login(
                 stringResource(R.string.loginGreeting),
                 style = MaterialTheme.typography.headlineLarge
             )
-            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp)
-            ) {
-                OutlinedTextField(
-                    isError = emailError != null,
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text(stringResource(R.string.email)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    leadingIcon = { Icon(Icons.Outlined.Email, stringResource(R.string.email)) },
-                    supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    isError = passwordError != null,
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text(stringResource(R.string.password)) },
-                    singleLine = true,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    leadingIcon = { Icon(Icons.Outlined.Lock, stringResource(R.string.password)) },
-                    trailingIcon = {
-                        IconButton({ passwordVisible = !passwordVisible }) {
-                            Icon(
-                                if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
-                                stringResource(R.string.password)
-                            )
-                        }
-                    },
-                    supportingText = { passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    shape = MaterialTheme.shapes.medium,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        errorLeadingIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Spacer(modifier = Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
+            Spacer(Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
+            LoginForm(
+                email = email,
+                password = password,
+                emailError = emailError,
+                passwordError = passwordError,
+                onEmailChange = { email = it },
+                onPasswordChange = { password = it }
+            )
+            Spacer(Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
             Button(
-                onClick = {
+                {
                     emailError = Validator.isNotEmpty(context, email, context.getString(R.string.email)) ?: Validator.isValidEmail(context, email)
                     passwordError = Validator.isNotEmpty(context, password, context.getString(R.string.password))
 
@@ -121,19 +81,12 @@ fun Login(
                 Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.login)) }
             TextButton(
-                onClick = { onNavigateToRegister() },
+                { onNavigateToRegister() },
                 Modifier.fillMaxWidth(),
             ) { Text(stringResource(R.string.registerPrompt)) }
         }
         when (uiState) {
-            is UiState.Loading -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+            is UiState.Loading -> { FullscreenLoading() }
             is UiState.Error -> {
                 val error = (uiState as UiState.Error)
                 LaunchedEffect(error.message) {

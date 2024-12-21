@@ -26,3 +26,4 @@ val dummyCategoryList = listOf(
         iconUrl = "https://drive.google.com/uc?export=download&id=1s4R8btNp5UoOtbTAdWk3VlsFJ9DLE4my",
     ),
 )
+

@@ -14,10 +14,10 @@
     <string name="loginPrompt">Sudah memiliki akun</string>
     <string name="register">Daftar</string>
     <string name="registerPrompt">Daftar akun</string>
-    <string name="logout">Keluar</string>
-    <string name="logoutConfirmation">Apakah anda yakin ingin keluar?</string>
-    <string name="logoutSuccess">Anda telah berhasil keluar</string>
-    <string name="logoutFailed">Anda gagal keluar</string>
+    <string name="logout">Log Out</string>
+    <string name="logoutConfirmation">Apakah anda yakin ingin log out?</string>
+    <string name="logoutSuccess">Anda telah berhasil log out</string>
+    <string name="logoutFailed">Anda gagal log out</string>
     <string name="clear">Kosongkan</string>
     <string name="clearCart">Kosongkan Keranjang</string>
     <string name="clearCartConfirmation">Apakah anda yakin ingin mengosongkan keranjang?</string>
@@ -27,6 +27,7 @@
     <string name="confirmMessage">Pesanan Anda telah dikonfirmasi, cetak bukti pembayaran?</string>
     <string name="confirmSuccess">Konfirmasi pesanan berhasil</string>
     <string name="confirmFailed">Konfirmasi pesanangagal</string>
+    <string name="active">Akun Aktif</string>
     <string name="inactive">Akun Nonaktif</string>
     <string name="inactiveMessage">Akun anda tidak aktif, silakan hubungi admin</string>
     <string name="noConnection">Tidak ada koneksi</string>
@@ -36,6 +37,25 @@
     <string name="searchQuery">Hasil untuk \"%1$s\"</string>
     <string name="noResult">Tidak ada hasil untuk \"%1$s\"</string>
     <string name="showingResult">%d hasil</string>
+    <string name="updateMenu">Perbarui Menu</string>
+    <string name="updateCategory">Perbarui Kategori</string>
+    <string name="updateUser">Perbarui Pengguna</string>
+    <string name="addMenu">Tambah Menu</string>
+    <string name="addCategory">Tambah Kategori</string>
+    <string name="addUser">Tambah Pengguna</string>
+    <string name="deleteMenu">Hapus Menu</string>
+    <string name="deleteCategory">Hapus Kategori</string>
+    <string name="deleteUser">Hapus Pengguna</string>
+    <string name="updateConfirmation">Apakah anda yakin ingin memperbarui data %1$s?</string>
+    <string name="deleteConfirmation">Apakah anda yakin ingin menghapus %1$s dari daftar?</string>
+    <string name="updateSuccess">Berhasil memperbarui %1$s</string>
+    <string name="updateFailed">Gagal memperbarui %1$s</string>
+    <string name="addSuccess">%1$s berhasil ditambahkan</string>
+    <string name="addFailed">Gagal menambahkan %1$s</string>
+    <string name="deleteSuccess">%1$s berhasil dihapus</string>
+    <string name="deleteFailed">Gagal menghapus %1$s</string>
+    <string name="activated">Status %1$s telah diaktifkan</string>
+    <string name="deactivated"> Status %1$s telah dinonaktifkan</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>
@@ -43,10 +63,16 @@
     <string name="password">Password</string>
     <string name="showPassword">Tampilkan Password</string>
     <string name="confirmPassword">Konfirmasi Password</string>
+    <string name="status">Status</string>
+    <string name="price">Harga</string>
+    <string name="imageUrl">URL Gambar</string>
+    <string name="iconUrl">URL Ikon (.svg)</string>
     <string name="customerData">Data Pelanggan</string>
     <string name="customerName">Nama</string>
     <string name="tableNumber">Nomor Meja</string>
     <string name="notes">Catatan</string>
+    <string name="currencyPrefix">Rp</string>
+    <string name="currencySuffix">,-</string>
 
     <string name="error">Terjadi kesalahan</string>
     <string name="cannotEmpty">%1$s tidak boleh kosong</string>
@@ -54,22 +80,24 @@
     <string name="shortPassword">Password terlalu pendek (minimal 6 karakter)</string>
     <string name="passwordNotMatch">Password tidak sesuai</string>
     <string name="invalidUsername">Username tidak boleh mengandung karakter khusus atau spasi</string>
+    <string name="invalidPrice">Format harga tanpa titik atau koma</string>
+    <string name="invalidUrl">URL tidak valid</string>
     <string name="fillInAllFields">Mohon isi data dengan benar</string>
 
-    <string name="home">Beranda</string>
+    <string name="menu">Menu</string>
     <string name="report">Laporan</string>
     <string name="admin">Admin Panel</string>
-    <string name="product">Produk</string>
     <string name="category">Kategori</string>
+    <string name="user">Pengguna</string>
     <string name="owner">Owner</string>
     <string name="cashier">Kasir</string>
 
     <string name="all">Semua</string>
-    <string name="productSearch">Cari Produk</string>
+    <string name="menuSearch">Cari Menu</string>
     <string name="categorySearch">Cari Kategori</string>
-    <string name="cashierSearch">Cari Kasir</string>
+    <string name="userSearch">Cari Pengguna</string>
     <string name="dateSearch">Gunakan ikon kalender di samping</string>
-    <string name="reportSearch">Cari No. Transaksi</string>
+    <string name="transactionSearch">Cari No. Transaksi</string>
     <string name="transactionNumber">No. Transaksi</string>
     <string name="date">Tanggal</string>
     <string name="paid">Lunas</string>
@@ -83,20 +111,20 @@
     <string name="no">Tidak</string>
     <string name="ok">OK</string>
     <string name="close">Tutup</string>
-    <string name="exit">Exit</string>
+    <string name="exit">Keluar</string>
     <string name="print">Cetak</string>
+    <string name="update">Perbarui</string>
+    <string name="add">Tambahkan</string>
 
     <string name="expand">Perluas</string>
     <string name="collapse">Perkecil</string>
     <string name="back">Kembali</string>
     <string name="done">Selesai</string>
-    <string name="add">Tambahkan</string>
     <string name="remove">Kurangi</string>
     <string name="edit">Edit</string>
     <string name="delete">Hapus</string>
-    <string name="menu">Menu</string>
+    <string name="info">Info</string>
     <string name="cart">Keranjang Belanja</string>
-    <string name="productImage">Gambar Produk</string>
     <string name="search">Cari</string>
-    <string name="status">Status</string>
+    <string name="paste">Tempel</string>
 </resources>

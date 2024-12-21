@@ -117,7 +117,7 @@ fun TransactionItem(
                                     Text(
                                         stringResource(R.string.numberOrder, transactionItem.tableNumber).uppercase(),
                                         style = MaterialTheme.typography.labelLarge.copy(
-                                            color = MaterialTheme.colorScheme.secondary
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
                                         ),
                                         modifier = Modifier.padding(horizontal = SizeChart.SIZE_SM.dp, vertical = SizeChart.SIZE_2XS.dp),
                                     )
@@ -129,7 +129,7 @@ fun TransactionItem(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    stringResource(R.string.cashier),
+                                    stringResource(R.string.user),
                                     style = MaterialTheme.typography.bodySmall.copy(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

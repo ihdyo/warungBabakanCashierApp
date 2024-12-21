@@ -41,9 +41,11 @@ import androidx.navigation.NavController
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.DateRangePickerComponent
 import com.babakan.cashier.common.component.SearchChipComponent
+import com.babakan.cashier.data.sealed.AdminItem
 import com.babakan.cashier.data.ui.listOfReportSearch
-import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchUser
-import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchCategory
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchAdminProduct
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchAdminUser
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchAdminCategory
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchProduct
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchTransaction
 import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
@@ -54,6 +56,7 @@ import com.babakan.cashier.utils.animation.slideInLeftAnimation
 import com.babakan.cashier.utils.animation.slideInRightAnimation
 import com.babakan.cashier.utils.animation.slideOutLeftAnimation
 import com.babakan.cashier.utils.animation.slideOutRightAnimation
+import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
@@ -76,7 +79,9 @@ fun MainSearchBar(
     onSearchActiveChange: (Boolean) -> Unit,
     navController: NavController,
     nestedScrollConnection: NestedScrollConnection,
-    isScrolledDown: Boolean
+    isScrolledDown: Boolean,
+    onAuditStateChange: (AuditState) -> Unit,
+    onItemSelected: (AdminItem) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -116,17 +121,17 @@ fun MainSearchBar(
         placeholder = {
             Text(
                 when {
-                    isHome -> stringResource(R.string.productSearch)
+                    isHome -> stringResource(R.string.menuSearch)
                     isTransaction -> when {
-                        isReportByTransactionNumber -> stringResource(R.string.reportSearch)
-                        isReportByCashier -> stringResource(R.string.cashierSearch)
+                        isReportByTransactionNumber -> stringResource(R.string.transactionSearch)
+                        isReportByCashier -> stringResource(R.string.userSearch)
                         isReportByDate -> stringResource(R.string.dateSearch)
                         else -> stringResource(R.string.search)
                     }
                     isAdmin -> when {
-                        isAdminProduct -> stringResource(R.string.productSearch)
+                        isAdminProduct -> stringResource(R.string.menuSearch)
                         isAdminCategory -> stringResource(R.string.categorySearch)
-                        isAdminUser -> stringResource(R.string.cashierSearch)
+                        isAdminUser -> stringResource(R.string.userSearch)
                         else -> stringResource(R.string.search)
                     }
                     else -> stringResource(R.string.search)
@@ -160,7 +165,7 @@ fun MainSearchBar(
                 IconButton({ scope.launch { drawerState.open() } }) {
                     Icon(
                         Icons.Default.Menu,
-                        stringResource(R.string.menu)
+                        stringResource(R.string.info)
                     )
                 }
             }
@@ -296,7 +301,7 @@ fun MainSearchBar(
                 }
             }
         }
-        AnimatedVisibility(isHome || (isAdmin && isAdminProduct)) {
+        AnimatedVisibility(isHome) {
             SearchProduct(
                 temporaryCartViewModel = temporaryCartViewModel,
                 nestedScrollConnection = nestedScrollConnection,
@@ -319,22 +324,44 @@ fun MainSearchBar(
                 isReportByDate = isReportByDate
             )
         }
-        AnimatedVisibility(isAdmin && isAdminCategory) {
-            SearchCategory(
+        AnimatedVisibility(isAdmin && isAdminProduct) {
+            SearchAdminProduct(
+                temporaryCartViewModel = temporaryCartViewModel,
                 nestedScrollConnection = nestedScrollConnection,
                 query = querySearch,
                 onResultCountChange = { newCount ->
                     resultCount = newCount
                 },
+                onAuditStateChange = onAuditStateChange,
+                onItemSelected = { item ->
+                    onItemSelected(AdminItem.Product(item))
+                }
+            )
+        }
+        AnimatedVisibility(isAdmin && isAdminCategory) {
+            SearchAdminCategory(
+                nestedScrollConnection = nestedScrollConnection,
+                query = querySearch,
+                onResultCountChange = { newCount ->
+                    resultCount = newCount
+                },
+                onAuditStateChange = onAuditStateChange,
+                onItemSelected = { item ->
+                    onItemSelected(AdminItem.Category(item))
+                }
             )
         }
         AnimatedVisibility(isAdmin && isAdminUser) {
-            SearchUser(
+            SearchAdminUser(
                 nestedScrollConnection = nestedScrollConnection,
                 query = querySearch,
                 onResultCountChange = { newCount ->
                     resultCount = newCount
                 },
+                onAuditStateChange = onAuditStateChange,
+                onItemSelected = { item ->
+                    onItemSelected(AdminItem.User(item))
+                }
             )
         }
         if (showDatePicker) {

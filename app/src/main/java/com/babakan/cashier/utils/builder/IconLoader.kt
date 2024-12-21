@@ -1,9 +1,6 @@
-package com.babakan.cashier.common.builder
+package com.babakan.cashier.utils.builder
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,7 +22,7 @@ import com.babakan.cashier.R
 
 @Composable
 fun IconLoader(
-    imageUrl: String,
+    iconUrl: String,
     size: Dp,
     color: Color = MaterialTheme.colorScheme.onSurface
 ) {
@@ -38,14 +35,14 @@ fun IconLoader(
 
     AsyncImage(
         model = ImageRequest.Builder(context)
-            .data(imageUrl)
+            .data(iconUrl)
             .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .crossfade(true)
             .build(),
         imageLoader = imageLoader,
-        error = painterResource(R.drawable.img_placeholder),
-        contentDescription = stringResource(R.string.product),
+        error = painterResource(R.drawable.ic_placeholder),
+        contentDescription = stringResource(R.string.menu),
         contentScale = ContentScale.Crop,
         colorFilter = ColorFilter.tint(color),
         modifier = Modifier.size(size)

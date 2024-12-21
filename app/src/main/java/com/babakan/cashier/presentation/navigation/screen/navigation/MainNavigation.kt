@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +30,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
+import com.babakan.cashier.common.audit.category.CategoryBottomSheet
+import com.babakan.cashier.common.audit.product.ProductBottomSheet
+import com.babakan.cashier.common.audit.user.UserBottomSheet
+import com.babakan.cashier.data.sealed.AdminItem
 import com.babakan.cashier.presentation.cashier.screen.cart.Cart
 import com.babakan.cashier.presentation.cashier.screen.home.Home
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.bottombar.NavigationBottomBar
@@ -42,6 +47,7 @@ import com.babakan.cashier.utils.animation.fadeInAnimation
 import com.babakan.cashier.utils.animation.fadeOutAnimation
 import com.babakan.cashier.utils.animation.scaleInAnimation
 import com.babakan.cashier.utils.animation.scaleOutAnimation
+import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.MainScreenState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -56,6 +62,8 @@ fun MainNavigation(
 ) {
     val mainScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val sheetState = rememberModalBottomSheetState()
+    var auditSheetState by remember { mutableStateOf(AuditState.HIDDEN) }
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -63,7 +71,7 @@ fun MainNavigation(
 
     var isSearchActive by remember { mutableStateOf(false) }
 
-    val tabs = listOf(R.string.product, R.string.category, R.string.cashier)
+    val tabs = listOf(R.string.menu, R.string.category, R.string.user)
     var selectedAdminTabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState(selectedAdminTabIndex, pageCount = { tabs.size })
     val onSelectedAdminTabIndex: (Int) -> Unit = { index ->
@@ -73,17 +81,16 @@ fun MainNavigation(
         selectedAdminTabIndex = index
     }
 
-    val isHome = currentDestination == MainScreenState.HOME.name
+    val isMENU = currentDestination == MainScreenState.MENU.name
     val isTransaction = currentDestination == MainScreenState.REPORT.name
     val isAdmin = currentDestination == MainScreenState.ADMIN.name
     val isCart = currentDestination == MainScreenState.CART.name
-
     val isAdminProduct = pagerState.currentPage == 0
     val isAdminCategory = pagerState.currentPage == 1
     val isAdminUser = pagerState.currentPage == 2
 
     var isScrolledDown by remember { mutableStateOf(false) }
-    if (isHome || isTransaction || isAdmin) {
+    if (isMENU || isTransaction || isAdmin) {
         isScrolledDown = true
     }
     val nestedScrollConnection = remember {
@@ -107,9 +114,12 @@ fun MainNavigation(
         }
     }
 
+    var selectedAuditItem by remember { mutableStateOf<AdminItem?>(null) }
+    var isAddNewItem by remember { mutableStateOf(false) }
+
     val temporaryTotalQuantity by temporaryCartViewModel.temporaryTotalQuantity.collectAsState()
     val isTemporaryProductEmpty = temporaryTotalQuantity == 0
-    val isFabShown = !isSearchActive && ((isHome && !isTemporaryProductEmpty) || isAdmin)
+    val isFabShown = !isSearchActive && ((isMENU && !isTemporaryProductEmpty) || isAdmin)
     if (isTransaction || isAdmin) {
         temporaryCartViewModel.clearTemporaryCart()
     }
@@ -118,7 +128,7 @@ fun MainNavigation(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentDestination != MainScreenState.CART.name,
+        gesturesEnabled = currentDestination != MainScreenState.CART.name && !isSearchActive,
         drawerContent = {
             NavigationDrawer(
                 authScope = authScope,
@@ -134,7 +144,7 @@ fun MainNavigation(
             topBar = {
                 NavigationTopBar(
                     temporaryCartViewModel = temporaryCartViewModel,
-                    isHome = isHome,
+                    isHome = isMENU,
                     isReport = isTransaction,
                     isAdmin = isAdmin,
                     isCart = isCart,
@@ -151,20 +161,33 @@ fun MainNavigation(
                     pagerState = pagerState,
                     tabs = tabs,
                     navController = navController,
+                    onAuditStateChange = { auditSheetState = it },
+                    onItemSelected = { item ->
+                        selectedAuditItem = item
+                        auditSheetState = when (item) {
+                            is AdminItem.Product -> AuditState.PRODUCT
+                            is AdminItem.Category -> AuditState.CATEGORY
+                            is AdminItem.User -> AuditState.USER
+                        }
+                    },
                 )
             },
             floatingActionButton = {
                 NavigationFab(
                     temporaryCartViewModel = temporaryCartViewModel,
                     temporaryTotalQuantity = temporaryTotalQuantity,
-                    isHome = isHome,
+                    isHome = isMENU,
                     isAdminProduct = isAdminProduct,
                     isAdminCategory = isAdminCategory,
-                    isAdminCashier = isAdminUser,
+                    isAdminUser = isAdminUser,
                     isFabShown = isFabShown,
+                    isScrolledDown = isScrolledDown,
                     mainScope = mainScope,
                     snackBarHostState = snackBarHostState,
                     onDrawerStateChange = { DrawerValue.Open },
+                    onSelectedAuditItemChange = { selectedAuditItem = it },
+                    onAuditSheetStateChange = { auditSheetState = it },
+                    onAddNewItemChange = { isAddNewItem = true }
                 )
             },
             bottomBar = {
@@ -179,12 +202,12 @@ fun MainNavigation(
         ) { paddingValues ->
             NavHost(
                 navController,
-                MainScreenState.HOME.name,
+                MainScreenState.MENU.name,
                 enterTransition = { scaleInAnimation(Duration.ANIMATION_MEDIUM) + fadeInAnimation(Duration.ANIMATION_MEDIUM) },
                 exitTransition = { scaleOutAnimation(Duration.ANIMATION_MEDIUM) + fadeOutAnimation(Duration.ANIMATION_MEDIUM) },
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable(MainScreenState.HOME.name) {
+                composable(MainScreenState.MENU.name) {
                     Home(
                         temporaryCartViewModel,
                         nestedScrollConnection,
@@ -198,18 +221,65 @@ fun MainNavigation(
                 }
                 composable(MainScreenState.ADMIN.name) {
                     Admin(
-                        nestedScrollConnection,
-                        pagerState,
-                        onSelectedAdminTabIndex
+                        nestedScrollConnection = nestedScrollConnection,
+                        pagerState = pagerState,
+                        onSelectedAdminTabIndex = onSelectedAdminTabIndex,
+                        onAuditStateChange = { auditSheetState = it },
+                        onItemSelected = { item ->
+                            selectedAuditItem = item
+                            auditSheetState = when (item) {
+                                is AdminItem.Product -> AuditState.PRODUCT
+                                is AdminItem.Category -> AuditState.CATEGORY
+                                is AdminItem.User -> AuditState.USER
+                            }
+                        },
                     )
                 }
                 composable(MainScreenState.CART.name) {
                     Cart(
-                        nestedScrollConnection,
-                        snackBarHostState,
-                        isScrolledDown,
-                        {}
+                        nestedScrollConnection = nestedScrollConnection,
+                        snackBarHostState = snackBarHostState,
+                        isScrolledDown = isScrolledDown,
+                        onCartConfirmClick = {
+                            // TODO: Create Transaction
+                        }
                     )
+                }
+            }
+            when (auditSheetState) {
+                AuditState.PRODUCT -> {
+                    ProductBottomSheet(
+                        scope = mainScope,
+                        snackBarHostState = snackBarHostState,
+                        sheetState = sheetState,
+                        item = (selectedAuditItem as AdminItem.Product).product,
+                        onDismiss = { auditSheetState = AuditState.HIDDEN },
+                        isAddNew = isAddNewItem,
+                    )
+                }
+                AuditState.CATEGORY -> {
+                    CategoryBottomSheet(
+                        scope = mainScope,
+                        snackBarHostState = snackBarHostState,
+                        sheetState = sheetState,
+                        item = (selectedAuditItem as AdminItem.Category).category,
+                        onDismiss = { auditSheetState = AuditState.HIDDEN },
+                        isAddNew = isAddNewItem,
+                    )
+                }
+                AuditState.USER -> {
+                    UserBottomSheet(
+                        scope = mainScope,
+                        snackBarHostState = snackBarHostState,
+                        sheetState = sheetState,
+                        item = (selectedAuditItem as AdminItem.User).user,
+                        onDismiss = { auditSheetState = AuditState.HIDDEN },
+                        isAddNew = isAddNewItem,
+                    )
+                }
+                else -> {
+                    auditSheetState = AuditState.HIDDEN
+                    isAddNewItem = false
                 }
             }
         }

@@ -25,7 +25,7 @@ fun EditButton(
             Icons.Default.Edit,
             stringResource(R.string.edit),
             tint = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.size(SizeChart.ICON_MEDIUM.dp)
+            modifier = Modifier.size(SizeChart.ICON_LARGE.dp)
         )
     }
 }

@@ -11,8 +11,18 @@ object Formatter {
 
     fun currency(number: Double): String {
         val numberFormatter = NumberFormat.getCurrencyInstance(locale)
-        numberFormatter.maximumFractionDigits = 0
+        numberFormatter.currency = Currency.getInstance("IDR")
+        numberFormatter.maximumFractionDigits = 2
+        numberFormatter.minimumFractionDigits = 0
         return numberFormatter.format(number)
+    }
+
+    fun cleanDecimal(number: Double): String {
+        return if (number % 1.0 == 0.0) {
+            number.toInt().toString()
+        } else {
+            number.toString()
+        }
     }
 
     fun date(timestamp: Timestamp): String {
@@ -22,5 +32,4 @@ object Formatter {
         val date = Date(millis)
         return dateFormat.format(date)
     }
-
 }

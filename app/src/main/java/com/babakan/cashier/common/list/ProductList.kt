@@ -42,10 +42,9 @@ fun ProductList(
                 index = index,
                 productItem = item,
                 categoryItem = categoryItem,
-                isAdmin = isAdmin,
                 isCountable = isCountable,
-                onAdminEdit = onAdminEdit
-            )
+                isAdmin = isAdmin
+            ) { onAdminEdit(item) }
         }
     }
 }

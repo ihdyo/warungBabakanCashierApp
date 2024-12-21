@@ -1,6 +1,8 @@
 package com.babakan.cashier.presentation.cashier.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -29,23 +31,25 @@ fun Home(
     val product = dummyProductList
     val category = dummyCategoryList
 
-    LazyVerticalGrid(
-        GridCells.Fixed(2),
-        contentPadding = pageContentPadding(isFabShown),
-        verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
-        horizontalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
-        modifier = Modifier
-            .nestedScroll(nestedScrollConnection)
-    ) {
-        itemsIndexed(product) { index, item ->
-            val categoryItem = category.find { it.id == item.categoryId } ?: CategoryModel()
+    Box(Modifier.fillMaxSize()) {
+        LazyVerticalGrid(
+            GridCells.Fixed(2),
+            contentPadding = pageContentPadding(isFabShown),
+            verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
+            horizontalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
+            modifier = Modifier
+                .nestedScroll(nestedScrollConnection)
+        ) {
+            itemsIndexed(product) { index, item ->
+                val categoryItem = category.find { it.id == item.categoryId } ?: CategoryModel()
 
-            ProductThumbnailItem(
-                temporaryCartViewModel = temporaryCartViewModel,
-                index = index,
-                productItem = item,
-                categoryItem = categoryItem
-            )
+                ProductThumbnailItem(
+                    temporaryCartViewModel = temporaryCartViewModel,
+                    index = index,
+                    productItem = item,
+                    categoryItem = categoryItem
+                )
+            }
         }
     }
 }

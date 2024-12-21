@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.babakan.cashier.common.builder.IconLoader
+import com.babakan.cashier.utils.builder.IconLoader
 import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
@@ -28,8 +28,8 @@ fun SearchChipComponent(
             if (icon != null || iconUrl != null) {
                 if (iconUrl != null) {
                     IconLoader(
-                        imageUrl = iconUrl,
-                        size = SizeChart.ICON_MEDIUM.dp,
+                        iconUrl = iconUrl,
+                        size = SizeChart.ICON_LARGE.dp,
                         color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 } else {
@@ -37,7 +37,7 @@ fun SearchChipComponent(
                         icon ?: Icons.Default.GridView,
                         label,
                         tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(SizeChart.ICON_MEDIUM.dp)
+                        modifier = Modifier.size(SizeChart.ICON_LARGE.dp)
                     )
                 }
             }

@@ -49,11 +49,10 @@ fun ProductOutList(
                 val productItem = products.find { it.id == productOut.id } ?: ProductModel()
 
                 ProductOutItem(
+                    index = groupedProducts.indexOf(productOut),
+                    productItem = productItem,
+                    productOutItem = productOut,
                     isEditable = isEditable,
-                    imageUrl = productItem.imageUrl,
-                    name = productItem.name,
-                    price = productItem.price,
-                    quantity = productOut.quantity,
                     textValue = productOut.quantity.toString(),
                     onTextChanged = { productOut.quantity = it.toInt() },
                     onSubtract = { productOut.quantity -= 1 },

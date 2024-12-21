@@ -1,4 +1,4 @@
-package com.babakan.cashier.common.builder
+package com.babakan.cashier.utils.builder
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -19,7 +19,7 @@ import com.babakan.cashier.R
 fun ImageLoader(
     imageUrl: String,
     height: Dp,
-    width: Dp = Dp.Unspecified,
+    width: Dp = Dp.Unspecified
 ) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
@@ -29,7 +29,7 @@ fun ImageLoader(
             .crossfade(true)
             .build(),
         error = painterResource(R.drawable.img_placeholder),
-        contentDescription = stringResource(R.string.product),
+        contentDescription = stringResource(R.string.menu),
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .height(height)

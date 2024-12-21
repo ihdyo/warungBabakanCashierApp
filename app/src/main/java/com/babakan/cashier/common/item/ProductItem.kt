@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.babakan.cashier.common.builder.ImageLoader
+import com.babakan.cashier.utils.builder.ImageLoader
 import com.babakan.cashier.common.component.CategoryComponent
 import com.babakan.cashier.common.component.EditButton
 import com.babakan.cashier.common.component.ItemCounterComponent
@@ -41,8 +41,8 @@ fun ProductItem(
     index: Int,
     productItem: ProductModel,
     categoryItem: CategoryModel,
-    isAdmin: Boolean = false,
     isCountable: Boolean = false,
+    isAdmin: Boolean = false,
     onAdminEdit: (ProductModel) -> Unit = {}
 ) {
 

@@ -4,12 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import com.babakan.cashier.common.list.CategoryList
 import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.presentation.owner.model.CategoryModel
+import com.babakan.cashier.utils.constant.AuditState
 
 @Composable
-fun SearchCategory(
+fun SearchAdminCategory(
     nestedScrollConnection: NestedScrollConnection,
     query: String,
-    onResultCountChange: (Int) -> Unit
+    onResultCountChange: (Int) -> Unit,
+    onAuditStateChange: (AuditState) -> Unit,
+    onItemSelected: (CategoryModel) -> Unit
 ) {
 
     val categories = if (query.isNotBlank()) {
@@ -21,7 +25,11 @@ fun SearchCategory(
 
     CategoryList(
         nestedScrollConnection = nestedScrollConnection,
-        categories = categories
-    )
+        categories = categories,
+        isAdmin = true
+    ) { item ->
+        onItemSelected(item)
+        onAuditStateChange(AuditState.CATEGORY)
+    }
 
 }

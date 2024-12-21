@@ -7,8 +7,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.babakan.cashier.common.builder.IconLoader
-import com.babakan.cashier.common.builder.ImageLoader
+import com.babakan.cashier.utils.builder.IconLoader
+import com.babakan.cashier.utils.builder.ImageLoader
 import com.babakan.cashier.common.component.ItemCounterComponent
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
@@ -90,7 +90,7 @@ fun ProductThumbnailItem(
                     )
                 }
                 Card(
-                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
                     shape = MaterialTheme.shapes.large,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -99,8 +99,8 @@ fun ProductThumbnailItem(
                     Box(Modifier.padding(SizeChart.SIZE_XS.dp)) {
                         IconLoader(
                             categoryIconUrl,
-                            SizeChart.ICON_MEDIUM.dp,
-                            color = MaterialTheme.colorScheme.primary
+                            SizeChart.ICON_LARGE.dp,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                 }

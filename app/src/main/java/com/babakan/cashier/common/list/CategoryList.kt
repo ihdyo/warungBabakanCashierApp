@@ -18,8 +18,9 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.babakan.cashier.common.builder.IconLoader
+import com.babakan.cashier.utils.builder.IconLoader
 import com.babakan.cashier.common.component.EditButton
+import com.babakan.cashier.common.item.CategoryItem
 import com.babakan.cashier.common.style.tabContentPadding
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.utils.constant.SizeChart
@@ -37,39 +38,11 @@ fun CategoryList(
         modifier = Modifier.nestedScroll(nestedScrollConnection)
     ) {
         itemsIndexed(categories) { index, item ->
-            Card(colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(SizeChart.SMALL_SPACE.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp)
-                    ) {
-                        Card(
-                            shape = MaterialTheme.shapes.small,
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
-                        ) {
-                            Box(Modifier.padding(SizeChart.SMALL_SPACE.dp)) {
-                                IconLoader(
-                                    item.iconUrl,
-                                    SizeChart.ICON_LARGE.dp,
-                                    MaterialTheme.colorScheme.secondary
-                                )
-                            }
-                        }
-                        Text(
-                            item.name,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    if (isAdmin) { EditButton { onAdminEdit(item) } }
-                }
-            }
+            CategoryItem(
+                index = index,
+                categoryItem = item,
+                isAdmin = isAdmin
+            ) { onAdminEdit(item) }
         }
     }
 }

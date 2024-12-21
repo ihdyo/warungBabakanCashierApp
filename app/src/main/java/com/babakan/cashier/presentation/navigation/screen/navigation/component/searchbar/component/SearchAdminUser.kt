@@ -4,12 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import com.babakan.cashier.common.list.UserList
 import com.babakan.cashier.data.dummy.dummyUserList
+import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.utils.constant.AuditState
 
 @Composable
-fun SearchUser(
+fun SearchAdminUser(
     nestedScrollConnection: NestedScrollConnection,
     query: String,
-    onResultCountChange: (Int) -> Unit
+    onResultCountChange: (Int) -> Unit,
+    onAuditStateChange: (AuditState) -> Unit,
+    onItemSelected: (UserModel) -> Unit
 ) {
 
     val users = if (query.isNotBlank()) {
@@ -21,7 +25,11 @@ fun SearchUser(
 
     UserList(
         nestedScrollConnection = nestedScrollConnection,
-        users = users
-    )
+        users = users,
+        isAdmin = true
+    ) { item ->
+        onItemSelected(item)
+        onAuditStateChange(AuditState.USER)
+    }
 
 }

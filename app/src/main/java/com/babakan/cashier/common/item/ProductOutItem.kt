@@ -17,18 +17,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
-import com.babakan.cashier.common.builder.ImageLoader
+import com.babakan.cashier.utils.builder.ImageLoader
 import com.babakan.cashier.common.component.ItemCounterComponent
+import com.babakan.cashier.presentation.cashier.model.ProductOutModel
+import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
 fun ProductOutItem(
+    index: Int,
+    productItem: ProductModel,
+    productOutItem: ProductOutModel,
     isEditable: Boolean = false,
-    imageUrl: String,
-    name: String,
-    price: Double,
-    quantity: Int,
     textValue: String,
     onTextChanged: (String) -> Unit,
     onSubtract: () -> Unit,
@@ -53,7 +54,7 @@ fun ProductOutItem(
                     shape = MaterialTheme.shapes.small
                 ) {
                     ImageLoader(
-                        imageUrl,
+                        productItem.imageUrl,
                         SizeChart.IMAGE_LIST_HEIGHT.dp,
                         SizeChart.IMAGE_LIST_HEIGHT.dp
                     )
@@ -62,13 +63,13 @@ fun ProductOutItem(
                     verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_TEXTS.dp)
                 ) {
                     Text(
-                        name,
+                        productItem.name,
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        Formatter.currency(price),
+                        Formatter.currency(productOutItem.price),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -88,7 +89,7 @@ fun ProductOutItem(
                 }
             } else {
                 Text(
-                    stringResource(R.string.countItem, quantity),
+                    stringResource(R.string.countItem, productOutItem.quantity),
                     style = MaterialTheme.typography.labelLarge,
                 )
             }

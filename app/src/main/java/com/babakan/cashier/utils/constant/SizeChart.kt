@@ -33,9 +33,10 @@ object SizeChart {
     const val SMALL_TEXT_FIELD = 36
     const val SMALL_ICON_BUTTON = 36
 
-    const val ICON_SMALL = 12
-    const val ICON_MEDIUM = 20
-    const val ICON_LARGE = 24
+    const val ICON_EXTRA_SMALL = 12
+    const val ICON_MEDIUM = 16
+    const val ICON_LARGE = 20
+    const val ICON_EXTRA_LARGE = 24
     const val IMAGE_LIST_HEIGHT = 48
     const val IMAGE_ADMIN_HEIGHT = 72
     const val IMAGE_THUMBNAIL_HEIGHT = 124

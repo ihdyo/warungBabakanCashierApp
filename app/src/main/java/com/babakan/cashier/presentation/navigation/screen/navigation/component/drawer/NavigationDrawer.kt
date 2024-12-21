@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,13 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
+import com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer.component.LogoutDialog
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -77,8 +73,8 @@ fun NavigationDrawer(
                     Card(colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)) {
                         Icon(
                             if (isOwner) Icons.Default.Verified else Icons.Default.Store,
-                            stringResource(R.string.cashier),
-                            tint = MaterialTheme.colorScheme.primary,
+                            stringResource(R.string.user),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(SizeChart.SMALL_SPACE.dp)
                         )
                     }
@@ -119,64 +115,16 @@ fun NavigationDrawer(
     }
 
     if (dialogState) {
-        AlertDialog(
-            icon = {
-                Icon(
-                    Icons.AutoMirrored.Default.Logout,
-                    stringResource(R.string.logout),
-                    tint = MaterialTheme.colorScheme.error
-                )
-            },
-            title = {
-                Text(
-                    stringResource(R.string.logout),
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.logoutConfirmation),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            },
-            onDismissRequest = { dialogState = !dialogState },
-            confirmButton = {
-                Button(
-                    {
-                        authViewModel.signOut(
-                            onSuccess = {
-                                onNavigateToLogin()
-                                authScope.launch {
-                                    snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
-                                }
-                            },
-                            onError = { errorMessage ->
-                                mainScope.launch {
-                                    snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
-                                }
-                            }
-                        )
-
-                        dialogState = !dialogState
-                        onDrawerStateChange(DrawerValue.Closed)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Text(stringResource(R.string.logout))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    { dialogState = !dialogState },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                ) { Text(stringResource(R.string.cancel),) }
-            }
+        LogoutDialog(
+            authViewModel = authViewModel,
+            context = context,
+            authScope = authScope,
+            mainScope = mainScope,
+            dialogState = dialogState,
+            setDialogState = { dialogState = !dialogState },
+            onDrawerStateChange = onDrawerStateChange,
+            snackBarHostState = snackBarHostState,
+            onNavigateToLogin = onNavigateToLogin
         )
     }
 }

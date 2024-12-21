@@ -1,27 +1,20 @@
 package com.babakan.cashier.presentation.navigation.screen.main
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
+import android.os.Process
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.WifiOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
+import com.babakan.cashier.common.ui.OneWayDialog
 import com.babakan.cashier.presentation.authentication.screen.login.Login
 import com.babakan.cashier.presentation.authentication.screen.register.Register
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
@@ -30,8 +23,6 @@ import com.babakan.cashier.presentation.navigation.viewmodel.MainViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.fadeInAnimation
 import com.babakan.cashier.utils.animation.fadeOutAnimation
-import com.babakan.cashier.utils.animation.scaleInAnimation
-import com.babakan.cashier.utils.animation.scaleOutAnimation
 import com.babakan.cashier.utils.constant.RouteState
 import com.babakan.cashier.utils.helper.isNetworkAvailable
 import kotlinx.coroutines.launch
@@ -43,7 +34,7 @@ fun MainScreen(
     mainViewModel: MainViewModel = viewModel(),
 ) {
     val context = LocalContext.current
-    val authScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     val isLoggedIn by mainViewModel.isLoggedIn.collectAsState()
     val isUserActive by mainViewModel.isUserActive.collectAsState()
@@ -56,17 +47,14 @@ fun MainScreen(
     val isInternetAvailable = remember { derivedStateOf { isNetworkAvailable(context) } }
 
     if (!isInternetAvailable.value) {
-        AlertDialog(
-            icon = { Icon(Icons.Default.WifiOff, stringResource(R.string.noConnection)) },
-            title = { Text(stringResource(R.string.noConnection), textAlign = TextAlign.Center) },
-            text = { Text(stringResource(R.string.noConnectionMessage), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center) },
-            onDismissRequest = {},
-            confirmButton = {
-                TextButton({ android.os.Process.killProcess(android.os.Process.myPid()) }) {
-                    Text(stringResource(R.string.exit), color = MaterialTheme.colorScheme.error)
-                }
-            }
-        )
+        OneWayDialog(
+            icon = Icons.Default.WifiOff,
+            title = stringResource(R.string.noConnection),
+            body = stringResource(R.string.noConnectionMessage),
+            confirmText = stringResource(R.string.exit)
+        ) {
+            Process.killProcess(Process.myPid())
+        }
     }
 
     LaunchedEffect(isUserActive) {
@@ -76,31 +64,24 @@ fun MainScreen(
     }
 
     if (showInactiveUserDialog) {
-        AlertDialog(
-            icon = { Icon(Icons.Default.Block, stringResource(R.string.inactive)) },
-            title = { Text(stringResource(R.string.inactive), textAlign = TextAlign.Center) },
-            text = { Text(stringResource(R.string.inactiveMessage), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center) },
-            onDismissRequest = {},
-            confirmButton = {
-                TextButton(
-                    {
-                        authScope.launch {
-                            authViewModel.signOut(
-                                onSuccess = {
-                                    navController.navigate(RouteState.LOGIN.name) {
-                                        popUpTo(RouteState.LOGIN.name) { inclusive = true }
-                                    }
-                                },
-                                onError = { android.os.Process.killProcess(android.os.Process.myPid()) }
-                            )
+        OneWayDialog(
+            icon = Icons.Default.Block,
+            title = stringResource(R.string.inactive),
+            body = stringResource(R.string.inactiveMessage),
+            confirmText = stringResource(R.string.exit)
+        ) {
+            scope.launch {
+                authViewModel.signOut(
+                    onSuccess = {
+                        navController.navigate(RouteState.LOGIN.name) {
+                            popUpTo(RouteState.LOGIN.name) { inclusive = true }
                         }
-                        showInactiveUserDialog = false
-                    }
-                ) {
-                    Text(stringResource(R.string.exit), color = MaterialTheme.colorScheme.error)
-                }
+                    },
+                    onError = { Process.killProcess(Process.myPid()) }
+                )
             }
-        )
+            showInactiveUserDialog = false
+        }
     }
 
     if (!isLoading) {
@@ -112,14 +93,14 @@ fun MainScreen(
         ) {
             composable(RouteState.LOGIN.name) {
                 Login(
-                    authScope = authScope,
+                    authScope = scope,
                     snackBarHostState = snackBarHostState,
                     onNavigateToRegister = { navController.navigate(RouteState.REGISTER.name) }
                 )
             }
             composable(RouteState.REGISTER.name) {
                 Register(
-                    authScope = authScope,
+                    authScope = scope,
                     snackBarHostState = snackBarHostState,
                     onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) },
                     onNavigateToMain = {
@@ -131,7 +112,7 @@ fun MainScreen(
             }
             composable(RouteState.MAIN.name) {
                 MainNavigation(
-                    authScope = authScope,
+                    authScope = scope,
                     snackBarHostState = snackBarHostState,
                     onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) }
                 )
