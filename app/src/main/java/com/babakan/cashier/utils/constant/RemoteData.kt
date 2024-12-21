@@ -2,11 +2,11 @@ package com.babakan.cashier.utils.constant
 
 object RemoteData {
     const val COLLECTION_USERS = "users"
-    const val COLLECTION_PRODUCT = "products"
-    const val COLLECTION_CATEGORY = "categories"
-    const val COLLECTION_CART = "cart"
+    const val COLLECTION_PRODUCTS = "products"
+    const val COLLECTION_CATEGORIES = "categories"
     const val COLLECTION_TRANSACTIONS = "transactions"
     const val COLLECTION_PRODUCT_OUT = "productOut"
+    const val COLLECTION_CART = "cart"
 
     const val FIELD_ID = "id"
     const val FIELD_USER_ID = "userId"

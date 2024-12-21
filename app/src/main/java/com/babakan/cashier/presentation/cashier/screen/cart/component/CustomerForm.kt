@@ -85,7 +85,6 @@ fun CustomerForm(
             value = notes,
             onValueChange = { onCustomerNoteChange(it) },
             label = { Text(stringResource(R.string.notes)) },
-            singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Notes, stringResource(R.string.notes)) },
             shape = MaterialTheme.shapes.medium,

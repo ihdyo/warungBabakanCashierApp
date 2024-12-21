@@ -31,7 +31,7 @@ import com.babakan.cashier.data.sealed.AdminItem
 import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInRightAnimation
 import com.babakan.cashier.utils.animation.slideOutRightAnimation

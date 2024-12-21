@@ -1,24 +1,12 @@
 package com.babakan.cashier.presentation.authentication.screen.register
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AlternateEmail
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.LockOpen
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
@@ -41,7 +29,7 @@ fun Register(
 ) {
     val context = LocalContext.current
 
-    val uiState by authViewModel.uiState.collectAsState()
+    val uiState by authViewModel.authState.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -98,7 +86,7 @@ fun Register(
                     confirmPasswordError = Validator.isNotEmpty(context, confirmPassword, context.getString(R.string.confirmPassword)) ?: Validator.isPasswordMatch(context, password, confirmPassword)
 
                     if (nameError == null && usernameError == null && emailError == null && passwordError == null && confirmPasswordError == null) {
-                        authViewModel.register(name, username, email, password)
+                        authViewModel.registerUser(name, username, email, password)
                     } else {
                         authScope.launch { snackBarHostState.showSnackbar(context.getString(R.string.fillInAllFields)) }
                     }

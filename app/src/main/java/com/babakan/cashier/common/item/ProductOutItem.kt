@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.utils.builder.ImageLoader
 import com.babakan.cashier.common.component.ItemCounterComponent
-import com.babakan.cashier.presentation.cashier.model.ProductOutModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter

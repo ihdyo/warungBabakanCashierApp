@@ -1,6 +1,6 @@
 package com.babakan.cashier.data.dummy
 
-import com.babakan.cashier.presentation.cashier.model.ProductOutModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.google.firebase.Timestamp
 
 val dummyProductOutList = listOf(

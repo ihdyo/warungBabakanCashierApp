@@ -12,7 +12,7 @@ import com.babakan.cashier.common.component.CategoryComponent
 import com.babakan.cashier.common.item.ProductOutItem
 import com.babakan.cashier.data.dummy.dummyCategoryList
 import com.babakan.cashier.data.dummy.dummyProductList
-import com.babakan.cashier.presentation.cashier.model.ProductOutModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.utils.constant.SizeChart

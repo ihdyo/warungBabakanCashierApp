@@ -1,4 +1,4 @@
-package com.babakan.cashier.presentation.owner.viewmodel
+package com.babakan.cashier.presentation.cashier.viewmodel
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

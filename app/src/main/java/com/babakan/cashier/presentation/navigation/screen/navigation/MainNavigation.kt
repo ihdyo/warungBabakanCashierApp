@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,6 +35,9 @@ import com.babakan.cashier.common.audit.category.CategoryBottomSheet
 import com.babakan.cashier.common.audit.product.ProductBottomSheet
 import com.babakan.cashier.common.audit.user.UserBottomSheet
 import com.babakan.cashier.data.sealed.AdminItem
+import com.babakan.cashier.data.state.UiState
+import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.presentation.cashier.screen.cart.Cart
 import com.babakan.cashier.presentation.cashier.screen.home.Home
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.bottombar.NavigationBottomBar
@@ -41,7 +45,7 @@ import com.babakan.cashier.presentation.navigation.screen.navigation.component.d
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.fab.NavigationFab
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar.NavigationTopBar
 import com.babakan.cashier.presentation.owner.screen.transaction.Transaction
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.fadeInAnimation
 import com.babakan.cashier.utils.animation.fadeOutAnimation
@@ -56,10 +60,22 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainNavigation(
     temporaryCartViewModel: TemporaryCartViewModel = viewModel(),
+    authViewModel: AuthViewModel,
     authScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     onNavigateToLogin: () -> Unit
 ) {
+    val currentUserState by authViewModel.currentUserState.collectAsState()
+    var currentUser by remember { mutableStateOf(UserModel()) }
+
+    LaunchedEffect(currentUserState) {
+        if (currentUserState is UiState.Success) {
+            currentUser = (currentUserState as UiState.Success<UserModel>).data
+        }
+    }
+
+    val isOwner = currentUser.isOwner
+
     val mainScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val sheetState = rememberModalBottomSheetState()
@@ -124,13 +140,13 @@ fun MainNavigation(
         temporaryCartViewModel.clearTemporaryCart()
     }
 
-    val isOwner = true // TODO Change this
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = currentDestination != MainScreenState.CART.name && !isSearchActive,
         drawerContent = {
             NavigationDrawer(
+                authViewModel = authViewModel,
+                currentUser = currentUser,
                 authScope = authScope,
                 mainScope = mainScope,
                 snackBarHostState = snackBarHostState,

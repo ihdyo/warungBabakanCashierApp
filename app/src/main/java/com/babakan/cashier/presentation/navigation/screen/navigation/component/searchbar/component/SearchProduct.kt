@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import com.babakan.cashier.common.list.ProductList
 import com.babakan.cashier.data.dummy.dummyProductList
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 
 @Composable
 fun SearchProduct(

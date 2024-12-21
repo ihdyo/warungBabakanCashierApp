@@ -48,7 +48,7 @@ import com.babakan.cashier.presentation.navigation.screen.navigation.component.s
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchAdminCategory
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchProduct
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component.SearchTransaction
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.fadeInAnimation
 import com.babakan.cashier.utils.animation.fadeOutAnimation
@@ -124,14 +124,14 @@ fun MainSearchBar(
                     isHome -> stringResource(R.string.menuSearch)
                     isTransaction -> when {
                         isReportByTransactionNumber -> stringResource(R.string.transactionSearch)
-                        isReportByCashier -> stringResource(R.string.userSearch)
+                        isReportByCashier -> stringResource(R.string.cashierSearch)
                         isReportByDate -> stringResource(R.string.dateSearch)
                         else -> stringResource(R.string.search)
                     }
                     isAdmin -> when {
                         isAdminProduct -> stringResource(R.string.menuSearch)
                         isAdminCategory -> stringResource(R.string.categorySearch)
-                        isAdminUser -> stringResource(R.string.userSearch)
+                        isAdminUser -> stringResource(R.string.cashierSearch)
                         else -> stringResource(R.string.search)
                     }
                     else -> stringResource(R.string.search)

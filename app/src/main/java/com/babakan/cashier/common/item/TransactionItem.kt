@@ -42,9 +42,10 @@ fun TransactionItem(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
+    // TODO: Replace with real data
     val productOut = dummyProductOutList
-
-    val totalItem = 5
+    val totalItem = productOut.sumOf { it.quantity }
+    val totalPrice = productOut.sumOf { it.price * it.quantity }
 
     Column {
         Card(
@@ -100,7 +101,7 @@ fun TransactionItem(
                         verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp)
                     ) {
                         Text(
-                            Formatter.currency(transactionItem.totalPrice),
+                            Formatter.currency(totalPrice),
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -168,7 +169,7 @@ fun TransactionItem(
                         stringResource(R.string.totalItem, totalItem),
                     )
                     Text(
-                        Formatter.currency(transactionItem.totalPrice),
+                        Formatter.currency(totalPrice),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             color = MaterialTheme.colorScheme.primary
                         )

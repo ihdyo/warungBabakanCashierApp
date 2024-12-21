@@ -95,7 +95,7 @@
     <string name="all">Semua</string>
     <string name="menuSearch">Cari Menu</string>
     <string name="categorySearch">Cari Kategori</string>
-    <string name="userSearch">Cari Pengguna</string>
+    <string name="cashierSearch">Cari Kasir</string>
     <string name="dateSearch">Gunakan ikon kalender di samping</string>
     <string name="transactionSearch">Cari No. Transaksi</string>
     <string name="transactionNumber">No. Transaksi</string>

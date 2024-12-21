@@ -8,8 +8,7 @@ data class CartModel(
     val id: String = "",
     val createdAt: Timestamp = Timestamp.now(),
     var updateAt: Timestamp = Timestamp.now(),
-    var userId: String = "",
-    var totalPrice: Double = 0.0,
+    var quantity: Double = 0.0,
 ) {
 
     fun toJson(): Map<String, Any> {
@@ -17,8 +16,7 @@ data class CartModel(
             RemoteData.FIELD_ID to id,
             RemoteData.FIELD_CREATED_AT to createdAt,
             RemoteData.FIELD_UPDATE_AT to updateAt,
-            RemoteData.FIELD_USER_ID to userId,
-            RemoteData.FIELD_TOTAL_PRICE to totalPrice
+            RemoteData.FIELD_QUANTITY to quantity
         )
     }
 
@@ -27,15 +25,13 @@ data class CartModel(
             val id = documentSnapshot.getString(RemoteData.FIELD_ID) ?: ""
             val createdAt = documentSnapshot.getTimestamp(RemoteData.FIELD_CREATED_AT) ?: Timestamp.now()
             val updateAt = documentSnapshot.getTimestamp(RemoteData.FIELD_UPDATE_AT) ?: Timestamp.now()
-            val userId = documentSnapshot.getString(RemoteData.FIELD_USER_ID) ?: ""
-            val totalPrice = documentSnapshot.getDouble(RemoteData.FIELD_TOTAL_PRICE) ?: 0.0
+            val quantity = documentSnapshot.getDouble(RemoteData.FIELD_QUANTITY) ?: 0.0
 
             return CartModel(
                 id = id,
                 createdAt = createdAt,
                 updateAt = updateAt,
-                userId = userId,
-                totalPrice = totalPrice
+                quantity = quantity
             )
         }
     }

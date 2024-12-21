@@ -5,7 +5,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import com.babakan.cashier.common.list.ProductList
 import com.babakan.cashier.data.dummy.dummyProductList
 import com.babakan.cashier.presentation.owner.model.ProductModel
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.constant.AuditState
 
 @Composable

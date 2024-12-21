@@ -13,10 +13,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat.getString
 import com.babakan.cashier.R
+import com.babakan.cashier.common.ui.FullscreenLoading
+import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -33,6 +38,27 @@ fun LogoutDialog(
     snackBarHostState: SnackbarHostState,
     onNavigateToLogin: () -> Unit,
 ) {
+
+    val authState by authViewModel.authState.collectAsState()
+
+    if (authState is UiState.Loading) FullscreenLoading()
+    LaunchedEffect(authState) {
+        when (authState) {
+            is UiState.Error -> {
+                mainScope.launch {
+                    snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
+                }
+            }
+            is UiState.Success -> {
+                authScope.launch {
+                    snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
+                }
+                onNavigateToLogin()
+            }
+            else -> {}
+        }
+    }
+
     AlertDialog(
         icon = {
             Icon(
@@ -58,20 +84,7 @@ fun LogoutDialog(
         confirmButton = {
             Button(
                 {
-                    authViewModel.signOut(
-                        onSuccess = {
-                            onNavigateToLogin()
-                            authScope.launch {
-                                snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
-                            }
-                        },
-                        onError = { errorMessage ->
-                            mainScope.launch {
-                                snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
-                            }
-                        }
-                    )
-
+                    authViewModel.signOutUser()
                     setDialogState(!dialogState)
                     onDrawerStateChange(DrawerValue.Closed)
                 },

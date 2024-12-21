@@ -31,7 +31,7 @@ import com.babakan.cashier.common.component.EditButton
 import com.babakan.cashier.common.component.ItemCounterComponent
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 

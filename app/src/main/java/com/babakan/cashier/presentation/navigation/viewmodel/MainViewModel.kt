@@ -2,7 +2,7 @@ package com.babakan.cashier.presentation.navigation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.babakan.cashier.data.repository.auth.UserRepository
+import com.babakan.cashier.data.repository.user.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,11 +19,11 @@ class MainViewModel(
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
-    private val _isUserActive = MutableStateFlow<Boolean?>(null)
-    val isUserActive: StateFlow<Boolean?> = _isUserActive
-
     private val _userId = MutableStateFlow<String?>(null)
     val userId: StateFlow<String?> = _userId
+
+    private val _isUserActive = MutableStateFlow<Boolean?>(null)
+    val isUserActive: StateFlow<Boolean?> = _isUserActive
 
     init {
         observeAuthState()
@@ -35,7 +35,7 @@ class MainViewModel(
             if (user != null) {
                 _userId.value = user.uid
                 _isLoggedIn.value = true
-                observeIsActiveField(user.uid)
+                observeUserStatus(user.uid)
             } else {
                 _isLoggedIn.value = false
                 _userId.value = null
@@ -45,9 +45,9 @@ class MainViewModel(
         }
     }
 
-    private fun observeIsActiveField(userId: String) {
+    private fun observeUserStatus(userId: String) {
         viewModelScope.launch {
-            userRepository.observeIsActiveField(userId).collectLatest { isActive ->
+            userRepository.listenIsActiveById(userId).collectLatest { isActive ->
                 _isUserActive.value = isActive
                 _isLoading.value = false
                 if (!isActive) {
@@ -58,4 +58,5 @@ class MainViewModel(
             }
         }
     }
+
 }

@@ -52,16 +52,16 @@ fun slideOutLeftAnimation(duration: Int): ExitTransition {
     )
 }
 
-// Slide in from bottom
-fun slideInBottomAnimation(duration: Int): EnterTransition {
+// Slide in to top
+fun slideInTopAnimation(duration: Int): EnterTransition {
     return slideInVertically(
         initialOffsetY = { fullWidth -> fullWidth },
         animationSpec = tween(durationMillis = duration, easing = LinearOutSlowInEasing)
     )
 }
 
-// Slide in from top
-fun slideInTopAnimation(duration: Int): EnterTransition {
+// Slide in to bottom
+fun slideInBottomAnimation(duration: Int): EnterTransition {
     return slideInVertically(
         initialOffsetY = { fullWidth -> -fullWidth },
         animationSpec = tween(durationMillis = duration, easing = LinearOutSlowInEasing)

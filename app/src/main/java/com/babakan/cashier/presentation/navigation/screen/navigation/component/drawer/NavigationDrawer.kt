@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
+import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer.component.LogoutDialog
 import com.babakan.cashier.utils.constant.SizeChart
@@ -44,19 +45,19 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationDrawer(
-    authViewModel: AuthViewModel = viewModel(),
+    authViewModel: AuthViewModel,
+    currentUser: UserModel,
     authScope: CoroutineScope,
     mainScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     onDrawerStateChange: (DrawerValue) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
+    val name = currentUser.name
+    val isOwner = currentUser.isOwner
+
     val context = LocalContext.current
     var dialogState by remember { mutableStateOf(false) }
-
-    // TODO Change this
-    val name = "Kadek Michella"
-    val isOwner = true
 
     ModalDrawerSheet(Modifier.width(SizeChart.DRAWER_WIDTH.dp)) {
         Column(

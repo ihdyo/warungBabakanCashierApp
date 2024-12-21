@@ -1,4 +1,4 @@
-package com.babakan.cashier.presentation.cashier.model
+package com.babakan.cashier.presentation.owner.model
 
 import com.babakan.cashier.utils.constant.RemoteData
 import com.google.firebase.Timestamp

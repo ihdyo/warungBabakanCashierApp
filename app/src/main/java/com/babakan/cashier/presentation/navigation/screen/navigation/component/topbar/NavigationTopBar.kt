@@ -43,7 +43,7 @@ import com.babakan.cashier.common.ui.CommonDialog
 import com.babakan.cashier.data.dummy.dummyCategoryList
 import com.babakan.cashier.data.sealed.AdminItem
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.MainSearchBar
-import com.babakan.cashier.presentation.owner.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInBottomAnimation
 import com.babakan.cashier.utils.animation.slideOutTopAnimation

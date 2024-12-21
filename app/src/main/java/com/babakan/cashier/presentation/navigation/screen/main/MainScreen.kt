@@ -14,7 +14,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.babakan.cashier.R
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.common.ui.OneWayDialog
+import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.screen.login.Login
 import com.babakan.cashier.presentation.authentication.screen.register.Register
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
@@ -36,6 +38,8 @@ fun MainScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    val authState by authViewModel.authState.collectAsState()
+
     val isLoggedIn by mainViewModel.isLoggedIn.collectAsState()
     val isUserActive by mainViewModel.isUserActive.collectAsState()
     val isLoading by mainViewModel.isLoading.collectAsState()
@@ -46,41 +50,9 @@ fun MainScreen(
     var showInactiveUserDialog by remember { mutableStateOf(false) }
     val isInternetAvailable = remember { derivedStateOf { isNetworkAvailable(context) } }
 
-    if (!isInternetAvailable.value) {
-        OneWayDialog(
-            icon = Icons.Default.WifiOff,
-            title = stringResource(R.string.noConnection),
-            body = stringResource(R.string.noConnectionMessage),
-            confirmText = stringResource(R.string.exit)
-        ) {
-            Process.killProcess(Process.myPid())
-        }
-    }
-
     LaunchedEffect(isUserActive) {
         if (isUserActive == false) {
             showInactiveUserDialog = true
-        }
-    }
-
-    if (showInactiveUserDialog) {
-        OneWayDialog(
-            icon = Icons.Default.Block,
-            title = stringResource(R.string.inactive),
-            body = stringResource(R.string.inactiveMessage),
-            confirmText = stringResource(R.string.exit)
-        ) {
-            scope.launch {
-                authViewModel.signOut(
-                    onSuccess = {
-                        navController.navigate(RouteState.LOGIN.name) {
-                            popUpTo(RouteState.LOGIN.name) { inclusive = true }
-                        }
-                    },
-                    onError = { Process.killProcess(Process.myPid()) }
-                )
-            }
-            showInactiveUserDialog = false
         }
     }
 
@@ -112,11 +84,43 @@ fun MainScreen(
             }
             composable(RouteState.MAIN.name) {
                 MainNavigation(
+                    authViewModel = authViewModel,
                     authScope = scope,
                     snackBarHostState = snackBarHostState,
                     onNavigateToLogin = { navController.navigate(RouteState.LOGIN.name) }
                 )
             }
         }
+    }
+    if (!isInternetAvailable.value) {
+        OneWayDialog(
+            icon = Icons.Default.WifiOff,
+            title = stringResource(R.string.noConnection),
+            body = stringResource(R.string.noConnectionMessage),
+            confirmText = stringResource(R.string.exit)
+        ) {
+            Process.killProcess(Process.myPid())
+        }
+    }
+    if (showInactiveUserDialog) {
+        OneWayDialog(
+            icon = Icons.Default.Block,
+            title = stringResource(R.string.inactive),
+            body = stringResource(R.string.inactiveMessage),
+            confirmText = stringResource(R.string.exit)
+        ) {
+            scope.launch { authViewModel.signOutUser() }
+            showInactiveUserDialog = false
+        }
+    }
+    when (authState) {
+        is UiState.Loading -> { FullscreenLoading() }
+        is UiState.Success -> {
+            navController.navigate(RouteState.LOGIN.name) {
+                popUpTo(RouteState.LOGIN.name) { inclusive = true }
+            }
+        }
+        is UiState.Error ->  Process.killProcess(Process.myPid())
+        else -> {}
     }
 }
