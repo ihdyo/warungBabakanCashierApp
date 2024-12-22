@@ -24,6 +24,7 @@ import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -32,7 +33,6 @@ fun LogoutDialog(
     context: Context,
     authScope: CoroutineScope,
     mainScope: CoroutineScope,
-    dialogState: Boolean,
     setDialogState: (Boolean) -> Unit,
     onDrawerStateChange: (DrawerValue) -> Unit,
     snackBarHostState: SnackbarHostState,
@@ -45,12 +45,12 @@ fun LogoutDialog(
     LaunchedEffect(authState) {
         when (authState) {
             is UiState.Error -> {
-                mainScope.launch {
+                mainScope.launch(Dispatchers.Main) {
                     snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
                 }
             }
             is UiState.Success -> {
-                authScope.launch {
+                authScope.launch(Dispatchers.Main) {
                     snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
                 }
                 onNavigateToLogin()
@@ -80,12 +80,12 @@ fun LogoutDialog(
                 textAlign = TextAlign.Center
             )
         },
-        onDismissRequest = { setDialogState(!dialogState) },
+        onDismissRequest = { setDialogState(false) },
         confirmButton = {
             Button(
                 {
                     authViewModel.signOutUser()
-                    setDialogState(!dialogState)
+                    setDialogState(false)
                     onDrawerStateChange(DrawerValue.Closed)
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -98,7 +98,7 @@ fun LogoutDialog(
         },
         dismissButton = {
             TextButton(
-                { setDialogState(!dialogState) },
+                { setDialogState(false) },
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )

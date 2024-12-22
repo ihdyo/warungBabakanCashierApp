@@ -19,6 +19,11 @@ class AuthRepository(
         password: String
     ): UiState<String> {
         return try {
+            val usernameResult = userRepository.searchUsersByUsername(username)
+            if (usernameResult is UiState.Success && usernameResult.data != null) {
+                return UiState.Error("Registrasi Gagal", "Nama pengguna sudah digunakan.")
+            }
+
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = authResult.user?.uid ?: return UiState.Error("Registrasi Gagal", "ID pengguna tidak ditemukan.")
 
@@ -32,7 +37,7 @@ class AuthRepository(
                 isOwner = false,
                 isActive = true
             )
-            val saveResult = userRepository.setUserById(userId, userModel)
+            val saveResult = userRepository.createUser(userModel)
             if (saveResult is UiState.Success) {
                 UiState.Success("Registrasi Berhasil!")
             } else {

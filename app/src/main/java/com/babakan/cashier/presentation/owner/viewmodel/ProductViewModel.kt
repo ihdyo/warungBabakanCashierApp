@@ -28,11 +28,25 @@ class ProductViewModel(
     private val _deleteProductState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteProductState: StateFlow<UiState<Unit>> = _deleteProductState
 
+    private val _searchProductByNameState = MutableStateFlow<UiState<List<ProductModel>>>(UiState.Idle)
+    val searchProductByNameState: StateFlow<UiState<List<ProductModel>>> = _searchProductByNameState
+
     private val _searchProductByCategoryState = MutableStateFlow<UiState<List<ProductModel>>>(UiState.Idle)
     val searchProductByCategoryState: StateFlow<UiState<List<ProductModel>>> = _searchProductByCategoryState
 
     init {
         fetchProducts()
+    }
+
+    fun resetAuditState() {
+        _createProductState.value = UiState.Idle
+        _updateProductState.value = UiState.Idle
+        _deleteProductState.value = UiState.Idle
+    }
+
+    fun resetSearchState() {
+        _searchProductByNameState.value = UiState.Idle
+        _searchProductByCategoryState.value = UiState.Idle
     }
 
     fun fetchProducts() {
@@ -43,11 +57,11 @@ class ProductViewModel(
     }
 
     fun fetchProductById(
-        productId: String
+        id: String
     ) {
         _fetchProductByIdState.value = UiState.Loading
         viewModelScope.launch {
-            _fetchProductByIdState.value = productRepository.getProductById(productId)
+            _fetchProductByIdState.value = productRepository.getProductById(id)
         }
     }
 
@@ -60,23 +74,31 @@ class ProductViewModel(
         }
     }
 
-    fun updateProductById(
+    fun updateProduct(
         productId: String,
-        fieldName: String,
-        newValue: Any
+        productData: ProductModel
     ) {
         _updateProductState.value = UiState.Loading
         viewModelScope.launch {
-            _updateProductState.value = productRepository.updateProductById(productId, fieldName, newValue)
+            _updateProductState.value = productRepository.updateProduct(productId, productData)
         }
     }
 
-    fun deleteProductById(
+    fun deleteProduct(
         productId: String
     ) {
         _deleteProductState.value = UiState.Loading
         viewModelScope.launch {
-            _deleteProductState.value = productRepository.deleteProductById(productId)
+            _deleteProductState.value = productRepository.deleteProduct(productId)
+        }
+    }
+
+    fun searchProductByName(
+        query: String
+    ) {
+        _searchProductByNameState.value = UiState.Loading
+        viewModelScope.launch {
+            _searchProductByNameState.value = productRepository.searchProductsByName(query)
         }
     }
 

@@ -34,12 +34,30 @@ class CartRepository(
     }
 
     suspend fun createCart(
-        cartData: ProductOutModel
+        listCartData: List<ProductOutModel>
     ): UiState<Unit> {
         return try {
-            cartCollection
-                .add(cartData.toJson())
-                .await()
+            val batch = cartCollection.firestore.batch()
+
+            listCartData.forEach { cartItem ->
+                val existingDocQuery = cartCollection
+                    .whereEqualTo(RemoteData.FIELD_PRODUCT_ID, cartItem.productId)
+                    .limit(1)
+
+                val existingDocSnapshot = existingDocQuery.get().await()
+
+                val docRef = cartCollection.document(cartItem.productId)
+
+                if (existingDocSnapshot.isEmpty) {
+                    batch.set(docRef, cartItem.toJson())
+                } else {
+                    val existingDoc = existingDocSnapshot.documents.first()
+                    val updatedQuantity = (existingDoc.getLong(RemoteData.FIELD_QUANTITY) ?: 0) + cartItem.quantity
+                    batch.update(docRef, RemoteData.FIELD_QUANTITY, updatedQuantity)
+                }
+            }
+
+            batch.commit().await()
 
             UiState.Success(Unit)
         } catch (e: Exception) {
@@ -47,17 +65,13 @@ class CartRepository(
         }
     }
 
-    suspend fun updateCartByProductId(
+    suspend fun setPrice(
         productId: String,
-        fieldName: String,
-        newValue: Any
+        price: Double
     ): UiState<Unit> {
         return try {
-            val updatedField = mapOf(fieldName to newValue)
-
-            cartCollection
-                .document(productId)
-                .update(updatedField)
+            val docRef = cartCollection.document(productId)
+            docRef.update(RemoteData.FIELD_PRICE, price)
                 .await()
 
             UiState.Success(Unit)
@@ -66,14 +80,59 @@ class CartRepository(
         }
     }
 
-    suspend fun deleteCartByProductId(
+    suspend fun addQuantity(
         productId: String
     ): UiState<Unit> {
         return try {
-            cartCollection
-                .document(productId)
-                .delete()
+            val docRef = cartCollection.document(productId)
+            val existingDocSnapshot = docRef
+                .get()
                 .await()
+
+            val currentQuantity = existingDocSnapshot.getLong(RemoteData.FIELD_QUANTITY) ?: 0
+            val newQuantity = currentQuantity + 1
+            docRef.update(RemoteData.FIELD_QUANTITY, newQuantity)
+                .await()
+
+            UiState.Success(Unit)
+        } catch (e: Exception) {
+            UiState.Error("Terjadi kesalahan", e.message.toString())
+        }
+    }
+
+    suspend fun subtractQuantity(
+        productId: String
+    ): UiState<Unit> {
+        return try {
+            val docRef = cartCollection.document(productId)
+            val existingDocSnapshot = docRef
+                .get()
+                .await()
+
+            val currentQuantity = existingDocSnapshot.getLong(RemoteData.FIELD_QUANTITY) ?: 0
+            val newQuantity = currentQuantity - 1
+
+            if (newQuantity > 0) {
+                docRef
+                    .update(RemoteData.FIELD_QUANTITY, newQuantity)
+                    .await()
+            } else {
+                docRef
+                    .delete()
+                    .await()
+            }
+
+            UiState.Success(Unit)
+        } catch (e: Exception) {
+            UiState.Error("Terjadi kesalahan", e.message.toString())
+        }
+    }
+
+    suspend fun clearCart(): UiState<Unit> {
+        return try {
+            cartCollection.get().await().forEach { document ->
+                document.reference.delete().await()
+            }
 
             UiState.Success(Unit)
         } catch (e: Exception) {

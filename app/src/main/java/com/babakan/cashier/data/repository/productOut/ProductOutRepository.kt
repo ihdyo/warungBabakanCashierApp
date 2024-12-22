@@ -1,6 +1,5 @@
 package com.babakan.cashier.data.repository.productOut
 
-import android.util.Log
 import com.babakan.cashier.utils.constant.RemoteData
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.model.ProductOutModel
@@ -13,21 +12,19 @@ class ProductOutRepository(
     private val transactionCollection = firestore.collection(RemoteData.COLLECTION_TRANSACTIONS)
 
     suspend fun getProductOut(
-        transactionIds: List<String>
-    ): UiState<List<Pair<String, List<ProductOutModel>>>> {
+        transactionIds: String
+    ): UiState<List<ProductOutModel>> {
         return try {
-            val productOutList = transactionIds.map { transactionId ->
-                val snapshot = transactionCollection
-                    .document(transactionId)
-                    .collection(RemoteData.COLLECTION_PRODUCT_OUT)
-                    .get()
-                    .await()
+            val productOutCollection = transactionCollection
+                .document(transactionIds)
+                .collection(RemoteData.COLLECTION_PRODUCT_OUT)
 
-                val productOut = snapshot.documents.mapNotNull { doc ->
-                    if (doc.exists()) ProductOutModel.fromDocumentSnapshot(doc) else null
-                }
+            val productOutSnapshot = productOutCollection
+                .get()
+                .await()
 
-                Pair(transactionId, productOut)
+            val productOutList = productOutSnapshot.documents.mapNotNull { doc ->
+                if (doc.exists()) ProductOutModel.fromDocumentSnapshot(doc) else null
             }
 
             UiState.Success(productOutList)
@@ -38,54 +35,21 @@ class ProductOutRepository(
 
     suspend fun createProductOut(
         transactionId: String,
-        productOutData: ProductOutModel
+        listProductOutData: List<ProductOutModel>
     ): UiState<Unit> {
         return try {
-            transactionCollection
+            val productOutCollection = transactionCollection
                 .document(transactionId)
                 .collection(RemoteData.COLLECTION_PRODUCT_OUT)
-                .add(productOutData.toJson())
-                .await()
 
-            UiState.Success(Unit)
-        } catch (e: Exception) {
-            UiState.Error("Terjadi kesalahan", e.message.toString())
-        }
-    }
+            val batch = productOutCollection.firestore.batch()
 
-    suspend fun updateProductOutByProductId(
-        transactionId: String,
-        productId: String,
-        fieldName: String,
-        newValue: Any
-    ): UiState<Unit> {
-        return try {
-            val updatedField = mapOf(fieldName to newValue)
+            listProductOutData.forEach { product ->
+                val docRef = productOutCollection.document(product.productId)
+                batch.set(docRef, product.toJson())
+            }
 
-            transactionCollection
-                .document(transactionId)
-                .collection(RemoteData.COLLECTION_PRODUCT_OUT)
-                .document(productId)
-                .update(updatedField)
-                .await()
-
-            UiState.Success(Unit)
-        } catch (e: Exception) {
-            UiState.Error("Terjadi kesalahan", e.message.toString())
-        }
-    }
-
-    suspend fun deleteProductOutByProductId(
-        transactionId: String,
-        productId: String
-    ): UiState<Unit> {
-        return try {
-            transactionCollection
-                .document(transactionId)
-                .collection(RemoteData.COLLECTION_PRODUCT_OUT)
-                .document(productId)
-                .delete()
-                .await()
+            batch.commit().await()
 
             UiState.Success(Unit)
         } catch (e: Exception) {

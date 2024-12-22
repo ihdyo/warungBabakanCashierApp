@@ -22,8 +22,8 @@ class CartViewModel(
     private val _modifyCartState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val modifyCartState: StateFlow<UiState<Unit>> = _modifyCartState
 
-    private val _removeCartState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val removeCartState: StateFlow<UiState<Unit>> = _removeCartState
+    private val _clearCartState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val clearCartState: StateFlow<UiState<Unit>> = _clearCartState
 
     init {
         fetchCart()
@@ -37,31 +37,46 @@ class CartViewModel(
     }
 
     fun addCart(
-        cartData: ProductOutModel
+        listCartData: List<ProductOutModel>
     ) {
         _addCartState.value = UiState.Loading
         viewModelScope.launch {
-            _addCartState.value = cartRepository.createCart(cartData)
+            _addCartState.value = cartRepository.createCart(listCartData)
         }
     }
 
-    fun modifyCart(
-        productId: String,
-        fieldName: String,
-        newValue: Any
+    fun addQuantityCartItem(
+        productId: String
     ) {
         _modifyCartState.value = UiState.Loading
         viewModelScope.launch {
-            _modifyCartState.value = cartRepository.updateCartByProductId(productId, fieldName, newValue)
+            _modifyCartState.value = cartRepository.addQuantity(productId)
         }
     }
 
-    fun removeCartById(
+    fun setPriceCartItem(
+        productId: String,
+        price: Double
+    ) {
+        _modifyCartState.value = UiState.Loading
+        viewModelScope.launch {
+            _modifyCartState.value = cartRepository.setPrice(productId, price)
+        }
+    }
+
+    fun subtractQuantityCartItem(
         productId: String
     ) {
-        _removeCartState.value = UiState.Loading
+        _modifyCartState.value = UiState.Loading
         viewModelScope.launch {
-            _removeCartState.value = cartRepository.deleteCartByProductId(productId)
+            _modifyCartState.value = cartRepository.subtractQuantity(productId)
+        }
+    }
+
+    fun clearCart() {
+        _clearCartState.value = UiState.Loading
+        viewModelScope.launch {
+            _clearCartState.value = cartRepository.clearCart()
         }
     }
 }

@@ -38,7 +38,6 @@ import com.babakan.cashier.utils.formatter.Formatter
 @Composable
 fun ProductItem(
     temporaryCartViewModel: TemporaryCartViewModel = viewModel(),
-    index: Int,
     productItem: ProductModel,
     categoryItem: CategoryModel,
     isCountable: Boolean = false,

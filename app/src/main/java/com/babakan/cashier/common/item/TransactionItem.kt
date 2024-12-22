@@ -21,9 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,7 +30,6 @@ import com.babakan.cashier.R
 import com.babakan.cashier.common.list.ProductOutList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
-import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.babakan.cashier.presentation.owner.model.TransactionModel
 import com.babakan.cashier.presentation.owner.viewmodel.ProductOutViewModel
 import com.babakan.cashier.utils.constant.SizeChart
@@ -41,19 +37,28 @@ import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
 fun TransactionItem(
+    productOutViewModel: ProductOutViewModel = viewModel(),
     transactionItem: TransactionModel,
-    productOut: List<ProductOutModel>,
-    index: Int,
-    userItem: UserModel
+    userItem: UserModel,
+    isExpanded: Boolean,
+    onExpand: (Boolean) -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    val productOutState by productOutViewModel.fetchProductOutState.collectAsState()
 
-    val totalItem = productOut.sumOf { it.quantity }
-    val totalPrice = productOut.sumOf { it.price * it.quantity }
+    LaunchedEffect(transactionItem.transactionId, isExpanded) {
+        if (isExpanded) {
+            productOutViewModel.fetchProductOut(transactionItem.transactionId)
+        }
+    }
+
+    val productOut = when (val state = productOutState) {
+        is UiState.Success -> state.data
+        else -> emptyList()
+    }
 
     Column {
         Card(
-            { isExpanded = !isExpanded },
+            { onExpand(true) },
             colors = CardDefaults.cardColors(
                 if (isExpanded) {
                     MaterialTheme.colorScheme.surfaceContainerHigh
@@ -105,7 +110,7 @@ fun TransactionItem(
                         verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp)
                     ) {
                         Text(
-                            Formatter.currency(totalPrice),
+                            Formatter.currency(transactionItem.totalPrice),
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -160,8 +165,7 @@ fun TransactionItem(
                 )
             ) {
                 ProductOutList(
-                    isEditable = false,
-                    productOutItem = productOut
+                    productOutItem = productOut,
                 )
                 Spacer(Modifier.height(SizeChart.DEFAULT_SPACE.dp))
                 Row(
@@ -170,16 +174,16 @@ fun TransactionItem(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        stringResource(R.string.totalItem, totalItem),
+                        stringResource(R.string.totalItem, productOut.sumOf { it.quantity }),
                     )
                     Text(
-                        Formatter.currency(totalPrice),
+                        Formatter.currency(transactionItem.totalPrice),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
                 }
-                IconButton({isExpanded = !isExpanded}) {
+                IconButton({onExpand(false)}) {
                     Icon(
                         Icons.Default.ExpandLess,
                         stringResource(R.string.collapse),

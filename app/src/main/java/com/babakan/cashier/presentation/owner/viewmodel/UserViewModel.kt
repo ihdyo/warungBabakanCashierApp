@@ -16,11 +16,8 @@ class UserViewModel(
     private val _fetchUsersState = MutableStateFlow<UiState<List<UserModel>>>(UiState.Idle)
     val fetchUsersState: StateFlow<UiState<List<UserModel>>> = _fetchUsersState
 
-    private val _fetchUserByIdState = MutableStateFlow<UiState<UserModel>>(UiState.Idle)
-    val fetchUserByIdState: StateFlow<UiState<UserModel>> = _fetchUserByIdState
-
-    private val _createUserState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val createUserState: StateFlow<UiState<Unit>> = _createUserState
+    private val _addUserState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val addUserState: StateFlow<UiState<Unit>> = _addUserState
 
     private val _updateUserState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val updateUserState: StateFlow<UiState<Unit>> = _updateUserState
@@ -35,6 +32,16 @@ class UserViewModel(
         fetchUsers()
     }
 
+    fun resetAuditState() {
+        _addUserState.value = UiState.Idle
+        _updateUserState.value = UiState.Idle
+        _deleteUserState.value = UiState.Idle
+    }
+
+    fun resetSearchState() {
+        _searchUserByName.value = UiState.Idle
+    }
+
     fun fetchUsers() {
         _fetchUsersState.value = UiState.Loading
         viewModelScope.launch {
@@ -42,41 +49,31 @@ class UserViewModel(
         }
     }
 
-    fun fetchUserById(
-        userId: String
-    ) {
-        _fetchUserByIdState.value = UiState.Loading
-        viewModelScope.launch {
-            _fetchUserByIdState.value = userRepository.getUserById(userId)
-        }
-    }
-
     fun createUser(
         userData: UserModel
     ) {
-        _createUserState.value = UiState.Loading
+        _addUserState.value = UiState.Loading
         viewModelScope.launch {
-            _createUserState.value = userRepository.setUserById(userData.id, userData)
+            _addUserState.value = userRepository.createUser(userData)
         }
     }
 
-    fun updateUserById(
+    fun updateUser(
         userId: String,
-        fieldName: String,
-        newValue: Any
+        userData: UserModel
     ) {
         _updateUserState.value = UiState.Loading
         viewModelScope.launch {
-            _updateUserState.value = userRepository.updateUserById(userId, fieldName, newValue)
+            _updateUserState.value = userRepository.updateUser(userId, userData)
         }
     }
 
-    fun deleteUserById(
+    fun deleteUser(
         userId: String
     ) {
         _deleteUserState.value = UiState.Loading
         viewModelScope.launch {
-            _deleteUserState.value = userRepository.deleteUserById(userId)
+            _deleteUserState.value = userRepository.deleteUser(userId)
         }
     }
 

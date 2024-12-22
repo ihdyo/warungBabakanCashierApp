@@ -27,14 +27,14 @@ import com.babakan.cashier.utils.constant.SizeChart
 fun CustomerData(
     customerName: String,
     tableNumber: String,
-    notes: String,
-    onExpand: () -> Unit
+    notes: String
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp)
+        verticalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
+        modifier = Modifier.padding(vertical = SizeChart.SMALL_SPACE.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -45,8 +45,7 @@ fun CustomerData(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
-                    modifier = Modifier.weight(1f)
+                    horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp)
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
@@ -66,12 +65,6 @@ fun CustomerData(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                IconButton({onExpand()}) {
-                    Icon(
-                        Icons.Default.ExpandMore,
-                        stringResource(R.string.expand),
-                    )
-                }
             }
         }
         if (notes.isNotBlank()) {
@@ -79,12 +72,9 @@ fun CustomerData(
                 thickness = 1.dp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = SizeChart.BETWEEN_TEXTS.dp)
+                    .padding(vertical = SizeChart.SMALL_SPACE.dp)
             )
-            Text(
-                notes,
-                Modifier.padding(bottom = SizeChart.SMALL_SPACE.dp)
-            )
+            Text(notes)
         }
     }
 }

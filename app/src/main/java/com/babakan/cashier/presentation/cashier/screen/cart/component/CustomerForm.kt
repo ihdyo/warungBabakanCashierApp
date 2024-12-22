@@ -1,6 +1,5 @@
 package com.babakan.cashier.presentation.cashier.screen.cart.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,17 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Notes
-import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.outlined.ConfirmationNumber
 import androidx.compose.material.icons.outlined.SentimentVerySatisfied
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,8 +32,7 @@ fun CustomerForm(
     notes: String,
     onCustomerNameChange: (String) -> Unit,
     onTableNumberChange: (String) -> Unit,
-    onCustomerNoteChange: (String) -> Unit,
-    onExpandClick: () -> Unit
+    onCustomerNoteChange: (String) -> Unit
 ) {
     Column {
         Text(
@@ -97,16 +92,5 @@ fun CustomerForm(
                 .fillMaxWidth()
                 .padding(bottom = SizeChart.SMALL_SPACE.dp)
         )
-        AnimatedVisibility(
-            tableNumber.isNotBlank() && customerName.isNotBlank(),
-            Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            IconButton({ onExpandClick() }) {
-                Icon(
-                    Icons.Default.ExpandLess,
-                    stringResource(R.string.collapse),
-                )
-            }
-        }
     }
 }

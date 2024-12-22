@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,49 +15,86 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getString
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
-import com.babakan.cashier.common.ui.CommonDialog
 import com.babakan.cashier.data.sealed.AdminItem
+import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.presentation.cashier.viewmodel.CartViewModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
+import com.babakan.cashier.presentation.owner.viewmodel.ProductViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInRightAnimation
 import com.babakan.cashier.utils.animation.slideOutRightAnimation
 import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.SizeChart
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationFab(
+    productViewModel: ProductViewModel = viewModel(),
+    cartViewModel: CartViewModel = viewModel(),
     temporaryCartViewModel: TemporaryCartViewModel,
-    temporaryTotalQuantity: Int,
+    temporaryItem: List<Map<String, Int>>,
+    scope: CoroutineScope,
+    snackBarHostState: SnackbarHostState,
     isHome: Boolean,
     isAdminProduct: Boolean,
     isAdminCategory: Boolean,
     isAdminUser: Boolean,
     isFabShown: Boolean,
     isScrolledDown: Boolean,
-    mainScope: CoroutineScope,
-    snackBarHostState: SnackbarHostState,
-    onDrawerStateChange: (DrawerValue) -> Unit,
     onSelectedAuditItemChange: (AdminItem) -> Unit,
     onAuditSheetStateChange: (AuditState) -> Unit,
-    onAddNewItemChange: (Boolean) -> Unit
+    onAddNewItemChange: (Boolean) -> Unit,
+    triggerEvent: (Boolean) -> Unit
 ) {
+    val addCartState by cartViewModel.addCartState.collectAsState()
+
     val context = LocalContext.current
-    var dialogState by remember { mutableStateOf(false) }
+
+    var temporaryItemCount by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(temporaryItem) {
+        temporaryItemCount = temporaryItem.sumOf { it.values.sum() }
+    }
+
+    LaunchedEffect(addCartState) {
+        when (addCartState) {
+            is UiState.Success -> {
+                triggerEvent(true)
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.addToCartSuccess)
+                    )
+                }
+            }
+            is UiState.Error -> {
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.addToCartFailed)
+                    )
+                }
+            }
+            else -> {}
+        }
+    }
 
     AnimatedVisibility(
         visible = isFabShown,
@@ -73,9 +109,7 @@ fun NavigationFab(
                 visible = isHome
             ) {
                 SmallFloatingActionButton(
-                    {
-                        dialogState = !dialogState
-                    },
+                    { temporaryCartViewModel.clearTemporaryCart() },
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.tertiary
                 ) {
@@ -88,11 +122,11 @@ fun NavigationFab(
             BadgedBox(
                 {
                     this@Column.AnimatedVisibility(
-                        isHome && temporaryTotalQuantity > 0,
+                        isHome && temporaryItemCount > 0,
                         enter = slideInRightAnimation(Duration.ANIMATION_LONG),
                         exit = slideOutRightAnimation(Duration.ANIMATION_LONG)
                     ) {
-                        Badge { Text(temporaryTotalQuantity.toString()) }
+                        Badge { Text(temporaryItemCount.toString()) }
                     }
                 },
             ) {
@@ -101,7 +135,22 @@ fun NavigationFab(
                     onClick = {
                         when {
                             isHome -> {
-                                // TODO: Add To Cart
+                                val temporaryProductId = temporaryItem.map { it.keys.first() }
+                                val temporaryProductQuantity = temporaryItem.map { it.values.first() }
+
+                                scope.launch {
+                                    cartViewModel.addCart(
+                                        temporaryProductQuantity.mapIndexed { index, quantity ->
+                                            ProductOutModel(
+                                                createdAt = Timestamp.now(),
+                                                updateAt = Timestamp.now(),
+                                                productId = temporaryProductId[index],
+                                                quantity = quantity
+                                            )
+                                        }
+                                    )
+                                    temporaryCartViewModel.clearTemporaryCart()
+                                }
                             }
                             isAdminProduct -> {
                                 onSelectedAuditItemChange(AdminItem.Product(ProductModel()))
@@ -137,25 +186,5 @@ fun NavigationFab(
                 )
             }
         }
-    }
-
-    if (dialogState) {
-        CommonDialog(
-            icon = Icons.Default.Clear,
-            title = stringResource(R.string.clearCart),
-            body = stringResource(R.string.clearCartConfirmation),
-            onConfirm = {
-                dialogState = !dialogState
-                onDrawerStateChange(DrawerValue.Closed)
-
-                mainScope.launch {
-                    temporaryCartViewModel.clearTemporaryCart()
-                    snackBarHostState.showSnackbar(getString(context, R.string.clearCartSuccess))
-                }
-            },
-            confirmText = stringResource(R.string.clear),
-            onDismiss = { dialogState = !dialogState },
-            dismissText = stringResource(R.string.cancel)
-        )
     }
 }

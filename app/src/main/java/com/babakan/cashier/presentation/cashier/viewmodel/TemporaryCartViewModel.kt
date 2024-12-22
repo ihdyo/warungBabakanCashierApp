@@ -12,7 +12,10 @@ class TemporaryCartViewModel : ViewModel() {
     private val _temporaryTotalQuantity = MutableStateFlow(0)
     val temporaryTotalQuantity: StateFlow<Int> = _temporaryTotalQuantity
 
-    fun addProductToTemporaryCart(productId: String, quantity: Int) {
+    fun addProductToTemporaryCart(
+        productId: String,
+        quantity: Int
+    ) {
         val currentCart = _temporaryCartProduct.value.toMutableList()
 
         val existingIndex = currentCart.indexOfFirst { it.containsKey(productId) }

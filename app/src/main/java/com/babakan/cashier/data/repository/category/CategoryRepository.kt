@@ -4,6 +4,7 @@ import com.babakan.cashier.utils.constant.RemoteData
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
 class CategoryRepository(
@@ -14,6 +15,7 @@ class CategoryRepository(
     suspend fun getCategories(): UiState<List<CategoryModel>> {
         return try {
             val snapshot = categoryCollection
+                .orderBy(RemoteData.FIELD_NAME)
                 .get()
                 .await()
 
@@ -27,32 +29,17 @@ class CategoryRepository(
         }
     }
 
-    suspend fun getCategoryById(
-        categoryId: String
-    ): UiState<CategoryModel> {
-        return try {
-            val snapshot = categoryCollection
-                .document(categoryId)
-                .get()
-                .await()
-
-            if (snapshot.exists()) {
-                val category = CategoryModel.fromDocumentSnapshot(snapshot)
-                UiState.Success(category)
-            } else {
-                UiState.Error("Kategori tidak ditemukan", "Kategori dengan ID $categoryId tidak ditemukan")
-            }
-        } catch (e: Exception) {
-            UiState.Error("Terjadi kesalahan", e.message.toString())
-        }
-    }
-
     suspend fun createCategory(
         categoryData: CategoryModel
     ): UiState<Unit> {
         return try {
+            val documentRef = categoryCollection.add(categoryData.toJson()).await()
+
+            val updatedCategoryData = categoryData.copy(id = documentRef.id)
+
             categoryCollection
-                .add(categoryData.toJson())
+                .document(documentRef.id)
+                .set(updatedCategoryData.toJson())
                 .await()
 
             UiState.Success(Unit)
@@ -61,17 +48,14 @@ class CategoryRepository(
         }
     }
 
-    suspend fun updateCategoryById(
+    suspend fun updateCategory(
         categoryId: String,
-        fieldName: String,
-        newValue: Any
+        categoryData: CategoryModel
     ): UiState<Unit> {
         return try {
-            val updatedField = mapOf(fieldName to newValue)
-
             categoryCollection
                 .document(categoryId)
-                .update(updatedField)
+                .set(categoryData.toJson(), SetOptions.merge())
                 .await()
 
             UiState.Success(Unit)
@@ -80,7 +64,7 @@ class CategoryRepository(
         }
     }
 
-    suspend fun deleteCategoryById(
+    suspend fun deleteCategory(
         categoryId: String
     ): UiState<Unit> {
         return try {

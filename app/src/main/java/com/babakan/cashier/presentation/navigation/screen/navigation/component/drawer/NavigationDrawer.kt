@@ -121,7 +121,6 @@ fun NavigationDrawer(
             context = context,
             authScope = authScope,
             mainScope = mainScope,
-            dialogState = dialogState,
             setDialogState = { dialogState = !dialogState },
             onDrawerStateChange = onDrawerStateChange,
             snackBarHostState = snackBarHostState,

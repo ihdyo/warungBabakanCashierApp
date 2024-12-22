@@ -8,8 +8,8 @@ data class UserModel(
     val id: String = "",
     val createdAt: Timestamp = Timestamp.now(),
     var updateAt: Timestamp = Timestamp.now(),
-    var username: String = "",
     var name: String = "",
+    var username: String = "",
     var email: String = "",
     var isOwner: Boolean = false,
     var isActive: Boolean = false
@@ -20,8 +20,8 @@ data class UserModel(
             RemoteData.FIELD_ID to id,
             RemoteData.FIELD_CREATED_AT to createdAt,
             RemoteData.FIELD_UPDATE_AT to updateAt,
-            RemoteData.FIELD_USERNAME to username,
             RemoteData.FIELD_NAME to name,
+            RemoteData.FIELD_USERNAME to username,
             RemoteData.FIELD_EMAIL to email,
             RemoteData.FIELD_IS_OWNER to isOwner,
             RemoteData.FIELD_IS_ACTIVE to isActive
@@ -33,8 +33,8 @@ data class UserModel(
             val id = documentSnapshot.getString(RemoteData.FIELD_ID) ?: ""
             val createdAt = documentSnapshot.getTimestamp(RemoteData.FIELD_CREATED_AT) ?: Timestamp.now()
             val updateAt = documentSnapshot.getTimestamp(RemoteData.FIELD_UPDATE_AT) ?: Timestamp.now()
-            val username = documentSnapshot.getString(RemoteData.FIELD_USERNAME) ?: ""
             val name = documentSnapshot.getString(RemoteData.FIELD_NAME) ?: ""
+            val username = documentSnapshot.getString(RemoteData.FIELD_USERNAME) ?: ""
             val email = documentSnapshot.getString(RemoteData.FIELD_EMAIL) ?: ""
             val isOwner = documentSnapshot.getBoolean(RemoteData.FIELD_IS_OWNER) ?: false
             val isActive = documentSnapshot.getBoolean(RemoteData.FIELD_IS_ACTIVE) ?: false
@@ -43,8 +43,8 @@ data class UserModel(
                 id = id,
                 createdAt = createdAt,
                 updateAt = updateAt,
-                username = username,
                 name = name,
+                username = username,
                 email = email,
                 isOwner = isOwner,
                 isActive = isActive

@@ -16,23 +16,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.EditButton
+import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
 fun UserItem(
+    authViewModel: AuthViewModel = viewModel(),
     index: Int,
     userItem: UserModel,
     isAdmin: Boolean = false,
     onAdminEdit: (UserModel) -> Unit = {}
 ) {
+    val currentUserState by authViewModel.currentUserState.collectAsState()
+
+    val isCurrentUser = currentUserState is UiState.Success && userItem.id == (currentUserState as UiState.Success<UserModel>).data.id
 
     val isActive = userItem.isActive
     val isOwner = userItem.isOwner
@@ -54,7 +63,7 @@ fun UserItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                if (isAdmin) { EditButton { onAdminEdit(userItem) } }
+                if (isAdmin && (isCurrentUser || !isOwner)) { EditButton { onAdminEdit(userItem) } }
             }
             Row(
                 verticalAlignment = Alignment.Bottom,
@@ -87,7 +96,7 @@ fun UserItem(
                         if (isOwner) {
                             Icon(
                                 Icons.Default.Verified,
-                                stringResource(R.string.edit),
+                                stringResource(R.string.owner),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(SizeChart.ICON_LARGE.dp)
                             )

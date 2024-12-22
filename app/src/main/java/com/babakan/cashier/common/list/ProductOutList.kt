@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.component.CategoryComponent
 import com.babakan.cashier.common.item.ProductOutItem
 import com.babakan.cashier.data.state.UiState
+import com.babakan.cashier.presentation.cashier.viewmodel.CartViewModel
 import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
@@ -27,12 +28,14 @@ import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
 fun ProductOutList(
+    cartViewModel: CartViewModel = viewModel(),
     productViewModel: ProductViewModel = viewModel(),
     categoryViewModel: CategoryViewModel = viewModel(),
-    isEditable: Boolean,
-    isCart: Boolean = false,
-    productOutItem: List<ProductOutModel>
+    isOnCart: Boolean = false,
+    productOutItem: List<ProductOutModel>,
+    triggerEvent: (Boolean) -> Unit = {}
 ) {
+    val modifyCartState by cartViewModel.modifyCartState.collectAsState()
     val productsState by productViewModel.fetchProductsState.collectAsState()
     val categoriesState by categoryViewModel.fetchCategoriesState.collectAsState()
 
@@ -55,6 +58,14 @@ fun ProductOutList(
         } else if (categoriesState is UiState.Success) {
             showLoading = false
             categories = (categoriesState as UiState.Success<List<CategoryModel>>).data
+        }
+    }
+    LaunchedEffect(modifyCartState) {
+        when (modifyCartState) {
+            is UiState.Success -> {
+                triggerEvent(true)
+            }
+            else -> {}
         }
     }
 
@@ -82,15 +93,20 @@ fun ProductOutList(
 
                 ProductOutItem(
                     productViewModel = productViewModel,
-                    index = groupedProducts.indexOf(productOut),
                     productItem = productItem,
                     productOutItem = productOut,
-                    isEditable = isEditable,
-                    isCart = isCart,
+                    isOnCart = isOnCart,
                     textValue = productOut.quantity.toString(),
                     onTextChanged = { productOut.quantity = it.toInt() },
-                    onSubtract = { productOut.quantity -= 1 },
-                    onAdd = { productOut.quantity += 1 },
+                    onSubtract = {
+                        cartViewModel.subtractQuantityCartItem(productOut.productId)
+                    },
+                    onAdd = {
+                        cartViewModel.addQuantityCartItem(productOut.productId)
+                    },
+                    onDeleteItemFromCart = {
+                        cartViewModel.subtractQuantityCartItem(productOut.productId)
+                    }
                 )
             }
         }

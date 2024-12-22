@@ -12,8 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +25,8 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -41,21 +43,29 @@ import com.babakan.cashier.R
 import com.babakan.cashier.common.component.SearchChipComponent
 import com.babakan.cashier.common.ui.CommonDialog
 import com.babakan.cashier.data.sealed.AdminItem
+import com.babakan.cashier.data.state.UiState
+import com.babakan.cashier.presentation.cashier.viewmodel.CartViewModel
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.MainSearchBar
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInBottomAnimation
+import com.babakan.cashier.utils.animation.slideInLeftAnimation
+import com.babakan.cashier.utils.animation.slideOutRightAnimation
 import com.babakan.cashier.utils.animation.slideOutTopAnimation
 import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 fun NavigationTopBar(
+    cartViewModel: CartViewModel,
     temporaryCartViewModel: TemporaryCartViewModel,
+    cart: List<ProductOutModel>,
     categories: List<CategoryModel>,
     onCategorySelected: (CategoryModel) -> Unit,
     onAllCategorySelected: () -> Unit,
@@ -77,8 +87,33 @@ fun NavigationTopBar(
     tabs: List<Int>,
     navController : NavController,
     onAuditStateChange: (AuditState) -> Unit,
-    onItemSelected: (AdminItem) -> Unit
+    onItemSelected: (AdminItem) -> Unit,
+    triggerEvent: (Boolean) -> Unit
 ) {
+    val clearCartState by cartViewModel.clearCartState.collectAsState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(clearCartState) {
+        when (clearCartState) {
+            is UiState.Success -> {
+                triggerEvent(true)
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.clearCartSuccess)
+                    )
+                }
+            }
+            is UiState.Error -> {
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.clearCartFailed)
+                    )
+                }
+            }
+            else -> {}
+        }
+    }
 
     var dialogState by remember { mutableStateOf(false) }
 
@@ -189,17 +224,17 @@ fun NavigationTopBar(
         exit = slideOutTopAnimation(Duration.ANIMATION_SHORT)
     ) {
         TopAppBar(
-            {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+            { Text(stringResource(R.string.cart)) },
+            actions = {
+                AnimatedVisibility(
+                    cart.isNotEmpty(),
+                    enter = slideInLeftAnimation(Duration.ANIMATION_SHORT),
+                    exit = slideOutRightAnimation(Duration.ANIMATION_SHORT)
                 ) {
-                    Text(stringResource(R.string.cart))
                     IconButton({ dialogState = !dialogState }) {
                         Icon(
-                            Icons.Default.Close,
-                            stringResource(R.string.cart)
+                            Icons.Default.DeleteOutline,
+                            stringResource(R.string.delete)
                         )
                     }
                 }
@@ -216,11 +251,11 @@ fun NavigationTopBar(
     }
     if (dialogState) {
         CommonDialog(
-            icon = Icons.Default.Clear,
+            icon = Icons.Default.DeleteOutline,
             title = stringResource(R.string.clearCart),
             body = stringResource(R.string.clearCartConfirmation),
             onConfirm = {
-                // TODO Clear cart
+                cartViewModel.clearCart()
                 dialogState = !dialogState
             },
             confirmText = stringResource(R.string.clear),

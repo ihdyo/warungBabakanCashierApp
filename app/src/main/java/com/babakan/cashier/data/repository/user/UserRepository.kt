@@ -3,7 +3,6 @@ package com.babakan.cashier.data.repository.user
 import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.utils.constant.RemoteData
 import com.babakan.cashier.data.state.UiState
-import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
@@ -27,7 +26,9 @@ class UserRepository(
                 if (doc.exists()) UserModel.fromDocumentSnapshot(doc) else null
             }
 
-            UiState.Success(users)
+            val sortedUsers = users.sortedWith(compareByDescending<UserModel> { it.isOwner }.thenBy { it.name })
+
+            UiState.Success(sortedUsers)
         } catch (e: Exception) {
             UiState.Error("Terjadi kesalahan", e.message.toString())
         }
@@ -53,14 +54,17 @@ class UserRepository(
         }
     }
 
-    suspend fun setUserById(
-        userId: String,
-        userModel: UserModel
+    suspend fun createUser(
+        userData: UserModel
     ): UiState<Unit> {
         return try {
+            val documentRef = userCollection.add(userData.toJson()).await()
+
+            val updatedUserData = userData.copy(id = documentRef.id)
+
             userCollection
-                .document(userId)
-                .set(userModel.toJson(), SetOptions.merge())
+                .document(documentRef.id)
+                .set(updatedUserData.toJson())
                 .await()
 
             UiState.Success(Unit)
@@ -69,7 +73,23 @@ class UserRepository(
         }
     }
 
-    suspend fun updateUserById(
+    suspend fun updateUser(
+        userId: String,
+        userData: UserModel
+    ): UiState<Unit> {
+        return try {
+            userCollection
+                .document(userId)
+                .set(userData.toJson(), SetOptions.merge())
+                .await()
+
+            UiState.Success(Unit)
+        } catch (e: Exception) {
+            UiState.Error("Terjadi kesalahan", e.message.toString())
+        }
+    }
+
+    suspend fun updateUserSingleField(
         userId: String,
         fieldName: String,
         newValue: Any
@@ -88,11 +108,11 @@ class UserRepository(
         }
     }
 
-    suspend fun deleteUserById(
+    suspend fun deleteUser(
         userId: String
     ): UiState<Unit> {
         return try {
-            val updateState = updateUserById(userId, RemoteData.FIELD_IS_ACTIVE, false)
+            val updateState = updateUserSingleField(userId, RemoteData.FIELD_IS_ACTIVE, false)
 
             if (updateState is UiState.Success) {
                 userCollection
@@ -116,6 +136,27 @@ class UserRepository(
             val snapshot = userCollection
                 .whereGreaterThanOrEqualTo(RemoteData.FIELD_NAME, query)
                 .whereLessThanOrEqualTo(RemoteData.FIELD_NAME, query + "\uf8ff")
+                .get()
+                .await()
+
+            val users = snapshot.documents.mapNotNull { doc ->
+                if (doc.exists()) UserModel.fromDocumentSnapshot(doc) else null
+            }
+
+            UiState.Success(users)
+        } catch (e: Exception) {
+            UiState.Error("Terjadi kesalahan", e.message.toString())
+        }
+    }
+
+
+    suspend fun searchUsersByUsername(
+        query: String
+    ): UiState<List<UserModel>> {
+        return try {
+            val snapshot = userCollection
+                .whereGreaterThanOrEqualTo(RemoteData.FIELD_USERNAME, query)
+                .whereLessThanOrEqualTo(RemoteData.FIELD_USERNAME, query + "\uf8ff")
                 .get()
                 .await()
 

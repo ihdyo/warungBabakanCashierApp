@@ -309,6 +309,7 @@ fun MainSearchBar(
                 onResultCountChange = { newCount ->
                     resultCount = newCount
                 },
+                isSearchActive = isSearchActive,
             )
         }
         AnimatedVisibility(isTransaction) {
@@ -321,7 +322,8 @@ fun MainSearchBar(
                 },
                 isReportByTransactionNumber = isReportByTransactionNumber,
                 isReportByCashier = isReportByCashier,
-                isReportByDate = isReportByDate
+                isReportByDate = isReportByDate,
+                isSearchActive = isSearchActive,
             )
         }
         AnimatedVisibility(isAdmin && isAdminProduct) {
@@ -335,7 +337,8 @@ fun MainSearchBar(
                 onAuditStateChange = onAuditStateChange,
                 onItemSelected = { item ->
                     onItemSelected(AdminItem.Product(item))
-                }
+                },
+                isSearchActive = isSearchActive,
             )
         }
         AnimatedVisibility(isAdmin && isAdminCategory) {
@@ -348,7 +351,8 @@ fun MainSearchBar(
                 onAuditStateChange = onAuditStateChange,
                 onItemSelected = { item ->
                     onItemSelected(AdminItem.Category(item))
-                }
+                },
+                isSearchActive = isSearchActive,
             )
         }
         AnimatedVisibility(isAdmin && isAdminUser) {
@@ -361,7 +365,8 @@ fun MainSearchBar(
                 onAuditStateChange = onAuditStateChange,
                 onItemSelected = { item ->
                     onItemSelected(AdminItem.User(item))
-                }
+                },
+                isSearchActive = isSearchActive,
             )
         }
         if (showDatePicker) {

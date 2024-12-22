@@ -56,6 +56,14 @@
     <string name="deleteFailed">Gagal menghapus %1$s</string>
     <string name="activated">Status %1$s telah diaktifkan</string>
     <string name="deactivated"> Status %1$s telah dinonaktifkan</string>
+    <string name="addToCartSuccess">Berhasil menambahkan menu ke keranjang</string>
+    <string name="addToCartFailed">Gagal menambahkan menu ke keranjang</string>
+    <string name="deleteFromCart">Hapus Dari Keranjang</string>
+    <string name="deleteFromCartMessage">Apakah anda yakin ingin menghapus menu ini dari keranjang?</string>
+    <string name="emptyCart">Keranjang kosong</string>
+    <string name="emptyCartMessage">Anda belum menambahkan menu ke keranjang</string>
+    <string name="transactionSuccess">Transaksi berhasil</string>
+    <string name="transactionFailed">Transaksi gagal</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>

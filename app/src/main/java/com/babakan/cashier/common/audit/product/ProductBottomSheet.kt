@@ -17,6 +17,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,29 +31,39 @@ import androidx.compose.ui.unit.dp
 import com.babakan.cashier.R
 import com.babakan.cashier.common.audit.product.component.ProductAuditForm
 import com.babakan.cashier.common.ui.AuditItemDialog
-import com.babakan.cashier.data.dummy.dummyCategoryList
+import com.babakan.cashier.common.ui.FullscreenLoading
+import com.babakan.cashier.data.state.UiState
+import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
+import com.babakan.cashier.presentation.owner.viewmodel.ProductViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 import com.babakan.cashier.utils.validator.Validator
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 fun ProductBottomSheet(
+    productViewModel: ProductViewModel,
     scope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     sheetState: SheetState,
     item: ProductModel = ProductModel(),
+    categories: List<CategoryModel>,
     onDismiss: () -> Unit,
-    isAddNew: Boolean = false
+    isAddNew: Boolean = false,
+    triggerEvent: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
 
-    val categories = dummyCategoryList // TODO: get categories
-    val category = categories.find { it.id == item.categoryId }
+    val addProductState = productViewModel.createProductState.collectAsState()
+    val updateProductState = productViewModel.updateProductState.collectAsState()
+    val deleteProductState = productViewModel.deleteProductState.collectAsState()
 
+    val category = categories.find { it.id == item.categoryId }
     var showCategories by remember { mutableStateOf(false) }
 
     var name by remember { mutableStateOf(if (isAddNew) "" else item.name) }
@@ -65,17 +77,116 @@ fun ProductBottomSheet(
 
     var showUpdateDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val onUpdateItem = { showUpdateDialog = true }
-    val onDeleteItem = { showDeleteDialog = true }
+    val onUpdateItemDialog = { showUpdateDialog = true }
+    val onDeleteItemDialog = { showDeleteDialog = true }
 
-    // TODO: Implement this audit
+    var showLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(addProductState.value) {
+        when (addProductState.value) {
+            is UiState.Loading -> { showLoading = true }
+            is UiState.Success -> {
+                showLoading = false
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.addSuccess, name)
+                    )
+                }
+                triggerEvent(true)
+                productViewModel.resetAuditState()
+                onDismiss()
+            }
+            is UiState.Error -> {
+                showLoading = false
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.addFailed, name)
+                    )
+                }
+            }
+            else -> Unit
+        }
+    }
+    LaunchedEffect(updateProductState.value) {
+        when (updateProductState.value) {
+            is UiState.Loading -> { showLoading = true }
+            is UiState.Success -> {
+                showLoading = false
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.updateSuccess, name)
+                    )
+                }
+                triggerEvent(true)
+                productViewModel.resetAuditState()
+                onDismiss()
+            }
+            is UiState.Error -> {
+                showLoading = false
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.updateFailed, name)
+                    )
+                }
+            }
+            else -> Unit
+        }
+    }
+    LaunchedEffect(deleteProductState.value) {
+        when (deleteProductState.value) {
+            is UiState.Loading -> { showLoading = true }
+            is UiState.Success -> {
+                showLoading = false
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.deleteSuccess, name)
+                    )
+                }
+                triggerEvent(true)
+                productViewModel.resetAuditState()
+                onDismiss()
+            }
+            is UiState.Error -> {
+                showLoading = false
+                scope.launch(Dispatchers.Main) {
+                    snackBarHostState.showSnackbar(
+                        context.getString(R.string.deleteFailed, name)
+                    )
+                }
+            }
+            else -> Unit
+        }
+    }
+
     val onAddNewItem = {
-        // TODO: Add New
-        // if success
-        onDismiss()
-        scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.addSuccess, name)) }
-        // if failed
-        scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.addFailed, name)) }
+        productViewModel.createProduct(
+            productData = ProductModel(
+                createdAt = Timestamp.now(),
+                updateAt = Timestamp.now(),
+                name = name,
+                categoryId = selectedCategory!!.id,
+                imageUrl = imageUrl,
+                price = price.toDouble()
+            )
+        )
+    }
+    val onUpdateItem = {
+        productViewModel.updateProduct(
+            productId = item.id,
+            productData = ProductModel(
+                id = item.id,
+                updateAt = Timestamp.now(),
+                name = name,
+                categoryId = selectedCategory!!.id,
+                imageUrl = imageUrl,
+                price = price.toDouble()
+            )
+        )
+    }
+    val onDeleteItem = {
+        productViewModel.deleteProduct(
+            productId = item.id
+        )
     }
 
     ModalBottomSheet(
@@ -99,7 +210,7 @@ fun ProductBottomSheet(
                     style = MaterialTheme.typography.titleLarge
                 )
                 if (!isAddNew) {
-                    IconButton({ onDeleteItem() }) {
+                    IconButton({ onDeleteItemDialog() }) {
                         Icon(
                             Icons.Default.Delete,
                             stringResource(R.string.delete),
@@ -132,7 +243,7 @@ fun ProductBottomSheet(
                     imageUrlError = Validator.isNotEmpty(context, imageUrl, context.getString(R.string.imageUrl)) ?: Validator.isValidUrl(context, imageUrl)
 
                     if (nameError == null && priceError == null && imageUrlError == null) {
-                        if (isAddNew) onAddNewItem() else onUpdateItem()
+                        if (isAddNew) onAddNewItem() else onUpdateItemDialog()
                     }
                 },
                 Modifier.fillMaxWidth(),
@@ -147,14 +258,8 @@ fun ProductBottomSheet(
                 isDelete = false,
                 onDismiss = { showUpdateDialog = false },
                 onConfirm = {
-                    // TODO: Update
-                    // if success
-                    onDismiss()
                     showUpdateDialog = false
-                    scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.updateSuccess, name)) }
-                    // if failed
-                    showUpdateDialog = false
-                    scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.updateFailed, name)) }
+                    onUpdateItem()
                 }
             )
         }
@@ -163,18 +268,13 @@ fun ProductBottomSheet(
                 title = stringResource(R.string.deleteMenu),
                 body = stringResource(R.string.deleteConfirmation, name),
                 isDelete = true,
-                onConfirm = {
-                    // TODO: Delete
-                    // if success
-                    onDismiss()
-                    showDeleteDialog = false
-                    scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.deleteSuccess, name)) }
-                    // if failed
-                    showDeleteDialog = false
-                    scope.launch { snackBarHostState.showSnackbar(context.getString(R.string.deleteFailed, name)) }
-                },
                 onDismiss = { showDeleteDialog = false },
+                onConfirm = {
+                    showDeleteDialog = false
+                    onDeleteItem()
+                },
             )
         }
     }
+    if (showLoading) FullscreenLoading()
 }

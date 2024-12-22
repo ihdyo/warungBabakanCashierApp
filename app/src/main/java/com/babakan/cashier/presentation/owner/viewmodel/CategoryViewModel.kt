@@ -16,9 +16,6 @@ class CategoryViewModel(
     private val _fetchCategoriesState = MutableStateFlow<UiState<List<CategoryModel>>>(UiState.Idle)
     val fetchCategoriesState: StateFlow<UiState<List<CategoryModel>>> = _fetchCategoriesState
 
-    private val _fetchCategoryByIdState = MutableStateFlow<UiState<CategoryModel>>(UiState.Idle)
-    val fetchCategoryByIdState: StateFlow<UiState<CategoryModel>> = _fetchCategoryByIdState
-
     private val _createCategoryState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val createCategoryState: StateFlow<UiState<Unit>> = _createCategoryState
 
@@ -28,23 +25,27 @@ class CategoryViewModel(
     private val _deleteCategoryState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteCategoryState: StateFlow<UiState<Unit>> = _deleteCategoryState
 
+    private val _searchCategoriesState = MutableStateFlow<UiState<List<CategoryModel>>>(UiState.Idle)
+    val searchCategoriesState: StateFlow<UiState<List<CategoryModel>>> = _searchCategoriesState
+
     init {
         fetchCategories()
+    }
+
+    fun resetAuditState() {
+        _createCategoryState.value = UiState.Idle
+        _updateCategoryState.value = UiState.Idle
+        _deleteCategoryState.value = UiState.Idle
+    }
+
+    fun resetSearchState() {
+        _searchCategoriesState.value = UiState.Idle
     }
 
     fun fetchCategories() {
         _fetchCategoriesState.value = UiState.Loading
         viewModelScope.launch {
             _fetchCategoriesState.value = categoryRepository.getCategories()
-        }
-    }
-
-    fun fetchCategoryById(
-        categoryId: String
-    ) {
-        _fetchCategoryByIdState.value = UiState.Loading
-        viewModelScope.launch {
-            _fetchCategoryByIdState.value = categoryRepository.getCategoryById(categoryId)
         }
     }
 
@@ -57,23 +58,31 @@ class CategoryViewModel(
         }
     }
 
-    fun updateCategoryById(
+    fun updateCategory(
         categoryId: String,
-        fieldName: String,
-        newValue: Any
+        categoryData: CategoryModel
     ) {
         _updateCategoryState.value = UiState.Loading
         viewModelScope.launch {
-            _updateCategoryState.value = categoryRepository.updateCategoryById(categoryId, fieldName, newValue)
+            _updateCategoryState.value = categoryRepository.updateCategory(categoryId, categoryData)
         }
     }
 
-    fun deleteCategoryById(
+    fun deleteCategory(
         categoryId: String
     ) {
         _deleteCategoryState.value = UiState.Loading
         viewModelScope.launch {
-            _deleteCategoryState.value = categoryRepository.deleteCategoryById(categoryId)
+            _deleteCategoryState.value = categoryRepository.deleteCategory(categoryId)
+        }
+    }
+
+    fun searchCategoriesByName(
+        query: String
+    ) {
+        _searchCategoriesState.value = UiState.Loading
+        viewModelScope.launch {
+            _searchCategoriesState.value = categoryRepository.searchCategoriesByName(query)
         }
     }
 }

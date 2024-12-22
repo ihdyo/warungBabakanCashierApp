@@ -15,6 +15,7 @@ class ProductRepository(
     suspend fun getProducts(): UiState<List<ProductModel>> {
         return try {
             val snapshot = productCollection
+                .orderBy(RemoteData.FIELD_NAME)
                 .get()
                 .await()
 
@@ -41,7 +42,7 @@ class ProductRepository(
                 val product = ProductModel.fromDocumentSnapshot(snapshot)
                 UiState.Success(product)
             } else {
-                UiState.Error("Menu tidak ditemukan", "Menu dengan ID $productId tidak ditemukan")
+                UiState.Error("Produk tidak ditemukan", "Produk dengan ID $productId tidak ditemukan")
             }
         } catch (e: Exception) {
             UiState.Error("Terjadi kesalahan", e.message.toString())
@@ -52,8 +53,13 @@ class ProductRepository(
         productData: ProductModel
     ): UiState<Unit> {
         return try {
+            val documentRef = productCollection.add(productData.toJson()).await()
+
+            val updatedProductData = productData.copy(id = documentRef.id)
+
             productCollection
-                .add(productData.toJson())
+                .document(documentRef.id)
+                .set(updatedProductData.toJson())
                 .await()
 
             UiState.Success(Unit)
@@ -62,17 +68,14 @@ class ProductRepository(
         }
     }
 
-    suspend fun updateProductById(
+    suspend fun updateProduct(
         productId: String,
-        fieldName: String,
-        newValue: Any
+        productData: ProductModel
     ): UiState<Unit> {
         return try {
-            val updatedField = mapOf(fieldName to newValue)
-
             productCollection
                 .document(productId)
-                .update(updatedField)
+                .set(productData.toJson(), SetOptions.merge())
                 .await()
 
             UiState.Success(Unit)
@@ -81,7 +84,7 @@ class ProductRepository(
         }
     }
 
-    suspend fun deleteProductById(
+    suspend fun deleteProduct(
         productId: String
     ): UiState<Unit> {
         return try {

@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import com.babakan.cashier.common.list.UserList
-import com.babakan.cashier.data.dummy.dummyUserList
 import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.utils.constant.AuditState
 

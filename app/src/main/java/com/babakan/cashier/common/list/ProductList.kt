@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.item.ProductItem
 import com.babakan.cashier.common.style.tabContentPadding
-import com.babakan.cashier.data.dummy.dummyCategoryList
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
@@ -34,10 +33,8 @@ fun ProductList(
     ) {
         itemsIndexed(products) { index, item ->
             val categoryItem = categories.find { it.id == item.categoryId } ?: CategoryModel()
-
             ProductItem(
                 temporaryCartViewModel = temporaryCartViewModel,
-                index = index,
                 productItem = item,
                 categoryItem = categoryItem,
                 isCountable = isCountable,

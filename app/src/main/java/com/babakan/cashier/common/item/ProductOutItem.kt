@@ -36,15 +36,14 @@ import com.babakan.cashier.utils.formatter.Formatter
 @Composable
 fun ProductOutItem(
     productViewModel: ProductViewModel = viewModel(),
-    index: Int,
     productItem: ProductModel,
     productOutItem: ProductOutModel,
-    isEditable: Boolean = false,
-    isCart: Boolean = false,
     textValue: String,
     onTextChanged: (String) -> Unit,
     onSubtract: () -> Unit,
-    onAdd: () -> Unit
+    onAdd: () -> Unit,
+    isOnCart: Boolean = false,
+    onDeleteItemFromCart : () -> Unit = {}
 ) {
     val productsState by productViewModel.fetchProductsState.collectAsState()
 
@@ -67,7 +66,7 @@ fun ProductOutItem(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
     ) {
         Row(
-            verticalAlignment = if (isEditable) Alignment.CenterVertically else Alignment.Bottom,
+            verticalAlignment = if (isOnCart) Alignment.CenterVertically else Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +75,7 @@ fun ProductOutItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
-                modifier = Modifier.weight(if (isEditable) 2f else 1f)
+                modifier = Modifier.weight(if (isOnCart) 2f else 1f)
             ) {
                 Card(
                     shape = MaterialTheme.shapes.small
@@ -97,14 +96,14 @@ fun ProductOutItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        Formatter.currency(if (isCart) realPrice else productOutItem.price),
+                        Formatter.currency(if (isOnCart) realPrice else productOutItem.price),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
                 }
             }
-            if (isEditable) {
+            if (isOnCart) {
                 Box(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -112,7 +111,9 @@ fun ProductOutItem(
                         textValue = textValue,
                         onSubtract = onSubtract,
                         onAdd = onAdd,
-                        onTextChanged = onTextChanged
+                        onTextChanged = onTextChanged,
+                        isOnCart = isOnCart,
+                        onDeleteItemFromCart = { onDeleteItemFromCart() }
                     )
                 }
             } else {

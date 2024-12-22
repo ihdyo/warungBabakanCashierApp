@@ -33,9 +33,9 @@ import com.babakan.cashier.utils.constant.AuditState
 @ExperimentalMaterial3Api
 @Composable
 fun Admin(
-    productViewModel: ProductViewModel = viewModel(),
-    categoryViewModel: CategoryViewModel = viewModel(),
-    userViewModel: UserViewModel = viewModel(),
+    productViewModel: ProductViewModel,
+    categoryViewModel: CategoryViewModel,
+    userViewModel: UserViewModel,
     nestedScrollConnection: NestedScrollConnection,
     pagerState: PagerState,
     onSelectedAdminTabIndex: (Int) -> Unit,
@@ -100,7 +100,7 @@ fun Admin(
                     onItemSelected = { item ->
                         onItemSelected(AdminItem.Product(item))
                     },
-                    showLoading = showLoading
+                    showLoading = showLoading,
                 )
                 1 -> AdminCategory(
                     categories = categories,
