@@ -1,6 +1,5 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation
 
-import Admin
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -46,6 +45,13 @@ import com.babakan.cashier.presentation.navigation.screen.navigation.component.f
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar.NavigationTopBar
 import com.babakan.cashier.presentation.owner.screen.transaction.Transaction
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.owner.model.CategoryModel
+import com.babakan.cashier.presentation.owner.model.ProductModel
+import com.babakan.cashier.presentation.owner.screen.admin.Admin
+import com.babakan.cashier.presentation.owner.viewmodel.CategoryViewModel
+import com.babakan.cashier.presentation.owner.viewmodel.ProductViewModel
+import com.babakan.cashier.presentation.owner.viewmodel.TransactionViewModel
+import com.babakan.cashier.presentation.owner.viewmodel.UserViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.fadeInAnimation
 import com.babakan.cashier.utils.animation.fadeOutAnimation
@@ -59,6 +65,10 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun MainNavigation(
+    userViewModel: UserViewModel = viewModel(),
+    productViewModel: ProductViewModel = viewModel(),
+    categoryViewModel: CategoryViewModel = viewModel(),
+    transactionViewModel: TransactionViewModel = viewModel(),
     temporaryCartViewModel: TemporaryCartViewModel = viewModel(),
     authViewModel: AuthViewModel,
     authScope: CoroutineScope,
@@ -66,15 +76,48 @@ fun MainNavigation(
     onNavigateToLogin: () -> Unit
 ) {
     val currentUserState by authViewModel.currentUserState.collectAsState()
+    val productsState by productViewModel.fetchProductsState.collectAsState()
+    val productByCategoryState by productViewModel.searchProductByCategoryState.collectAsState()
+    val categoryState by categoryViewModel.fetchCategoriesState.collectAsState()
+
     var currentUser by remember { mutableStateOf(UserModel()) }
+    var products by remember { mutableStateOf(emptyList<ProductModel>()) }
+    var categories by remember { mutableStateOf(emptyList<CategoryModel>()) }
+
+    var showLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(currentUserState) {
-        if (currentUserState is UiState.Success) {
+        if (currentUserState is UiState.Loading) {
+            showLoading = true
+        } else if (currentUserState is UiState.Success) {
+            showLoading = false
             currentUser = (currentUserState as UiState.Success<UserModel>).data
         }
     }
-
-    val isOwner = currentUser.isOwner
+    LaunchedEffect(productsState) {
+        if (productsState is UiState.Loading) {
+            showLoading = true
+        } else if (productsState is UiState.Success) {
+            showLoading = false
+            products = (productsState as UiState.Success<List<ProductModel>>).data
+        }
+    }
+    LaunchedEffect(productByCategoryState) {
+        if (productByCategoryState is UiState.Loading) {
+            showLoading = true
+        } else if (productByCategoryState is UiState.Success) {
+            showLoading = false
+            products = (productByCategoryState as UiState.Success<List<ProductModel>>).data
+        }
+    }
+    LaunchedEffect(categoryState) {
+        if (categoryState is UiState.Loading) {
+            showLoading = true
+        } else if (categoryState is UiState.Success) {
+            showLoading = false
+            categories = (categoryState as UiState.Success<List<CategoryModel>>).data
+        }
+    }
 
     val mainScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -140,6 +183,8 @@ fun MainNavigation(
         temporaryCartViewModel.clearTemporaryCart()
     }
 
+    val isOwner = currentUser.isOwner
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = currentDestination != MainScreenState.CART.name && !isSearchActive,
@@ -160,6 +205,13 @@ fun MainNavigation(
             topBar = {
                 NavigationTopBar(
                     temporaryCartViewModel = temporaryCartViewModel,
+                    categories = categories,
+                    onCategorySelected = {
+                        productViewModel.searchProductByCategory(it.id, false)
+                    },
+                    onAllCategorySelected = {
+                        productViewModel.searchProductByCategory("", true)
+                    },
                     isHome = isMENU,
                     isReport = isTransaction,
                     isAdmin = isAdmin,
@@ -225,14 +277,17 @@ fun MainNavigation(
             ) {
                 composable(MainScreenState.MENU.name) {
                     Home(
-                        temporaryCartViewModel,
-                        nestedScrollConnection,
-                        isFabShown
+                        products = products,
+                        categories = categories,
+                        temporaryCartViewModel = temporaryCartViewModel,
+                        nestedScrollConnection = nestedScrollConnection,
+                        isFabShown = isFabShown,
+                        showLoading = showLoading
                     )
                 }
                 composable(MainScreenState.REPORT.name) {
                     Transaction(
-                        nestedScrollConnection
+                        nestedScrollConnection = nestedScrollConnection
                     )
                 }
                 composable(MainScreenState.ADMIN.name) {
@@ -248,7 +303,7 @@ fun MainNavigation(
                                 is AdminItem.Category -> AuditState.CATEGORY
                                 is AdminItem.User -> AuditState.USER
                             }
-                        },
+                        }
                     )
                 }
                 composable(MainScreenState.CART.name) {
@@ -270,7 +325,7 @@ fun MainNavigation(
                         sheetState = sheetState,
                         item = (selectedAuditItem as AdminItem.Product).product,
                         onDismiss = { auditSheetState = AuditState.HIDDEN },
-                        isAddNew = isAddNewItem,
+                        isAddNew = isAddNewItem
                     )
                 }
                 AuditState.CATEGORY -> {

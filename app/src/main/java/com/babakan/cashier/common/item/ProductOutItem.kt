@@ -11,30 +11,58 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
 import com.babakan.cashier.utils.builder.ImageLoader
 import com.babakan.cashier.common.component.ItemCounterComponent
+import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.model.ProductOutModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
+import com.babakan.cashier.presentation.owner.viewmodel.ProductViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
 @Composable
 fun ProductOutItem(
+    productViewModel: ProductViewModel = viewModel(),
     index: Int,
     productItem: ProductModel,
     productOutItem: ProductOutModel,
     isEditable: Boolean = false,
+    isCart: Boolean = false,
     textValue: String,
     onTextChanged: (String) -> Unit,
     onSubtract: () -> Unit,
     onAdd: () -> Unit
 ) {
+    val productsState by productViewModel.fetchProductsState.collectAsState()
+
+    var products by remember { mutableStateOf(emptyList<ProductModel>()) }
+
+    var showLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(productsState) {
+        if (productsState is UiState.Loading) {
+            showLoading = true
+        } else if (productsState is UiState.Success) {
+            showLoading = false
+            products = (productsState as UiState.Success<List<ProductModel>>).data
+        }
+    }
+
+    val realPrice = products.find { it.id == productOutItem.productId }?.price ?: 0.0
+
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
     ) {
@@ -69,7 +97,7 @@ fun ProductOutItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        Formatter.currency(productOutItem.price),
+                        Formatter.currency(if (isCart) realPrice else productOutItem.price),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         )

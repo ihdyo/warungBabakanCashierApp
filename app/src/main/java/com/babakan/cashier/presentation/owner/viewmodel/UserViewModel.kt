@@ -28,6 +28,13 @@ class UserViewModel(
     private val _deleteUserState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteUserState: StateFlow<UiState<Unit>> = _deleteUserState
 
+    private val _searchUserByName = MutableStateFlow<UiState<List<UserModel>>>(UiState.Idle)
+    val searchUserByName: StateFlow<UiState<List<UserModel>>> = _searchUserByName
+
+    init {
+        fetchUsers()
+    }
+
     fun fetchUsers() {
         _fetchUsersState.value = UiState.Loading
         viewModelScope.launch {
@@ -70,6 +77,15 @@ class UserViewModel(
         _deleteUserState.value = UiState.Loading
         viewModelScope.launch {
             _deleteUserState.value = userRepository.deleteUserById(userId)
+        }
+    }
+
+    fun searchUsersByName(
+        query: String
+    ) {
+        _searchUserByName.value = UiState.Loading
+        viewModelScope.launch {
+            _searchUserByName.value = userRepository.searchUsersByName(query)
         }
     }
 }

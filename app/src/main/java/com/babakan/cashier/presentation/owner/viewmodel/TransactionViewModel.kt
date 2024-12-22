@@ -28,6 +28,10 @@ class TransactionViewModel(
     private val _deleteTransactionState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteTransactionState: StateFlow<UiState<Unit>> = _deleteTransactionState
 
+    init {
+        fetchTransactions()
+    }
+
     fun fetchTransactions() {
         _fetchTransactionsState.value = UiState.Loading
         viewModelScope.launch {

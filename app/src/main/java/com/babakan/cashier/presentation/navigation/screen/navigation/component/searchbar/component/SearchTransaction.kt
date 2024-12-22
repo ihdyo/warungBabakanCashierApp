@@ -29,8 +29,10 @@ fun SearchTransaction(
 //    }
 
     TransactionList(
-        nestedScrollConnection = nestedScrollConnection,
-        transactions = transactions
+        transactions = transactions,
+        users = emptyList(), // TODO: Change this,
+        productOut = emptyList(), // TODO: Change this,
+        nestedScrollConnection = nestedScrollConnection
     )
 
 }

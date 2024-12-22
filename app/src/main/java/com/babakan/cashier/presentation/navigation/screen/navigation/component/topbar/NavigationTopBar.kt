@@ -40,10 +40,10 @@ import androidx.navigation.NavController
 import com.babakan.cashier.R
 import com.babakan.cashier.common.component.SearchChipComponent
 import com.babakan.cashier.common.ui.CommonDialog
-import com.babakan.cashier.data.dummy.dummyCategoryList
 import com.babakan.cashier.data.sealed.AdminItem
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.MainSearchBar
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.slideInBottomAnimation
 import com.babakan.cashier.utils.animation.slideOutTopAnimation
@@ -56,6 +56,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationTopBar(
     temporaryCartViewModel: TemporaryCartViewModel,
+    categories: List<CategoryModel>,
+    onCategorySelected: (CategoryModel) -> Unit,
+    onAllCategorySelected: () -> Unit,
     isHome: Boolean,
     isReport: Boolean,
     isAdmin: Boolean,
@@ -107,8 +110,6 @@ fun NavigationTopBar(
             AnimatedVisibility(
                 visible = isScrolledDown && isHome,
             ) {
-                val category = dummyCategoryList
-
                 var selectedChipIndex by remember { mutableIntStateOf(-1) }
 
                 Column {
@@ -127,17 +128,23 @@ fun NavigationTopBar(
                             val isSelected = selectedChipIndex == -1
 
                             SearchChipComponent(
-                                onClick = { selectedChipIndex = -1 },
+                                onClick = {
+                                    selectedChipIndex = -1
+                                    onAllCategorySelected()
+                                },
                                 icon = Icons.Filled.GridView,
                                 isSelected = isSelected,
                                 label = stringResource(R.string.all)
                             )
                         }
-                        itemsIndexed(category) { index, item ->
+                        itemsIndexed(categories) { index, item ->
                             val isSelected = selectedChipIndex == index
 
                             SearchChipComponent(
-                                onClick = { selectedChipIndex = index },
+                                onClick = {
+                                    selectedChipIndex = index
+                                    onCategorySelected(item)
+                                },
                                 iconUrl = item.iconUrl,
                                 isSelected = isSelected,
                                 label = item.name

@@ -117,19 +117,23 @@ class ProductRepository(
     }
 
     suspend fun searchProductsByCategoryId(
-        categoryId: String
+        categoryId: String,
+        isShowAll: Boolean
     ): UiState<List<ProductModel>> {
         return try {
-            val snapshot = productCollection
-                .whereEqualTo(RemoteData.FIELD_CATEGORY_ID, categoryId)
-                .get()
-                .await()
+            val query = if (isShowAll) {
+                productCollection
+            } else {
+                productCollection.whereEqualTo(RemoteData.FIELD_CATEGORY_ID, categoryId)
+            }
 
-            val product = snapshot.documents.mapNotNull { doc ->
+            val snapshot = query.get().await()
+
+            val products = snapshot.documents.mapNotNull { doc ->
                 if (doc.exists()) ProductModel.fromDocumentSnapshot(doc) else null
             }
 
-            UiState.Success(product)
+            UiState.Success(products)
         } catch (e: Exception) {
             UiState.Error("Terjadi kesalahan", e.message.toString())
         }

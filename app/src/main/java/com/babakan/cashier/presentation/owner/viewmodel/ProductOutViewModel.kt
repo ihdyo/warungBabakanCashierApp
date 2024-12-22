@@ -13,8 +13,8 @@ class ProductOutViewModel(
     private val productOutRepository: ProductOutRepository = ProductOutRepository()
 ) : ViewModel() {
 
-    private val _fetchProductOutState = MutableStateFlow<UiState<List<ProductOutModel>>>(UiState.Idle)
-    val fetchProductOutState: StateFlow<UiState<List<ProductOutModel>>> = _fetchProductOutState
+    private val _fetchProductOutState = MutableStateFlow<UiState<List<Pair<String, List<ProductOutModel>>>>>(UiState.Idle)
+    val fetchProductOutState: StateFlow<UiState<List<Pair<String, List<ProductOutModel>>>>> = _fetchProductOutState
 
     private val _addProductOutState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val addProductOutState: StateFlow<UiState<Unit>> = _addProductOutState
@@ -25,39 +25,44 @@ class ProductOutViewModel(
     private val _removeProductOutState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val removeProductOutState: StateFlow<UiState<Unit>> = _removeProductOutState
 
-    fun fetchProductOut() {
+    fun fetchProductOut(
+        transactionId: List<String>
+    ) {
         _fetchProductOutState.value = UiState.Loading
         viewModelScope.launch {
-            _fetchProductOutState.value = productOutRepository.getProductOut()
+            _fetchProductOutState.value = productOutRepository.getProductOut(transactionId)
         }
     }
 
     fun addProductOut(
+        transactionId: String,
         productOutData: ProductOutModel
     ) {
         _addProductOutState.value = UiState.Loading
         viewModelScope.launch {
-            _addProductOutState.value = productOutRepository.createProductOut(productOutData)
+            _addProductOutState.value = productOutRepository.createProductOut(transactionId, productOutData)
         }
     }
 
     fun modifyProductOut(
+        transactionId: String,
         productId: String,
         fieldName: String,
         newValue: Any
     ) {
         _modifyProductOutState.value = UiState.Loading
         viewModelScope.launch {
-            _modifyProductOutState.value = productOutRepository.updateProductOutByProductId(productId, fieldName, newValue)
+            _modifyProductOutState.value = productOutRepository.updateProductOutByProductId(transactionId, productId, fieldName, newValue)
         }
     }
 
     fun removeProductOutById(
+        transactionId: String,
         productId: String
     ) {
         _removeProductOutState.value = UiState.Loading
         viewModelScope.launch {
-            _removeProductOutState.value = productOutRepository.deleteProductOutByProductId(productId)
+            _removeProductOutState.value = productOutRepository.deleteProductOutByProductId(transactionId, productId)
         }
     }
 }

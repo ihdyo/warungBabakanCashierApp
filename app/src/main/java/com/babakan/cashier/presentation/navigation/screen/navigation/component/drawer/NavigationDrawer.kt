@@ -53,11 +53,11 @@ fun NavigationDrawer(
     onDrawerStateChange: (DrawerValue) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
-    val name = currentUser.name
-    val isOwner = currentUser.isOwner
-
     val context = LocalContext.current
     var dialogState by remember { mutableStateOf(false) }
+
+    val name = currentUser.name
+    val isOwner = currentUser.isOwner
 
     ModalDrawerSheet(Modifier.width(SizeChart.DRAWER_WIDTH.dp)) {
         Column(

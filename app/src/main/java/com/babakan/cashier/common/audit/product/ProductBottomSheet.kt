@@ -45,7 +45,7 @@ fun ProductBottomSheet(
     sheetState: SheetState,
     item: ProductModel = ProductModel(),
     onDismiss: () -> Unit,
-    isAddNew: Boolean = false,
+    isAddNew: Boolean = false
 ) {
     val context = LocalContext.current
 

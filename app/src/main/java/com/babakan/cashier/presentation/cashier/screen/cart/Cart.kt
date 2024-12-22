@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,12 +32,17 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
 import com.babakan.cashier.common.list.ProductOutList
-import com.babakan.cashier.data.dummy.dummyProductOutList
+import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.cashier.screen.cart.component.CustomerData
 import com.babakan.cashier.presentation.cashier.screen.cart.component.CustomerForm
 import com.babakan.cashier.presentation.cashier.screen.cart.component.PrintToPDFDialog
+import com.babakan.cashier.presentation.cashier.viewmodel.CartViewModel
+import com.babakan.cashier.presentation.owner.model.ProductModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
+import com.babakan.cashier.presentation.owner.viewmodel.ProductViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 import com.babakan.cashier.utils.validator.Validator
@@ -43,11 +50,38 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Cart(
+    cartViewModel: CartViewModel = viewModel(),
+    productViewModel: ProductViewModel = viewModel(),
     nestedScrollConnection: NestedScrollConnection,
     snackBarHostState: SnackbarHostState,
     isScrolledDown: Boolean,
     onCartConfirmClick: () -> Unit
 ) {
+    val cartState by cartViewModel.fetchCartState.collectAsState()
+    val productsState by productViewModel.fetchProductsState.collectAsState()
+
+    var cart by remember { mutableStateOf(emptyList<ProductOutModel>()) }
+    var products by remember { mutableStateOf(emptyList<ProductModel>()) }
+
+    var showLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(cartState) {
+        if (cartState is UiState.Loading) {
+            showLoading = true
+        } else if (cartState is UiState.Success) {
+            showLoading = false
+            cart = (cartState as UiState.Success<List<ProductOutModel>>).data
+        }
+    }
+    LaunchedEffect(productsState) {
+        if (productsState is UiState.Loading) {
+            showLoading = true
+        } else if (productsState is UiState.Success) {
+            showLoading = false
+            products = (productsState as UiState.Success<List<ProductModel>>).data
+        }
+    }
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -61,9 +95,11 @@ fun Cart(
     var customerNameError by remember { mutableStateOf<String?>(null) }
     var tableNumberError by remember { mutableStateOf<String?>(null) }
 
-    val productOut = dummyProductOutList
-    val totalItem = productOut.sumOf { it.quantity }
-    val totalPrice = productOut.sumOf { it.price * it.quantity }
+    val totalItem = cart.sumOf { it.quantity }
+    val totalPrice = cart.sumOf {
+        val product = products.find { product -> product.id == it.productId }
+        product?.price ?: 0.0
+    }
 
     Box(Modifier.fillMaxSize()) {
         Column(
@@ -133,8 +169,10 @@ fun Cart(
                 ) {
                     item {
                         ProductOutList(
+                            productViewModel = productViewModel,
                             isEditable = true,
-                            productOutItem = productOut
+                            isCart = true,
+                            productOutItem = cart
                         )
                     }
                 }

@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 
 data class ProductOutModel(
-    val id: String = "",
+    val productId: String = "",
     val createdAt: Timestamp = Timestamp.now(),
     var updateAt: Timestamp = Timestamp.now(),
     var price: Double = 0.0,
@@ -14,7 +14,7 @@ data class ProductOutModel(
     
     fun toJson(): Map<String, Any> {
         return mapOf(
-            RemoteData.FIELD_ID to id,
+            RemoteData.FIELD_PRODUCT_ID to productId,
             RemoteData.FIELD_CREATED_AT to createdAt,
             RemoteData.FIELD_UPDATE_AT to updateAt,
             RemoteData.FIELD_PRICE to price,
@@ -24,14 +24,14 @@ data class ProductOutModel(
     
     companion object {
         fun fromDocumentSnapshot(documentSnapshot: DocumentSnapshot): ProductOutModel {
-            val id = documentSnapshot.getString(RemoteData.FIELD_ID) ?: ""
+            val id = documentSnapshot.getString(RemoteData.FIELD_PRODUCT_ID) ?: ""
             val createdAt = documentSnapshot.getTimestamp(RemoteData.FIELD_CREATED_AT) ?: Timestamp.now()
             val updateAt = documentSnapshot.getTimestamp(RemoteData.FIELD_UPDATE_AT) ?: Timestamp.now()
             val price = documentSnapshot.getDouble(RemoteData.FIELD_PRICE) ?: 0.0
             val quantity = documentSnapshot.getLong(RemoteData.FIELD_QUANTITY) ?: 0
             
             return ProductOutModel(
-                id = id,
+                productId = id,
                 createdAt = createdAt,
                 updateAt = updateAt,
                 price = price,

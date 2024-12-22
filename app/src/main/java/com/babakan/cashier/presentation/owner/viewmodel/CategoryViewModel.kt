@@ -28,6 +28,10 @@ class CategoryViewModel(
     private val _deleteCategoryState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteCategoryState: StateFlow<UiState<Unit>> = _deleteCategoryState
 
+    init {
+        fetchCategories()
+    }
+
     fun fetchCategories() {
         _fetchCategoriesState.value = UiState.Loading
         viewModelScope.launch {

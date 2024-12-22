@@ -28,6 +28,13 @@ class ProductViewModel(
     private val _deleteProductState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteProductState: StateFlow<UiState<Unit>> = _deleteProductState
 
+    private val _searchProductByCategoryState = MutableStateFlow<UiState<List<ProductModel>>>(UiState.Idle)
+    val searchProductByCategoryState: StateFlow<UiState<List<ProductModel>>> = _searchProductByCategoryState
+
+    init {
+        fetchProducts()
+    }
+
     fun fetchProducts() {
         _fetchProductsState.value = UiState.Loading
         viewModelScope.launch {
@@ -70,6 +77,16 @@ class ProductViewModel(
         _deleteProductState.value = UiState.Loading
         viewModelScope.launch {
             _deleteProductState.value = productRepository.deleteProductById(productId)
+        }
+    }
+
+    fun searchProductByCategory(
+        categoryId: String,
+        isShowAll: Boolean
+    ) {
+        _searchProductByCategoryState.value = UiState.Loading
+        viewModelScope.launch {
+            _searchProductByCategoryState.value = productRepository.searchProductsByCategoryId(categoryId, isShowAll)
         }
     }
 }

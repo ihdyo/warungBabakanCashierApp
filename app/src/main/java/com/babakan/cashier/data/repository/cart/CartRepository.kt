@@ -2,23 +2,29 @@ package com.babakan.cashier.data.repository.cart
 
 import com.babakan.cashier.utils.constant.RemoteData
 import com.babakan.cashier.data.state.UiState
-import com.babakan.cashier.presentation.cashier.model.CartModel
+import com.babakan.cashier.presentation.owner.model.ProductOutModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class CartRepository(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
-    private val cartCollection = firestore.collection(RemoteData.COLLECTION_CART)
+    private val currentUserId = auth.currentUser?.uid.toString()
+    private val cartCollection = firestore
+        .collection(RemoteData.COLLECTION_USERS)
+        .document(currentUserId)
+        .collection(RemoteData.COLLECTION_CART)
 
-    suspend fun getCart(): UiState<List<CartModel>> {
+    suspend fun getCart(): UiState<List<ProductOutModel>> {
         return try {
             val snapshot = cartCollection
                 .get()
                 .await()
 
             val cart = snapshot.documents.mapNotNull { doc ->
-                if (doc.exists()) CartModel.fromDocumentSnapshot(doc) else null
+                if (doc.exists()) ProductOutModel.fromDocumentSnapshot(doc) else null
             }
 
             UiState.Success(cart)
@@ -28,7 +34,7 @@ class CartRepository(
     }
 
     suspend fun createCart(
-        cartData: CartModel
+        cartData: ProductOutModel
     ): UiState<Unit> {
         return try {
             cartCollection

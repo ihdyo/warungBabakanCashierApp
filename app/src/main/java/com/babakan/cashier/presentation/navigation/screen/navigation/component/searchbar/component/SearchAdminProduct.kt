@@ -27,9 +27,10 @@ fun SearchAdminProduct(
     onResultCountChange(products.size)
 
     ProductList(
+        products = products,
+        categories = emptyList(), // TODO: Change This
         temporaryCartViewModel = temporaryCartViewModel,
         nestedScrollConnection = nestedScrollConnection,
-        products = products,
         isAdmin = true
     ) { item ->
         onItemSelected(item)

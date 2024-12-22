@@ -19,23 +19,21 @@ import com.babakan.cashier.utils.constant.SizeChart
 
 @Composable
 fun ProductList(
+    products: List<ProductModel>,
+    categories: List<CategoryModel>,
     temporaryCartViewModel: TemporaryCartViewModel = viewModel(),
     nestedScrollConnection: NestedScrollConnection,
-    products: List<ProductModel>,
     isAdmin: Boolean = false,
     isCountable: Boolean = false,
     onAdminEdit: (ProductModel) -> Unit = {}
 ) {
-
-    val category = dummyCategoryList
-
     LazyColumn(
         contentPadding = tabContentPadding(),
         verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
         modifier = Modifier.nestedScroll(nestedScrollConnection)
     ) {
         itemsIndexed(products) { index, item ->
-            val categoryItem = category.find { it.id == item.categoryId } ?: CategoryModel()
+            val categoryItem = categories.find { it.id == item.categoryId } ?: CategoryModel()
 
             ProductItem(
                 temporaryCartViewModel = temporaryCartViewModel,
