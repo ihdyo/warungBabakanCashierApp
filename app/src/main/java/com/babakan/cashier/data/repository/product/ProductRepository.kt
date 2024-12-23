@@ -120,17 +120,13 @@ class ProductRepository(
     }
 
     suspend fun searchProductsByCategoryId(
-        categoryId: String,
-        isShowAll: Boolean
+        categoryId: String
     ): UiState<List<ProductModel>> {
         return try {
-            val query = if (isShowAll) {
-                productCollection
-            } else {
-                productCollection.whereEqualTo(RemoteData.FIELD_CATEGORY_ID, categoryId)
-            }
-
-            val snapshot = query.get().await()
+            val snapshot = productCollection
+                .whereEqualTo(RemoteData.FIELD_CATEGORY_ID, categoryId)
+                .get()
+                .await()
 
             val products = snapshot.documents.mapNotNull { doc ->
                 if (doc.exists()) ProductModel.fromDocumentSnapshot(doc) else null

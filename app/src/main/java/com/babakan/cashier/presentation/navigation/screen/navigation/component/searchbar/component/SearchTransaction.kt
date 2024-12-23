@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.list.TransactionList
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.dummy.dummyTransactionList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.viewmodel.TransactionViewModel
@@ -32,20 +33,24 @@ fun SearchTransaction(
     val searchTransactionByDateRange by transactionViewModel.searchTransactionDateRangeState.collectAsState()
     val usersState by userViewModel.fetchUsersState.collectAsState()
 
-    LaunchedEffect(query, dateRange) {
-        if (isReportByTransactionNumber) {
-            transactionViewModel.searchTransactionsByTransactionId(query)
-        }
-        if (isReportByCashier) {
-            transactionViewModel.searchTransactionsByUserName(query)
-        }
-        if (isReportByDate) {
-            if (dateRange != null) {
-                transactionViewModel.searchTransactionsByDateRange(
-                    Timestamp(Date(dateRange.first!!)),
-                    Timestamp(Date(dateRange.second!!))
-                )
+    LaunchedEffect(query, dateRange, isSearchActive) {
+        if (isSearchActive) {
+            if (isReportByTransactionNumber) {
+                transactionViewModel.searchTransactionsByTransactionId(query)
             }
+            if (isReportByCashier) {
+                transactionViewModel.searchTransactionsByUserName(query)
+            }
+            if (isReportByDate) {
+                if (dateRange != null) {
+                    transactionViewModel.searchTransactionsByDateRange(
+                        Timestamp(Date(dateRange.first!!)),
+                        Timestamp(Date(dateRange.second!!))
+                    )
+                }
+            }
+        } else {
+            transactionViewModel.resetSearchState()
         }
     }
 
@@ -67,35 +72,19 @@ fun SearchTransaction(
     } else {
         emptyList()
     }
+
     val users = when (val state = usersState) {
         is UiState.Success -> state.data
         else -> emptyList()
     }
 
-    if (isSearchActive) {
-        if (isReportByTransactionNumber) {
-            transactionViewModel.searchTransactionsByTransactionId(query)
-        }
-        if (isReportByCashier) {
-            transactionViewModel.searchTransactionsByUserName(query)
-        }
-        if (isReportByDate) {
-            if (dateRange != null) {
-                transactionViewModel.searchTransactionsByDateRange(
-                    Timestamp(Date(dateRange.first!!)),
-                    Timestamp(Date(dateRange.second!!))
-                )
-            }
-        }
-    }
-
-    if (!isSearchActive) {
-        transactionViewModel.resetSearchState()
-        return
-    }
+    val showLoading = searchTransactionByTransactionId is UiState.Loading
+            || searchTransactionByUserName is UiState.Loading
+            || searchTransactionByDateRange is UiState.Loading
 
     onResultCountChange(transactions.size)
 
+    if (showLoading) { FullscreenLoading() }
     TransactionList(
         transactions = transactions,
         users = users,

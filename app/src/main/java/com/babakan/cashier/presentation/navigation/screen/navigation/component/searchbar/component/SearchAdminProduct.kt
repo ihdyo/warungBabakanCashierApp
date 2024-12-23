@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.list.ProductList
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.dummy.dummyProductList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.model.ProductModel
@@ -52,8 +53,11 @@ fun SearchAdminProduct(
         return
     }
 
+    val showLoading = searchProductByNameState is UiState.Loading
+
     onResultCountChange(products.size)
 
+    if (showLoading) { FullscreenLoading() }
     ProductList(
         products = products,
         categories = categories,

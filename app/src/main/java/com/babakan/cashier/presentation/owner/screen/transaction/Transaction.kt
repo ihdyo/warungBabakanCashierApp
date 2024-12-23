@@ -28,6 +28,7 @@ fun Transaction(
         is UiState.Success -> state.data
         else -> emptyList()
     }
+
     val transactions = when (val state = transactionState) {
         is UiState.Success -> state.data
         else -> emptyList()

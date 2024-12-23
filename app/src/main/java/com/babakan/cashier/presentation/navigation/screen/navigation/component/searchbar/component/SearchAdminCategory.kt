@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.list.CategoryList
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.viewmodel.CategoryViewModel
@@ -39,8 +40,11 @@ fun SearchAdminCategory(
         categoryViewModel.resetSearchState()
     }
 
+    val showLoading = searchCategoryState is UiState.Loading
+
     onResultCountChange(categories.size)
 
+    if (showLoading) { FullscreenLoading() }
     CategoryList(
         nestedScrollConnection = nestedScrollConnection,
         categories = categories,

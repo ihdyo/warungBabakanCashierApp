@@ -3,6 +3,7 @@ package com.babakan.cashier.data.repository.user
 import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.utils.constant.RemoteData
 import com.babakan.cashier.data.state.UiState
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
@@ -12,8 +13,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class UserRepository(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
+    private val currentUserId = auth.currentUser?.uid.toString()
     private val userCollection = firestore.collection(RemoteData.COLLECTION_USERS)
 
     suspend fun getUsers(): UiState<List<UserModel>> {
@@ -58,13 +61,11 @@ class UserRepository(
         userData: UserModel
     ): UiState<Unit> {
         return try {
-            val documentRef = userCollection.add(userData.toJson()).await()
-
-            val updatedUserData = userData.copy(id = documentRef.id)
+            val userId = userData.id
 
             userCollection
-                .document(documentRef.id)
-                .set(updatedUserData.toJson())
+                .document(userId)
+                .set(userData.toJson(), SetOptions.merge())
                 .await()
 
             UiState.Success(Unit)
@@ -89,7 +90,7 @@ class UserRepository(
         }
     }
 
-    suspend fun updateUserSingleField(
+    private suspend fun updateUserSingleField(
         userId: String,
         fieldName: String,
         newValue: Any
@@ -149,14 +150,12 @@ class UserRepository(
         }
     }
 
-
     suspend fun searchUsersByUsername(
         query: String
     ): UiState<List<UserModel>> {
         return try {
             val snapshot = userCollection
-                .whereGreaterThanOrEqualTo(RemoteData.FIELD_USERNAME, query)
-                .whereLessThanOrEqualTo(RemoteData.FIELD_USERNAME, query + "\uf8ff")
+                .whereEqualTo(RemoteData.FIELD_USERNAME, query)
                 .get()
                 .await()
 
@@ -170,11 +169,9 @@ class UserRepository(
         }
     }
 
-    fun listenIsActiveById(
-        userId: String
-    ): Flow<Boolean> = callbackFlow {
+    fun listenCurrentUserIsActive(): Flow<Boolean> = callbackFlow {
         val listenerRegistration: ListenerRegistration = userCollection
-            .document(userId)
+            .document(currentUserId)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)

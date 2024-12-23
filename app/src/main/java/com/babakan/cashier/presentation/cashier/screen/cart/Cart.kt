@@ -75,7 +75,7 @@ fun Cart(
     productViewModel: ProductViewModel = viewModel(),
     transactionViewModel: TransactionViewModel = viewModel(),
     productOutViewModel: ProductOutViewModel = viewModel(),
-    authViewModel: AuthViewModel = viewModel(),
+    currentUser: UserModel,
     nestedScrollConnection: NestedScrollConnection,
     snackBarHostState: SnackbarHostState,
     isScrolledDown: Boolean,
@@ -83,7 +83,6 @@ fun Cart(
 ) {
     val productsState by productViewModel.fetchProductsState.collectAsState()
     val createTransactionState by transactionViewModel.createTransactionState.collectAsState()
-    val currentUserState by authViewModel.currentUserState.collectAsState()
     val clearCartState by cartViewModel.clearCartState.collectAsState()
     val addProductOutState by productOutViewModel.addProductOutState.collectAsState()
 
@@ -151,7 +150,7 @@ fun Cart(
         }
     }
 
-    val transactionIdBuilder = Timestamp.now().toDate().time.toString() // TODO: IMPROVE THIS IF NEEDED
+    val transactionIdBuilder = Timestamp.now().toDate().time.toString()
     val onCreateTransaction = {
         scope.launch {
             val prices = products.filter { it.id in cart.map { it.productId } }.map { it.price }
@@ -168,7 +167,7 @@ fun Cart(
                     transactionId = transactionIdBuilder,
                     createdAt = Timestamp.now(),
                     updateAt = Timestamp.now(),
-                    userId = (currentUserState as UiState.Success<UserModel>).data.id,
+                    userId = currentUser.id,
                     tableNumber = tableNumber.toInt(),
                     customerName = customerName,
                     totalPrice = totalPrice,

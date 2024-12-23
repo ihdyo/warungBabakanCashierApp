@@ -19,7 +19,6 @@ import com.babakan.cashier.utils.formatter.Formatter
 @Composable
 fun ProductThumbnailItem(
     temporaryCartViewModel: TemporaryCartViewModel,
-    index : Int,
     productItem: ProductModel,
     categoryItem: CategoryModel
 ) {

@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
 import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
@@ -21,13 +20,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Login(
-    authViewModel: AuthViewModel = viewModel(),
+    authViewModel: AuthViewModel,
     authScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     onNavigateToRegister: () -> Unit
 ) {
     val context = LocalContext.current
-    val uiState by authViewModel.authState.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -36,6 +35,7 @@ fun Login(
     var passwordError by remember { mutableStateOf<String?>(null) }
 
     Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
+        if (authState is UiState.Loading) { FullscreenLoading() }
         Column(
             Modifier
                 .fillMaxSize()
@@ -75,16 +75,6 @@ fun Login(
                 { onNavigateToRegister() },
                 Modifier.fillMaxWidth(),
             ) { Text(stringResource(R.string.registerPrompt)) }
-        }
-        when (uiState) {
-            is UiState.Loading -> { FullscreenLoading() }
-            is UiState.Error -> {
-                val error = (uiState as UiState.Error)
-                LaunchedEffect(error.message) {
-                    snackBarHostState.showSnackbar(error.message)
-                }
-            }
-            else -> {}
         }
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -64,7 +65,6 @@ import com.babakan.cashier.utils.animation.scaleInAnimation
 import com.babakan.cashier.utils.animation.scaleOutAnimation
 import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.MainScreenState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -76,9 +76,7 @@ fun MainNavigation(
     userViewModel: UserViewModel = viewModel(),
     temporaryCartViewModel: TemporaryCartViewModel = viewModel(),
     authViewModel: AuthViewModel,
-    authScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
-    onNavigateToLogin: () -> Unit
 ) {
     val currentUserState by authViewModel.currentUserState.collectAsState()
     val productsState by productViewModel.fetchProductsState.collectAsState()
@@ -165,6 +163,8 @@ fun MainNavigation(
         }
     }
 
+    var selectedCategory by remember { mutableStateOf<CategoryModel?>(null) }
+
     val mainScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val sheetState = rememberModalBottomSheetState()
@@ -195,6 +195,9 @@ fun MainNavigation(
     val isAdminUser = pagerState.currentPage == 2
 
     var isScrolledDown by remember { mutableStateOf(true) }
+    if (isMenu || isTransaction || isAdmin) {
+        isScrolledDown = true
+    }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -229,8 +232,6 @@ fun MainNavigation(
         temporaryCartViewModel.clearTemporaryCart()
     }
 
-    val isOwner = currentUser.isOwner
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = currentDestination != MainScreenState.CART.name && !isSearchActive,
@@ -238,11 +239,7 @@ fun MainNavigation(
             NavigationDrawer(
                 authViewModel = authViewModel,
                 currentUser = currentUser,
-                authScope = authScope,
-                mainScope = mainScope,
-                snackBarHostState = snackBarHostState,
-                onDrawerStateChange = { mainScope.launch { drawerState.close() } },
-                onNavigateToLogin = onNavigateToLogin
+                onDrawerStateChange = { mainScope.launch { drawerState.close() } }
             )
         }
     ) {
@@ -254,12 +251,8 @@ fun MainNavigation(
                     temporaryCartViewModel = temporaryCartViewModel,
                     cart = cart,
                     categories = categories,
-                    onCategorySelected = {
-                        productViewModel.searchProductByCategory(it.id, false)
-                    },
-                    onAllCategorySelected = {
-                        productViewModel.searchProductByCategory("", true)
-                    },
+                    onCategorySelected = { category -> selectedCategory = category },
+                    onAllCategorySelected = { selectedCategory = null },
                     isHome = isMenu,
                     isReport = isTransaction,
                     isAdmin = isAdmin,
@@ -308,7 +301,7 @@ fun MainNavigation(
                 )
             },
             bottomBar = {
-                if (isOwner) {
+                if (currentUser.isOwner) {
                     NavigationBottomBar(
                         navController = navController,
                         currentDestination = currentDestination,
@@ -317,57 +310,55 @@ fun MainNavigation(
                 }
             },
         ) { paddingValues ->
-            NavHost(
-                navController,
-                MainScreenState.MENU.name,
-                enterTransition = { scaleInAnimation(Duration.ANIMATION_MEDIUM) + fadeInAnimation(Duration.ANIMATION_MEDIUM) },
-                exitTransition = { scaleOutAnimation(Duration.ANIMATION_MEDIUM) + fadeOutAnimation(Duration.ANIMATION_MEDIUM) },
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                composable(MainScreenState.MENU.name) {
-                    Home(
-                        products = products,
-                        categories = categories,
-                        temporaryCartViewModel = temporaryCartViewModel,
-                        nestedScrollConnection = nestedScrollConnection,
-                        isFabShown = isFabShown,
-                        showLoading = showLoading
-                    )
-                }
-                composable(MainScreenState.REPORT.name) {
-                    Transaction(
-                        userViewModel = userViewModel,
-                        nestedScrollConnection = nestedScrollConnection
-                    )
-                }
-                composable(MainScreenState.ADMIN.name) {
-                    Admin(
-                        productViewModel = productViewModel,
-                        categoryViewModel = categoryViewModel,
-                        userViewModel = userViewModel,
-                        nestedScrollConnection = nestedScrollConnection,
-                        pagerState = pagerState,
-                        onSelectedAdminTabIndex = onSelectedAdminTabIndex,
-                        onAuditStateChange = { auditSheetState = it },
-                        onItemSelected = { item ->
-                            selectedAuditItem = item
-                            auditSheetState = when (item) {
-                                is AdminItem.Product -> AuditState.PRODUCT
-                                is AdminItem.Category -> AuditState.CATEGORY
-                                is AdminItem.User -> AuditState.USER
+            Surface {
+                NavHost(
+                    navController,
+                    MainScreenState.MENU.name,
+                    enterTransition = { scaleInAnimation(Duration.ANIMATION_MEDIUM) + fadeInAnimation(Duration.ANIMATION_MEDIUM) },
+                    exitTransition = { scaleOutAnimation(Duration.ANIMATION_MEDIUM) + fadeOutAnimation(Duration.ANIMATION_MEDIUM) },
+                    modifier = Modifier.padding(paddingValues)
+                ) {
+                    composable(MainScreenState.MENU.name) {
+                        Home(
+                            temporaryCartViewModel = temporaryCartViewModel,
+                            selectedCategory = selectedCategory,
+                            nestedScrollConnection = nestedScrollConnection,
+                            isFabShown = isFabShown
+                        )
+                    }
+                    composable(MainScreenState.REPORT.name) {
+                        Transaction(
+                            userViewModel = userViewModel,
+                            nestedScrollConnection = nestedScrollConnection
+                        )
+                    }
+                    composable(MainScreenState.ADMIN.name) {
+                        Admin(
+                            nestedScrollConnection = nestedScrollConnection,
+                            pagerState = pagerState,
+                            onSelectedAdminTabIndex = onSelectedAdminTabIndex,
+                            onAuditStateChange = { auditSheetState = it },
+                            onItemSelected = { item ->
+                                selectedAuditItem = item
+                                auditSheetState = when (item) {
+                                    is AdminItem.Product -> AuditState.PRODUCT
+                                    is AdminItem.Category -> AuditState.CATEGORY
+                                    is AdminItem.User -> AuditState.USER
+                                }
                             }
-                        }
-                    )
-                }
-                composable(MainScreenState.CART.name) {
-                    Cart(
-                        cartViewModel = cartViewModel,
-                        cart = cart,
-                        nestedScrollConnection = nestedScrollConnection,
-                        snackBarHostState = snackBarHostState,
-                        isScrolledDown = isScrolledDown,
-                        cartTriggerEvent = { cartTriggerEvent = it }
-                    )
+                        )
+                    }
+                    composable(MainScreenState.CART.name) {
+                        Cart(
+                            cartViewModel = cartViewModel,
+                            cart = cart,
+                            currentUser = currentUser,
+                            nestedScrollConnection = nestedScrollConnection,
+                            snackBarHostState = snackBarHostState,
+                            isScrolledDown = isScrolledDown,
+                            cartTriggerEvent = { cartTriggerEvent = it }
+                        )
+                    }
                 }
             }
             when (auditSheetState) {

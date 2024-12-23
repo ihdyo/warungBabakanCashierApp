@@ -1,6 +1,5 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer.component
 
-import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.AlertDialog
@@ -9,55 +8,27 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.content.ContextCompat.getString
 import com.babakan.cashier.R
 import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun LogoutDialog(
     authViewModel: AuthViewModel,
-    context: Context,
-    authScope: CoroutineScope,
-    mainScope: CoroutineScope,
     setDialogState: (Boolean) -> Unit,
     onDrawerStateChange: (DrawerValue) -> Unit,
-    snackBarHostState: SnackbarHostState,
-    onNavigateToLogin: () -> Unit,
 ) {
+    val signOutState by authViewModel.signOutState.collectAsState()
 
-    val authState by authViewModel.authState.collectAsState()
-
-    if (authState is UiState.Loading) FullscreenLoading()
-    LaunchedEffect(authState) {
-        when (authState) {
-            is UiState.Error -> {
-                mainScope.launch(Dispatchers.Main) {
-                    snackBarHostState.showSnackbar(getString(context, R.string.logoutFailed))
-                }
-            }
-            is UiState.Success -> {
-                authScope.launch(Dispatchers.Main) {
-                    snackBarHostState.showSnackbar(getString(context, R.string.logoutSuccess))
-                }
-                onNavigateToLogin()
-            }
-            else -> {}
-        }
-    }
+    if (signOutState is UiState.Loading) FullscreenLoading()
 
     AlertDialog(
         icon = {
@@ -84,10 +55,13 @@ fun LogoutDialog(
         confirmButton = {
             Button(
                 {
-                    authViewModel.signOutUser()
-                    setDialogState(false)
-                    onDrawerStateChange(DrawerValue.Closed)
+                    if (signOutState !is UiState.Loading) {
+                        setDialogState(false)
+                        onDrawerStateChange(DrawerValue.Closed)
+                        authViewModel.signOutUser()
+                    }
                 },
+                enabled = signOutState !is UiState.Loading,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer

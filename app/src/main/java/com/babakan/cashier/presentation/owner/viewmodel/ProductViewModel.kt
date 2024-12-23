@@ -56,15 +56,6 @@ class ProductViewModel(
         }
     }
 
-    fun fetchProductById(
-        id: String
-    ) {
-        _fetchProductByIdState.value = UiState.Loading
-        viewModelScope.launch {
-            _fetchProductByIdState.value = productRepository.getProductById(id)
-        }
-    }
-
     fun createProduct(
         productData: ProductModel
     ) {
@@ -103,12 +94,11 @@ class ProductViewModel(
     }
 
     fun searchProductByCategory(
-        categoryId: String,
-        isShowAll: Boolean
+        categoryId: String
     ) {
         _searchProductByCategoryState.value = UiState.Loading
         viewModelScope.launch {
-            _searchProductByCategoryState.value = productRepository.searchProductsByCategoryId(categoryId, isShowAll)
+            _searchProductByCategoryState.value = productRepository.searchProductsByCategoryId(categoryId)
         }
     }
 }

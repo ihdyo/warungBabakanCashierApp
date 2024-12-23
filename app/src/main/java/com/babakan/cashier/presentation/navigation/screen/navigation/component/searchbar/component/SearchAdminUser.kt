@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.list.UserList
+import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.dummy.dummyUserList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
@@ -41,8 +42,11 @@ fun SearchAdminUser(
         return
     }
 
+    val showLoading = searchUserState is UiState.Loading
+
     onResultCountChange(users.size)
 
+    if (showLoading) { FullscreenLoading() }
     UserList(
         nestedScrollConnection = nestedScrollConnection,
         users = users,

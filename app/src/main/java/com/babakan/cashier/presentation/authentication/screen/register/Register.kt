@@ -24,8 +24,7 @@ fun Register(
     authViewModel: AuthViewModel = viewModel(),
     authScope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToMain: () -> Unit
+    onNavigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -43,9 +42,8 @@ fun Register(
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState) }
-    ) { innerPadding ->
+    Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
+        if (uiState is UiState.Loading) { FullscreenLoading() }
         Column(
             Modifier
                 .fillMaxSize()
@@ -98,17 +96,5 @@ fun Register(
                 Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.loginPrompt)) }
         }
-        when (uiState) {
-            is UiState.Loading -> { FullscreenLoading() }
-            is UiState.Success -> { onNavigateToMain() }
-            is UiState.Error -> {
-                val error = (uiState as UiState.Error)
-                LaunchedEffect(error.message) {
-                    snackBarHostState.showSnackbar(error.message)
-                }
-            }
-            else -> {}
-        }
-
     }
 }

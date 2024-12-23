@@ -9,8 +9,12 @@ import kotlinx.coroutines.tasks.await
 
 class AuthRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val userRepository: UserRepository = UserRepository()
+    private val userRepository: UserRepository = UserRepository(),
 ) {
+
+    fun isUserSignedIn(): Boolean {
+        return auth.currentUser != null
+    }
 
     suspend fun signUpUser(
         name: String,
@@ -20,7 +24,7 @@ class AuthRepository(
     ): UiState<String> {
         return try {
             val usernameResult = userRepository.searchUsersByUsername(username)
-            if (usernameResult is UiState.Success && usernameResult.data != null) {
+            if (usernameResult is UiState.Success && usernameResult.data.isNotEmpty()) {
                 return UiState.Error("Registrasi Gagal", "Nama pengguna sudah digunakan.")
             }
 
@@ -35,7 +39,7 @@ class AuthRepository(
                 name = name,
                 email = email,
                 isOwner = false,
-                isActive = true
+                isActive = false
             )
             val saveResult = userRepository.createUser(userModel)
             if (saveResult is UiState.Success) {
@@ -48,7 +52,10 @@ class AuthRepository(
         }
     }
 
-    suspend fun loginUser(email: String, password: String): UiState<String> {
+    suspend fun loginUser(
+        email: String,
+        password: String
+    ): UiState<String> {
         return try {
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
             if (authResult.user != null) {

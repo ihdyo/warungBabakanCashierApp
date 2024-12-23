@@ -8,7 +8,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.common.list.ProductList
 import com.babakan.cashier.common.ui.FullscreenLoading
-import com.babakan.cashier.data.dummy.dummyProductList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.presentation.owner.viewmodel.CategoryViewModel
@@ -24,7 +23,7 @@ fun SearchProduct(
     onResultCountChange: (Int) -> Unit,
     isSearchActive: Boolean
 ) {
-    val searchProductByNameState by productViewModel.searchProductByNameState.collectAsState()
+    val searchProductState by productViewModel.searchProductByNameState.collectAsState()
     val categoriesState by categoryViewModel.fetchCategoriesState.collectAsState()
 
     LaunchedEffect(query) {
@@ -33,10 +32,11 @@ fun SearchProduct(
         }
     }
 
-    val products = when (val state = searchProductByNameState) {
+    val products = when (val state = searchProductState) {
         is UiState.Success -> state.data
         else -> emptyList()
     }
+
     val categories = when (val state = categoriesState) {
         is UiState.Success -> state.data
         else -> emptyList()
@@ -47,12 +47,11 @@ fun SearchProduct(
         return
     }
 
-    val showLoading = searchProductByNameState is UiState.Loading
+    val showLoading = searchProductState is UiState.Loading
 
     onResultCountChange(products.size)
 
     if (showLoading) { FullscreenLoading() }
-
     ProductList(
         products = products,
         categories = categories,
