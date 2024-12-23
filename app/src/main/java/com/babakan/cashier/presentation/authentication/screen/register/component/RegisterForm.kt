@@ -102,7 +102,6 @@ fun RegisterForm(
             ),
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             isError = passwordError != null,
             value = password,
@@ -112,9 +111,14 @@ fun RegisterForm(
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(Icons.Outlined.LockOpen, stringResource(R.string.name)) },
-            trailingIcon = { IconButton({ passwordVisible = !passwordVisible }) { Icon(if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff, stringResource(
-                R.string.name)
-            ) } },
+            trailingIcon = {
+                IconButton({ passwordVisible = !passwordVisible }) {
+                    Icon(
+                        if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
+                        stringResource(R.string.password)
+                    )
+                }
+            },
             supportingText = { passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
             shape = MaterialTheme.shapes.medium,
             colors = OutlinedTextFieldDefaults.colors(
@@ -133,9 +137,14 @@ fun RegisterForm(
             visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation('●'),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(Icons.Outlined.Lock, stringResource(R.string.name)) },
-            trailingIcon = { IconButton({ confirmPasswordVisible = !confirmPasswordVisible }) { Icon(if (confirmPasswordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff, stringResource(
-                R.string.name)
-            ) } },
+            trailingIcon = {
+                IconButton({ confirmPasswordVisible = !confirmPasswordVisible }) {
+                    Icon(
+                        if (confirmPasswordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
+                        stringResource(R.string.confirmPassword)
+                    )
+                }
+            },
             supportingText = { confirmPasswordError?.let { Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) } },
             shape = MaterialTheme.shapes.medium,
             colors = OutlinedTextFieldDefaults.colors(

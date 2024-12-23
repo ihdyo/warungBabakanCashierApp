@@ -91,7 +91,7 @@ fun MainScreen(
             }
             is UiState.Error -> {
                 val error = (authState as UiState.Error)
-                snackBarHostState.showSnackbar(error.title, error.message)
+                snackBarHostState.showSnackbar(error.message)
             }
             else -> {}
         }
