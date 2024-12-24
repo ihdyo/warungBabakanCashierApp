@@ -23,6 +23,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.babakan.cashier.R
 import com.babakan.cashier.common.item.TransactionItem
 import com.babakan.cashier.presentation.authentication.model.UserModel
@@ -34,7 +35,8 @@ import com.babakan.cashier.utils.constant.SizeChart
 fun TransactionList(
     transactions: List<TransactionModel>,
     users: List<UserModel>,
-    nestedScrollConnection: NestedScrollConnection
+    nestedScrollConnection: NestedScrollConnection,
+    navController: NavController
 ) {
     var expandedIndex by remember { mutableIntStateOf(-1) }
 
@@ -61,7 +63,8 @@ fun TransactionList(
                     isExpanded = isExpanded,
                     onExpand = {
                         expandedIndex = if (isExpanded) -1 else index
-                    }
+                    },
+                    navController = navController
                 )
             }
         }

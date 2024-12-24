@@ -170,7 +170,6 @@ class UserRepository(
         }
     }
 
-
     fun getUserByEmail(
         email: String,
         callback: (UiState<Boolean>
@@ -188,7 +187,6 @@ class UserRepository(
                 callback(UiState.Error("Terjadi kesalahan", e.message.toString()))
             }
     }
-
 
     fun listenCurrentUserIsActive(
         userId: String

@@ -32,4 +32,8 @@ object Formatter {
         val date = Date(millis)
         return dateFormat.format(date)
     }
+
+    fun firstName(name: String): String {
+        return name.split(" ")[0]
+    }
 }

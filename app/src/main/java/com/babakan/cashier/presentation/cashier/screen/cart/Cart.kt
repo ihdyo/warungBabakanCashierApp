@@ -79,7 +79,9 @@ fun Cart(
     nestedScrollConnection: NestedScrollConnection,
     snackBarHostState: SnackbarHostState,
     isScrolledDown: Boolean,
-    cartTriggerEvent: (Boolean) -> Unit
+    cartTriggerEvent: (Boolean) -> Unit,
+    getSuccessTransactionId: (String) -> Unit,
+    onClickToPreview: () -> Unit
 ) {
     val productsState by productViewModel.fetchProductsState.collectAsState()
     val createTransactionState by transactionViewModel.createTransactionState.collectAsState()
@@ -87,6 +89,7 @@ fun Cart(
     val addProductOutState by productOutViewModel.addProductOutState.collectAsState()
 
     var products by remember { mutableStateOf(emptyList<ProductModel>()) }
+    var successTransactionId by remember { mutableStateOf("") }
 
     var showLoading by remember { mutableStateOf(false) }
 
@@ -126,15 +129,18 @@ fun Cart(
             cartViewModel.clearCart()
             cartTriggerEvent(true)
 
+            getSuccessTransactionId(successTransactionId)
+
             showLoading = false
             dialogState = true
         } else if (createTransactionState is UiState.Error) {
-            showLoading = false
+            successTransactionId = ""
             scope.launch(Dispatchers.Main) {
                 snackBarHostState.showSnackbar(
                     context.getString(R.string.transactionFailed)
                 )
             }
+            showLoading = false
         }
     }
     LaunchedEffect(clearCartState) {
@@ -161,10 +167,10 @@ fun Cart(
                     quantity = product.quantity
                 )
             }
-
+            successTransactionId = transactionIdBuilder
             transactionViewModel.createTransaction(
                 TransactionModel(
-                    transactionId = transactionIdBuilder,
+                    transactionId = successTransactionId,
                     createdAt = Timestamp.now(),
                     updateAt = Timestamp.now(),
                     userId = currentUser.id,
@@ -351,9 +357,11 @@ fun Cart(
     }
     if (dialogState) {
         PrintToPDFDialog(
-            context = context,
-            scope = scope,
-            snackBarHostState = snackBarHostState
-        ) { dialogState = false }
+            onConfirm = {
+                dialogState = false
+                onClickToPreview()
+            },
+            onDismiss = { dialogState = false }
+        )
     }
 }

@@ -24,12 +24,14 @@ import com.babakan.cashier.utils.constant.SizeChart
 fun NavigationBottomBar(
     navController: NavController,
     currentDestination: String?,
-    isSearchActive: Boolean
+    isSearchActive: Boolean,
+    isCart: Boolean,
+    isInvoice: Boolean
 ) {
     val isAdmin = true
 
     AnimatedVisibility(
-        visible = isAdmin && !isSearchActive && currentDestination != MainScreenState.CART.name,
+        visible = isAdmin && !isSearchActive && !isCart && !isInvoice,
         enter = slideInTopAnimation(Duration.ANIMATION_SHORT),
         exit = slideOutBottomAnimation(Duration.ANIMATION_SHORT)
     ) {

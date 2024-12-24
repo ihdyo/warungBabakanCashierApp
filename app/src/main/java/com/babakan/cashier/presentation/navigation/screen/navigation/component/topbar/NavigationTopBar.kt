@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.DrawerState
@@ -55,6 +56,7 @@ import com.babakan.cashier.utils.animation.slideInLeftAnimation
 import com.babakan.cashier.utils.animation.slideOutRightAnimation
 import com.babakan.cashier.utils.animation.slideOutTopAnimation
 import com.babakan.cashier.utils.constant.AuditState
+import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +75,7 @@ fun NavigationTopBar(
     isReport: Boolean,
     isAdmin: Boolean,
     isCart: Boolean,
+    isPreview: Boolean,
     isAdminProduct: Boolean,
     isAdminCategory: Boolean,
     isAdminUser: Boolean,
@@ -244,6 +247,18 @@ fun NavigationTopBar(
                     Icon(
                         Icons.AutoMirrored.Default.ArrowBack,
                         stringResource(R.string.back)
+                    )
+                }
+            }
+        )
+    }
+    AnimatedVisibility(isPreview) {
+        TopAppBar({},
+            actions = {
+                IconButton({ navController.navigateUp() }) {
+                    Icon(
+                        Icons.Default.Close,
+                        stringResource(R.string.close)
                     )
                 }
             }

@@ -324,6 +324,7 @@ fun MainSearchBar(
                 isReportByCashier = isReportByCashier,
                 isReportByDate = isReportByDate,
                 isSearchActive = isSearchActive,
+                navController = navController
             )
         }
         AnimatedVisibility(isAdmin && isAdminProduct) {

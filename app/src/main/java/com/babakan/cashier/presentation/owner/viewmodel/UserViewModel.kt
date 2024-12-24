@@ -19,6 +19,9 @@ class UserViewModel(
     private val _addUserState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val addUserState: StateFlow<UiState<Unit>> = _addUserState
 
+    private val _fetchUserByIdState = MutableStateFlow<UiState<UserModel>>(UiState.Idle)
+    val fetchUserByIdState: StateFlow<UiState<UserModel>> = _fetchUserByIdState
+
     private val _updateUserState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val updateUserState: StateFlow<UiState<Unit>> = _updateUserState
 
@@ -74,6 +77,15 @@ class UserViewModel(
         _deleteUserState.value = UiState.Loading
         viewModelScope.launch {
             _deleteUserState.value = userRepository.deleteUser(userId)
+        }
+    }
+
+    fun fetchUserById(
+        userId: String
+    ) {
+        _fetchUserByIdState.value = UiState.Loading
+        viewModelScope.launch {
+            _fetchUserByIdState.value = userRepository.getUserById(userId)
         }
     }
 

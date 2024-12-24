@@ -69,6 +69,12 @@
     <string name="registeredMessage">Akun anda telah terdaftar, silakan hubungi admin untuk mengaktifkan akun</string>
     <string name="limitTransaction">Transaksi yang ditampilkan telah mencapai batas</string>
     <string name="limitTransactionMessage">Gunakan fitur pencarian untuk memuat transaksi lama</string>
+    <string name="printTransaction">Cetak Transaksi</string>
+    <string name="saveToDeviceSuccess">Berhasil menyimpan gambar ke perangkat</string>
+    <string name="saveToDeviceFailed">Gagal menyimpan gambar ke perangkat</string>
+    <string name="shareSuccess">Berhasil dibagikan</string>
+    <string name="shareFailed">Gagal dibagikan</string>
+    <string name="invoice">Bukti Transaksi</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>
@@ -118,7 +124,7 @@
     <string name="paid">Lunas</string>
     <string name="number">No.</string>
     <string name="numberOrder">No. %1$s</string>
-    <string name="totalItem">Total (%1$s barang)</string>
+    <string name="totalItem">Total (%1$s item)</string>
     <string name="countItem">x%1$s</string>
 
     <string name="cancel">Batal</string>
@@ -130,6 +136,8 @@
     <string name="print">Cetak</string>
     <string name="update">Perbarui</string>
     <string name="add">Tambahkan</string>
+    <string name="saveToDevice">Simpan ke Perangkat</string>
+    <string name="share">Bagikan</string>
 
     <string name="expand">Perluas</string>
     <string name="collapse">Perkecil</string>
@@ -142,4 +150,6 @@
     <string name="cart">Keranjang Belanja</string>
     <string name="search">Cari</string>
     <string name="paste">Tempel</string>
+
+    <!--ihd.yo-->
 </resources>

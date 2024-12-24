@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.babakan.cashier.common.list.TransactionList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.viewmodel.TransactionViewModel
@@ -20,6 +21,7 @@ fun Transaction(
     userViewModel: UserViewModel = viewModel(),
     transactionViewModel: TransactionViewModel = viewModel(),
     nestedScrollConnection: NestedScrollConnection,
+    navController: NavController
 ) {
     val usersState by userViewModel.fetchUsersState.collectAsState()
     val transactionState by transactionViewModel.fetchTransactionsState.collectAsState()
@@ -43,7 +45,8 @@ fun Transaction(
         TransactionList(
             transactions = transactions,
             users = users,
-            nestedScrollConnection = nestedScrollConnection
+            nestedScrollConnection = nestedScrollConnection,
+            navController = navController
         )
     }
 }

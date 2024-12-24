@@ -160,7 +160,7 @@ fun UserBottomSheet(
         }
     }
 
-    // TODO: Need Admin SDK to Add, Edit, and Delete Users
+    // TODO: Need Admin SDK to manage users
     val onAddNewItem = {
         userViewModel.createUser(
             userData = UserModel(

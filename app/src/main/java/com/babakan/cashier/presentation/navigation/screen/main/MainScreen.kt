@@ -53,12 +53,12 @@ fun MainScreen(
 
     val toSingleMain = {
         navController.navigate(RouteState.MAIN.name) {
-            popUpTo(RouteState.MAIN.name) { inclusive = true }
+            popUpTo(RouteState.LOGIN.name) { inclusive = true }
         }
     }
     val toSingleLogin = {
         navController.navigate(RouteState.LOGIN.name) {
-            popUpTo(RouteState.LOGIN.name) { inclusive = true }
+            popUpTo(RouteState.MAIN.name) { inclusive = true }
             launchSingleTop = true
         }
     }

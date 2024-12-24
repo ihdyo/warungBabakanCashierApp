@@ -18,6 +18,9 @@ class TransactionViewModel(
     private val _fetchTransactionsState = MutableStateFlow<UiState<List<TransactionModel>>>(UiState.Idle)
     val fetchTransactionsState: StateFlow<UiState<List<TransactionModel>>> = _fetchTransactionsState
 
+    private val _transactionByIdState = MutableStateFlow<UiState<TransactionModel>>(UiState.Idle)
+    val transactionByIdState: StateFlow<UiState<TransactionModel>> = _transactionByIdState
+
     private val _createTransactionState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val createTransactionState: StateFlow<UiState<Unit>> = _createTransactionState
 
@@ -40,10 +43,19 @@ class TransactionViewModel(
         _searchTransactionDateRangeState.value = UiState.Idle
     }
 
-    fun fetchTransactions() {
+    private fun fetchTransactions() {
         _fetchTransactionsState.value = UiState.Loading
         viewModelScope.launch {
             _fetchTransactionsState.value = transactionRepository.getTransactions()
+        }
+    }
+
+    fun fetchTransactionById(
+        transactionId: String
+    ) {
+        _transactionByIdState.value = UiState.Loading
+        viewModelScope.launch {
+            _transactionByIdState.value = transactionRepository.getTransactionById(transactionId)
         }
     }
 

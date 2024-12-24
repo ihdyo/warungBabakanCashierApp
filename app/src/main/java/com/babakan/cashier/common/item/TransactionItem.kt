@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,14 +21,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.babakan.cashier.R
+import com.babakan.cashier.common.component.PrintButtonComponent
 import com.babakan.cashier.common.list.ProductOutList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.presentation.owner.model.TransactionModel
 import com.babakan.cashier.presentation.owner.viewmodel.ProductOutViewModel
+import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.formatter.Formatter
 
@@ -41,7 +42,8 @@ fun TransactionItem(
     transactionItem: TransactionModel,
     userItem: UserModel,
     isExpanded: Boolean,
-    onExpand: (Boolean) -> Unit
+    onExpand: (Boolean) -> Unit = {},
+    navController : NavController,
 ) {
     val productOutState by productOutViewModel.fetchProductOutState.collectAsState()
 
@@ -58,13 +60,14 @@ fun TransactionItem(
 
     Column {
         Card(
-            { onExpand(true) },
+            onClick = { onExpand(true) },
             colors = CardDefaults.cardColors(
-                if (isExpanded) {
+                containerColor = if (isExpanded) {
                     MaterialTheme.colorScheme.surfaceContainerHigh
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer
-                }
+                },
+                disabledContentColor = MaterialTheme.colorScheme.onSurface
             ),
             shape = MaterialTheme.shapes.large
         ) {
@@ -144,14 +147,19 @@ fun TransactionItem(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
-                                Text(userItem.name)
+                                Text(
+                                    Formatter.firstName(userItem.name),
+                                    textAlign = TextAlign.End
+                                )
                             }
                         }
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(transactionItem.notes)
+                        if (transactionItem.notes.isNotBlank()) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Text(transactionItem.notes)
+                        }
                     }
                 }
             }
@@ -159,7 +167,8 @@ fun TransactionItem(
         AnimatedVisibility (isExpanded) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(
+                modifier = Modifier
+                    .padding(
                     vertical = SizeChart.SMALL_SPACE.dp,
                     horizontal = SizeChart.DEFAULT_SPACE.dp
                 )
@@ -183,10 +192,10 @@ fun TransactionItem(
                         )
                     )
                 }
-                IconButton({onExpand(false)}) {
-                    Icon(
-                        Icons.Default.ExpandLess,
-                        stringResource(R.string.collapse),
+                Spacer(Modifier.height(SizeChart.DEFAULT_SPACE.dp))
+                PrintButtonComponent {
+                    navController.navigate(
+                        "${MainScreenState.INVOICE.name}/${transactionItem.transactionId}"
                     )
                 }
             }

@@ -4,7 +4,8 @@ enum class MainScreenState {
     MENU,
     REPORT,
     ADMIN,
-    CART
+    CART,
+    INVOICE
 }
 
 enum class RouteState {

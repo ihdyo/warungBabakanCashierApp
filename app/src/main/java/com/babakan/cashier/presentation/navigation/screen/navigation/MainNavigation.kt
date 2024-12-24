@@ -1,6 +1,5 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -27,10 +26,12 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.babakan.cashier.R
 import com.babakan.cashier.common.audit.category.CategoryBottomSheet
 import com.babakan.cashier.common.audit.product.ProductBottomSheet
@@ -41,6 +42,7 @@ import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.presentation.cashier.screen.cart.Cart
 import com.babakan.cashier.presentation.cashier.screen.home.Home
+import com.babakan.cashier.presentation.cashier.screen.invoice.Invoice
 import com.babakan.cashier.presentation.cashier.viewmodel.CartViewModel
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.bottombar.NavigationBottomBar
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.drawer.NavigationDrawer
@@ -51,12 +53,9 @@ import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.presentation.owner.model.ProductOutModel
-import com.babakan.cashier.presentation.owner.model.TransactionModel
 import com.babakan.cashier.presentation.owner.screen.admin.Admin
 import com.babakan.cashier.presentation.owner.viewmodel.CategoryViewModel
-import com.babakan.cashier.presentation.owner.viewmodel.ProductOutViewModel
 import com.babakan.cashier.presentation.owner.viewmodel.ProductViewModel
-import com.babakan.cashier.presentation.owner.viewmodel.TransactionViewModel
 import com.babakan.cashier.presentation.owner.viewmodel.UserViewModel
 import com.babakan.cashier.utils.animation.Duration
 import com.babakan.cashier.utils.animation.fadeInAnimation
@@ -65,6 +64,7 @@ import com.babakan.cashier.utils.animation.scaleInAnimation
 import com.babakan.cashier.utils.animation.scaleOutAnimation
 import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.MainScreenState
+import com.babakan.cashier.utils.constant.RemoteData
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -95,6 +95,8 @@ fun MainNavigation(
     var categoryTriggerEvent by remember { mutableStateOf(false) }
     var cartTriggerEvent by remember { mutableStateOf(false) }
     var userTriggerEvent by remember { mutableStateOf(false) }
+
+    var successTransactionId by remember { mutableStateOf("") }
 
     var showLoading by remember { mutableStateOf(false) }
 
@@ -190,6 +192,7 @@ fun MainNavigation(
     val isTransaction = currentDestination == MainScreenState.REPORT.name
     val isAdmin = currentDestination == MainScreenState.ADMIN.name
     val isCart = currentDestination == MainScreenState.CART.name
+    val isInvoice = navController.currentDestination?.route?.contains(MainScreenState.INVOICE.name) == true
     val isAdminProduct = pagerState.currentPage == 0
     val isAdminCategory = pagerState.currentPage == 1
     val isAdminUser = pagerState.currentPage == 2
@@ -257,6 +260,7 @@ fun MainNavigation(
                     isReport = isTransaction,
                     isAdmin = isAdmin,
                     isCart = isCart,
+                    isPreview = isInvoice,
                     isAdminProduct = isAdminProduct,
                     isAdminCategory = isAdminCategory,
                     isAdminUser = isAdminUser,
@@ -305,7 +309,9 @@ fun MainNavigation(
                     NavigationBottomBar(
                         navController = navController,
                         currentDestination = currentDestination,
-                        isSearchActive = isSearchActive
+                        isSearchActive = isSearchActive,
+                        isCart = isCart,
+                        isInvoice = isInvoice
                     )
                 }
             },
@@ -329,7 +335,8 @@ fun MainNavigation(
                     composable(MainScreenState.REPORT.name) {
                         Transaction(
                             userViewModel = userViewModel,
-                            nestedScrollConnection = nestedScrollConnection
+                            nestedScrollConnection = nestedScrollConnection,
+                            navController = navController
                         )
                     }
                     composable(MainScreenState.ADMIN.name) {
@@ -356,9 +363,23 @@ fun MainNavigation(
                             nestedScrollConnection = nestedScrollConnection,
                             snackBarHostState = snackBarHostState,
                             isScrolledDown = isScrolledDown,
-                            cartTriggerEvent = { cartTriggerEvent = it }
+                            cartTriggerEvent = { cartTriggerEvent = it },
+                            getSuccessTransactionId = { successTransactionId = it },
+                            onClickToPreview = {
+                                navController.navigate(
+                                    "${MainScreenState.INVOICE.name}/${successTransactionId}"
+                                )
+                            }
                         )
                     }
+                    composable(
+                        route = "${MainScreenState.INVOICE.name}/{${RemoteData.FIELD_TRANSACTION_ID}}",
+                        arguments = listOf(navArgument(RemoteData.FIELD_TRANSACTION_ID) { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val transactionId = backStackEntry.arguments?.getString(RemoteData.FIELD_TRANSACTION_ID) ?: ""
+                        Invoice(transactionId = transactionId)
+                    }
+
                 }
             }
             when (auditSheetState) {

@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.babakan.cashier.common.list.TransactionList
 import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.dummy.dummyTransactionList
@@ -26,7 +27,8 @@ fun SearchTransaction(
     isReportByTransactionNumber: Boolean,
     isReportByCashier: Boolean,
     isReportByDate: Boolean,
-    isSearchActive: Boolean
+    isSearchActive: Boolean,
+    navController : NavController
 ) {
     val searchTransactionByTransactionId by transactionViewModel.searchTransactionIdState.collectAsState()
     val searchTransactionByUserName by transactionViewModel.searchTransactionNameState.collectAsState()
@@ -88,7 +90,8 @@ fun SearchTransaction(
     TransactionList(
         transactions = transactions,
         users = users,
-        nestedScrollConnection = nestedScrollConnection
+        nestedScrollConnection = nestedScrollConnection,
+        navController = navController
     )
 
 }

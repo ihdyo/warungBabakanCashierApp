@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,7 +83,7 @@ fun ProductOutList(
         for ((categoryId, groupedProducts) in groupedItems) {
             val categoryItem = categories.find { it.id == categoryId } ?: CategoryModel()
 
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(SizeChart.BETWEEN_TEXTS.dp))
             CategoryComponent(
                 iconUrl = categoryItem.iconUrl,
                 name = categoryItem.name

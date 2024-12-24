@@ -1,6 +1,5 @@
 package com.babakan.cashier.data.repository.transaction
 
-import com.babakan.cashier.data.repository.cart.CartRepository
 import com.babakan.cashier.data.repository.productOut.ProductOutRepository
 import com.babakan.cashier.data.repository.user.UserRepository
 import com.babakan.cashier.utils.constant.RemoteData
@@ -33,6 +32,26 @@ class TransactionRepository(
             val sortedTransactions = transactions.sortedByDescending { it.createdAt }
 
             UiState.Success(sortedTransactions)
+        } catch (e: Exception) {
+            UiState.Error("Terjadi kesalahan", e.message.toString())
+        }
+    }
+
+    suspend fun getTransactionById(
+        transactionId: String
+    ): UiState<TransactionModel> {
+        return try {
+            val document = transactionCollection
+                .document(transactionId)
+                .get()
+                .await()
+
+            if (document.exists()) {
+                val transaction = TransactionModel.fromDocumentSnapshot(document)
+                UiState.Success(transaction)
+            } else {
+                UiState.Error("Transaction not found", "No transaction found with ID $transactionId")
+            }
         } catch (e: Exception) {
             UiState.Error("Terjadi kesalahan", e.message.toString())
         }
