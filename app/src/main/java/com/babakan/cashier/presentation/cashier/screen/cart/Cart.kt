@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,10 +44,9 @@ import com.babakan.cashier.common.list.ProductOutList
 import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
-import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.presentation.cashier.screen.cart.component.CustomerData
 import com.babakan.cashier.presentation.cashier.screen.cart.component.CustomerForm
-import com.babakan.cashier.presentation.cashier.screen.cart.component.PrintToPDFDialog
+import com.babakan.cashier.presentation.cashier.screen.cart.component.PrintInvoiceDialog
 import com.babakan.cashier.presentation.cashier.viewmodel.CartViewModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.presentation.owner.model.ProductOutModel
@@ -356,7 +356,7 @@ fun Cart(
         }
     }
     if (dialogState) {
-        PrintToPDFDialog(
+        PrintInvoiceDialog(
             onConfirm = {
                 dialogState = false
                 onClickToPreview()

@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
@@ -48,13 +50,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationFab(
-    productViewModel: ProductViewModel = viewModel(),
     cartViewModel: CartViewModel = viewModel(),
     temporaryCartViewModel: TemporaryCartViewModel,
     temporaryItem: List<Map<String, Int>>,
     scope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
     isHome: Boolean,
+    isInvoice: Boolean,
     isAdminProduct: Boolean,
     isAdminCategory: Boolean,
     isAdminUser: Boolean,
@@ -63,7 +65,8 @@ fun NavigationFab(
     onSelectedAuditItemChange: (AdminItem) -> Unit,
     onAuditSheetStateChange: (AuditState) -> Unit,
     onAddNewItemChange: (Boolean) -> Unit,
-    triggerEvent: (Boolean) -> Unit
+    triggerEvent: (Boolean) -> Unit,
+    shareBitmapFromComposable: () -> Unit
 ) {
     val addCartState by cartViewModel.addCartState.collectAsState()
 
@@ -185,6 +188,16 @@ fun NavigationFab(
                     },
                 )
             }
+        }
+    }
+    AnimatedVisibility(isInvoice) {
+        FloatingActionButton(
+            onClick = { shareBitmapFromComposable() },
+        ) {
+            Icon(
+                Icons.Default.Share,
+                stringResource(R.string.share)
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.babakan.cashier.common.item
 
+import android.graphics.Picture
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +43,7 @@ fun TransactionItem(
     userItem: UserModel,
     isExpanded: Boolean,
     onExpand: (Boolean) -> Unit = {},
-    navController : NavController,
+    navController : NavController
 ) {
     val productOutState by productOutViewModel.fetchProductOutState.collectAsState()
 

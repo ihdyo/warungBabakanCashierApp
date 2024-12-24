@@ -74,4 +74,5 @@ dependencies {
     implementation(libs.coil.network.ktor3)
     implementation(libs.coil.svg)
     implementation(libs.coil.gif)
+    implementation(libs.accompanist.permissions)
 }

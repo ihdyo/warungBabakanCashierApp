@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import coil3.request.allowHardware
 import coil3.request.crossfade
 import com.babakan.cashier.R
 
@@ -23,6 +24,7 @@ fun ImageLoader(
 ) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
+            .allowHardware(false)
             .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .data(imageUrl)

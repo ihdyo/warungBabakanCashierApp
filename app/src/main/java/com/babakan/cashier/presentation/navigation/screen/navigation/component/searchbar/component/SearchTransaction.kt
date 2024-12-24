@@ -1,5 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component
 
+import android.graphics.Picture
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -9,7 +10,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.babakan.cashier.common.list.TransactionList
 import com.babakan.cashier.common.ui.FullscreenLoading
-import com.babakan.cashier.data.dummy.dummyTransactionList
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.viewmodel.TransactionViewModel
 import com.babakan.cashier.presentation.owner.viewmodel.UserViewModel

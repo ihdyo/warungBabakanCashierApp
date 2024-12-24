@@ -1,9 +1,13 @@
 package com.babakan.cashier.common.item
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,13 +36,60 @@ fun InvoiceItem(
     productOut: List<ProductOutModel>,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_SECTIONS.dp),
+        verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_ITEMS.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(vertical = SizeChart.SMALL_SPACE.dp)
     ) {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = MaterialTheme.shapes.large
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp),
+                modifier = Modifier
+                    .padding(SizeChart.DEFAULT_SPACE.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            transactionItem.transactionId,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Card(
+                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                            shape = MaterialTheme.shapes.extraSmall
+                        ) {
+                            Text(
+                                stringResource(R.string.paid).uppercase(),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.padding(horizontal = SizeChart.SIZE_XS.dp, vertical = SizeChart.SIZE_2XS.dp)
+                            )
+                        }
+                    }
+                    Text(
+                        Formatter.date(transactionItem.createdAt),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
         ProductOutList(
             productOutItem = productOut,
         )
+        Spacer(Modifier.height(SizeChart.SMALL_SPACE.dp))
         OutlinedCard {
             Column(
                 verticalArrangement = Arrangement.spacedBy(SizeChart.DEFAULT_SPACE.dp),
@@ -88,6 +139,7 @@ fun InvoiceItem(
                 }
             }
         }
+        Spacer(Modifier.height(SizeChart.BETWEEN_ITEMS.dp))
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -103,5 +155,6 @@ fun InvoiceItem(
                 )
             )
         }
+        Spacer(Modifier.height(SizeChart.BETWEEN_SECTIONS.dp))
     }
 }

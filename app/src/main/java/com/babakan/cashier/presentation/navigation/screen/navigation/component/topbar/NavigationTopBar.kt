@@ -1,5 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar
 
+import android.graphics.Picture
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -91,7 +92,8 @@ fun NavigationTopBar(
     navController : NavController,
     onAuditStateChange: (AuditState) -> Unit,
     onItemSelected: (AdminItem) -> Unit,
-    triggerEvent: (Boolean) -> Unit
+    triggerEvent: (Boolean) -> Unit,
+    picture : Picture
 ) {
     val clearCartState by cartViewModel.clearCartState.collectAsState()
 
@@ -143,7 +145,8 @@ fun NavigationTopBar(
                 nestedScrollConnection = nestedScrollConnection,
                 isScrolledDown = isScrolledDown,
                 onAuditStateChange = onAuditStateChange,
-                onItemSelected = onItemSelected
+                onItemSelected = onItemSelected,
+                picture = picture,
             )
             AnimatedVisibility(
                 visible = isScrolledDown && isHome,

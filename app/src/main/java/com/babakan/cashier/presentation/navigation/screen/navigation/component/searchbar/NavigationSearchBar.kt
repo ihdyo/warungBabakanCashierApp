@@ -1,5 +1,6 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar
 
+import android.graphics.Picture
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -81,7 +82,8 @@ fun MainSearchBar(
     nestedScrollConnection: NestedScrollConnection,
     isScrolledDown: Boolean,
     onAuditStateChange: (AuditState) -> Unit,
-    onItemSelected: (AdminItem) -> Unit
+    onItemSelected: (AdminItem) -> Unit,
+    picture: Picture
 ) {
     val context = LocalContext.current
 

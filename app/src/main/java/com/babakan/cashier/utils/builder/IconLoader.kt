@@ -16,6 +16,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import com.babakan.cashier.R
@@ -35,6 +36,7 @@ fun IconLoader(
 
     AsyncImage(
         model = ImageRequest.Builder(context)
+            .allowHardware(false)
             .data(iconUrl)
             .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)

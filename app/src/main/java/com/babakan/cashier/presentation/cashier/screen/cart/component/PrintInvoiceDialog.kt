@@ -15,7 +15,7 @@ import com.babakan.cashier.R
 import com.babakan.cashier.common.component.PrintButtonComponent
 
 @Composable
-fun PrintToPDFDialog(
+fun PrintInvoiceDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {

@@ -27,8 +27,10 @@ import com.babakan.cashier.utils.animation.fadeInAnimation
 import com.babakan.cashier.utils.animation.fadeOutAnimation
 import com.babakan.cashier.utils.constant.RouteState
 import com.babakan.cashier.utils.helper.isNetworkAvailable
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.launch
 
+@ExperimentalPermissionsApi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(

@@ -1,5 +1,7 @@
 package com.babakan.cashier.presentation.cashier.screen.invoice
 
+import android.graphics.Picture
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,13 +19,24 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.drawscope.draw
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,10 +57,13 @@ fun Invoice(
     transactionViewModel: TransactionViewModel = viewModel(),
     productOutViewModel: ProductOutViewModel = viewModel(),
     transactionId: String,
+    picture: Picture
 ) {
+    val scrollState = rememberScrollState()
     val userByIdState by userViewModel.fetchUserByIdState.collectAsState()
     val transactionByIdState by transactionViewModel.transactionByIdState.collectAsState()
     val productOutState by productOutViewModel.fetchProductOutState.collectAsState()
+    var contentHeight by remember { mutableStateOf(0) }
 
     LaunchedEffect(transactionId) {
         transactionViewModel.fetchTransactionById(transactionId)
@@ -78,54 +94,49 @@ fun Invoice(
     val showLoading = userByIdState is UiState.Loading || transactionByIdState is UiState.Loading || productOutState is UiState.Loading
 
     Box(Modifier.fillMaxSize()) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(SizeChart.BETWEEN_SECTIONS.dp),
-            modifier = Modifier
-                .padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
-                .padding(bottom = SizeChart.PRINT_BUTTON_HEIGHT.dp)
-                .verticalScroll(rememberScrollState())
+        Box(
+            Modifier
+                .verticalScroll(scrollState)
+                .onGloballyPositioned { coordinates ->
+                    contentHeight = coordinates.size.height
+                }
+                .drawWithCache {
+                    val width = this.size.width.toInt()
+
+                    val height = contentHeight
+
+                    onDrawWithContent {
+                        val pictureCanvas = Canvas(
+                            picture.beginRecording(width, height)
+                        )
+                        draw(this, this.layoutDirection, pictureCanvas, this.size) {
+                            this@onDrawWithContent.drawContent()
+                        }
+                        picture.endRecording()
+
+                        drawIntoCanvas { canvas ->
+                            canvas.nativeCanvas.drawPicture(picture)
+                        }
+                    }
+                }
         ) {
-            Text(
-                stringResource(R.string.invoice),
-                style = MaterialTheme.typography.titleLarge
-            )
-            InvoiceItem(
-                transactionItem = transaction,
-                userItem = user,
-                productOut = productOut,
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(SizeChart.DEFAULT_SPACE.dp)
-        ) {
-            Button(
-                { /*TODO: Save to Device*/ },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            Column(
+                Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
+                    .padding(top = SizeChart.BETWEEN_SECTIONS.dp)
+            ) {
+                if (showLoading) { FullscreenLoading() }
+                Text(
+                    stringResource(R.string.invoice),
+                    style = MaterialTheme.typography.titleLarge
                 )
-            ) {
-                Text(stringResource(R.string.saveToDevice))
-            }
-            IconButton(
-                { /*TODO: Share*/ },
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-            ) {
-                Icon(
-                    Icons.Default.Share,
-                    stringResource(R.string.share)
+                InvoiceItem(
+                    transactionItem = transaction,
+                    userItem = user,
+                    productOut = productOut,
                 )
             }
         }
-        if (showLoading) { FullscreenLoading() }
     }
 }

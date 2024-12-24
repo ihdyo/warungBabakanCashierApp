@@ -1,5 +1,8 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation
 
+import android.Manifest
+import android.graphics.Picture
+import android.os.Build
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -8,6 +11,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -24,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -50,6 +55,7 @@ import com.babakan.cashier.presentation.navigation.screen.navigation.component.f
 import com.babakan.cashier.presentation.navigation.screen.navigation.component.topbar.NavigationTopBar
 import com.babakan.cashier.presentation.owner.screen.transaction.Transaction
 import com.babakan.cashier.presentation.cashier.viewmodel.TemporaryCartViewModel
+import com.babakan.cashier.presentation.navigation.viewmodel.PictureViewModel
 import com.babakan.cashier.presentation.owner.model.CategoryModel
 import com.babakan.cashier.presentation.owner.model.ProductModel
 import com.babakan.cashier.presentation.owner.model.ProductOutModel
@@ -65,8 +71,15 @@ import com.babakan.cashier.utils.animation.scaleOutAnimation
 import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.RemoteData
+import com.babakan.cashier.utils.helper.createBitmapFromPicture
+import com.babakan.cashier.utils.helper.saveToDisk
+import com.babakan.cashier.utils.helper.shareBitmap
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@ExperimentalPermissionsApi
 @ExperimentalMaterial3Api
 @Composable
 fun MainNavigation(
@@ -75,6 +88,7 @@ fun MainNavigation(
     cartViewModel: CartViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel(),
     temporaryCartViewModel: TemporaryCartViewModel = viewModel(),
+    pictureViewModel: PictureViewModel = viewModel(),
     authViewModel: AuthViewModel,
     snackBarHostState: SnackbarHostState,
 ) {
@@ -99,6 +113,12 @@ fun MainNavigation(
     var successTransactionId by remember { mutableStateOf("") }
 
     var showLoading by remember { mutableStateOf(false) }
+
+    val picture = remember { Picture() }
+
+    LaunchedEffect(Unit) {
+        pictureViewModel.setPicture(picture)
+    }
 
     LaunchedEffect(currentUserState) {
         if (currentUserState is UiState.Loading) {
@@ -166,11 +186,12 @@ fun MainNavigation(
     }
 
     var selectedCategory by remember { mutableStateOf<CategoryModel?>(null) }
+    var auditSheetState by remember { mutableStateOf(AuditState.HIDDEN) }
 
-    val mainScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val sheetState = rememberModalBottomSheetState()
-    var auditSheetState by remember { mutableStateOf(AuditState.HIDDEN) }
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -182,7 +203,7 @@ fun MainNavigation(
     var selectedAdminTabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState(selectedAdminTabIndex, pageCount = { tabs.size })
     val onSelectedAdminTabIndex: (Int) -> Unit = { index ->
-        mainScope.launch {
+        scope.launch {
             pagerState.scrollToPage(index)
         }
         selectedAdminTabIndex = index
@@ -235,14 +256,47 @@ fun MainNavigation(
         temporaryCartViewModel.clearTemporaryCart()
     }
 
+    val writeStorageAccessState = rememberMultiplePermissionsState(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            emptyList()
+        } else {
+            listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    )
+
+    fun shareBitmapFromComposable(pictureViewModel: PictureViewModel) {
+        if (writeStorageAccessState.allPermissionsGranted) {
+            scope.launch(Dispatchers.IO) {
+                val bitmap = createBitmapFromPicture(pictureViewModel.picture ?: return@launch)
+                pictureViewModel.setBitmap(bitmap)
+
+                val uri = bitmap.saveToDisk(context, successTransactionId)
+                shareBitmap(context, uri)
+            }
+        } else if (writeStorageAccessState.shouldShowRationale) {
+            scope.launch {
+                val result = snackBarHostState.showSnackbar(
+                    message = "The storage permission is needed to save the image",
+                    actionLabel = "Grant Access"
+                )
+
+                if (result == SnackbarResult.ActionPerformed) {
+                    writeStorageAccessState.launchMultiplePermissionRequest()
+                }
+            }
+        } else {
+            writeStorageAccessState.launchMultiplePermissionRequest()
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentDestination != MainScreenState.CART.name && !isSearchActive,
+        gesturesEnabled = !isSearchActive && !isCart && !isInvoice,
         drawerContent = {
             NavigationDrawer(
                 authViewModel = authViewModel,
                 currentUser = currentUser,
-                onDrawerStateChange = { mainScope.launch { drawerState.close() } }
+                onDrawerStateChange = { scope.launch { drawerState.close() } }
             )
         }
     ) {
@@ -268,7 +322,7 @@ fun MainNavigation(
                     snackBarHostState = snackBarHostState,
                     onSearchActiveChange = { isSearchActive = it },
                     drawerState = drawerState,
-                    scope = mainScope,
+                    scope = scope,
                     nestedScrollConnection = nestedScrollConnection,
                     isScrolledDown = isScrolledDown,
                     pagerState = pagerState,
@@ -283,16 +337,18 @@ fun MainNavigation(
                             is AdminItem.User -> AuditState.USER
                         }
                     },
-                    triggerEvent = { cartTriggerEvent = it }
+                    triggerEvent = { cartTriggerEvent = it },
+                    picture = picture
                 )
             },
             floatingActionButton = {
                 NavigationFab(
                     temporaryCartViewModel = temporaryCartViewModel,
                     temporaryItem = temporaryItem,
-                    scope = mainScope,
+                    scope = scope,
                     snackBarHostState = snackBarHostState,
                     isHome = isMenu,
+                    isInvoice = isInvoice,
                     isAdminProduct = isAdminProduct,
                     isAdminCategory = isAdminCategory,
                     isAdminUser = isAdminUser,
@@ -301,7 +357,8 @@ fun MainNavigation(
                     onSelectedAuditItemChange = { selectedAuditItem = it },
                     onAuditSheetStateChange = { auditSheetState = it },
                     onAddNewItemChange = { isAddNewItem = true },
-                    triggerEvent = { cartTriggerEvent = it }
+                    triggerEvent = { cartTriggerEvent = it },
+                    shareBitmapFromComposable = { shareBitmapFromComposable(pictureViewModel) }
                 )
             },
             bottomBar = {
@@ -377,16 +434,20 @@ fun MainNavigation(
                         arguments = listOf(navArgument(RemoteData.FIELD_TRANSACTION_ID) { type = NavType.StringType })
                     ) { backStackEntry ->
                         val transactionId = backStackEntry.arguments?.getString(RemoteData.FIELD_TRANSACTION_ID) ?: ""
-                        Invoice(transactionId = transactionId)
-                    }
+                        val savedPicture = pictureViewModel.picture ?: Picture()
 
+                        Invoice(
+                            transactionId = transactionId,
+                            picture = savedPicture
+                        )
+                    }
                 }
             }
             when (auditSheetState) {
                 AuditState.PRODUCT -> {
                     ProductBottomSheet(
                         productViewModel = productViewModel,
-                        scope = mainScope,
+                        scope = scope,
                         snackBarHostState = snackBarHostState,
                         sheetState = sheetState,
                         item = (selectedAuditItem as AdminItem.Product).product,
@@ -399,7 +460,7 @@ fun MainNavigation(
                 AuditState.CATEGORY -> {
                     CategoryBottomSheet(
                         categoryViewModel = categoryViewModel,
-                        scope = mainScope,
+                        scope = scope,
                         snackBarHostState = snackBarHostState,
                         sheetState = sheetState,
                         item = (selectedAuditItem as AdminItem.Category).category,
@@ -411,7 +472,7 @@ fun MainNavigation(
                 AuditState.USER -> {
                     UserBottomSheet(
                         userViewModel = userViewModel,
-                        scope = mainScope,
+                        scope = scope,
                         snackBarHostState = snackBarHostState,
                         sheetState = sheetState,
                         item = (selectedAuditItem as AdminItem.User).user,
