@@ -28,7 +28,7 @@ fun Register(
 ) {
     val context = LocalContext.current
 
-    val uiState by authViewModel.authState.collectAsState()
+    val registerState by authViewModel.registerState.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -43,7 +43,7 @@ fun Register(
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
 
     Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
-        if (uiState is UiState.Loading) { FullscreenLoading() }
+        if (registerState is UiState.Loading) { FullscreenLoading() }
         Column(
             Modifier
                 .fillMaxSize()

@@ -27,7 +27,6 @@ fun UserList(
     ) {
         itemsIndexed(users) { index, item ->
             UserItem(
-                index = index,
                 userItem = item,
                 isAdmin = isAdmin
             ) { onAdminEdit(item) }

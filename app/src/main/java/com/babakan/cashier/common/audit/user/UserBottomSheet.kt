@@ -28,11 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.babakan.cashier.R
 import com.babakan.cashier.common.audit.user.component.UserAuditForm
 import com.babakan.cashier.common.ui.AuditItemDialog
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.authentication.model.UserModel
+import com.babakan.cashier.presentation.authentication.viewmodel.AuthViewModel
 import com.babakan.cashier.presentation.owner.viewmodel.UserViewModel
 import com.babakan.cashier.utils.constant.SizeChart
 import com.babakan.cashier.utils.validator.Validator
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun UserBottomSheet(
+    authViewModel: AuthViewModel = viewModel(),
     userViewModel: UserViewModel,
     scope: CoroutineScope,
     snackBarHostState: SnackbarHostState,
@@ -55,6 +58,7 @@ fun UserBottomSheet(
 ) {
     val context = LocalContext.current
 
+    val currentUserState by authViewModel.currentUserState.collectAsState()
     val addUserState = userViewModel.addUserState.collectAsState()
     val updateUserState = userViewModel.updateUserState.collectAsState()
     val deleteUserState = userViewModel.deleteUserState.collectAsState()
@@ -72,6 +76,11 @@ fun UserBottomSheet(
     var showDeleteDialog by remember { mutableStateOf(false) }
     val onUpdateItemDialog = { showUpdateDialog = true }
     val onDeleteItemDialog = { showDeleteDialog = true }
+
+    val isCurrentUser = when (val state = currentUserState) {
+        is UiState.Success -> state.data.id == item.id
+        else -> false
+    }
 
     var showLoading by remember { mutableStateOf(false) }
 
@@ -151,7 +160,7 @@ fun UserBottomSheet(
         }
     }
 
-    // TODO: ALSO REGISTER
+    // TODO: Need Admin SDK to Add, Edit, and Delete Users
     val onAddNewItem = {
         userViewModel.createUser(
             userData = UserModel(
@@ -164,7 +173,6 @@ fun UserBottomSheet(
             )
         )
     }
-    // TODO: IMPLEMENT CHANGE EMAIL VIA AUTH
     val onUpdateItem = {
         userViewModel.updateUser(
             userId = item.id,
@@ -178,7 +186,6 @@ fun UserBottomSheet(
             )
         )
     }
-    // TODO: DELETE FROM AUTH
     val onDeleteItem = {
         userViewModel.deleteUser(
             userId = item.id
@@ -202,10 +209,10 @@ fun UserBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = if (isAddNew) stringResource(R.string.addUser) else stringResource(R.string.updateUser),
+                    text = if (isAddNew) stringResource(R.string.addUser) else if (isCurrentUser) stringResource(R.string.updateProfile) else stringResource(R.string.updateUser),
                     style = MaterialTheme.typography.titleLarge
                 )
-                if (!isAddNew) {
+                if (!isAddNew && !isCurrentUser) {
                     IconButton({ onDeleteItemDialog() }) {
                         Icon(
                             Icons.Default.Delete,
@@ -226,7 +233,8 @@ fun UserBottomSheet(
                 emailError = emailError,
                 onEmailChange = { email = it },
                 isActive = isActive,
-                onIsActiveChange = { isActive = it }
+                onIsActiveChange = { isActive = it },
+                isCurrentUser = isCurrentUser
             )
             Button(
                 {

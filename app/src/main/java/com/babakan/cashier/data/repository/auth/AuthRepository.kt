@@ -6,6 +6,8 @@ import com.babakan.cashier.data.state.UiState
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class AuthRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
@@ -16,7 +18,25 @@ class AuthRepository(
         return auth.currentUser != null
     }
 
-    suspend fun signUpUser(
+    suspend fun getCurrentUser(): UiState<UserModel> {
+        return try {
+            val userId = auth.currentUser?.uid
+            if (userId != null) {
+                val userState = userRepository.getUserById(userId)
+                if (userState is UiState.Success) {
+                    UiState.Success(userState.data)
+                } else {
+                    UiState.Error("Pengguna tidak ditemukan", "Tidak ada data untuk pengguna.")
+                }
+            } else {
+                UiState.Error("Tidak ada pengguna yang masuk", "Pengguna tidak terautentikasi.")
+            }
+        } catch (e: Exception) {
+            UiState.Error("Terjadi kesalahan", e.message.toString())
+        }
+    }
+
+    suspend fun signUpAuth(
         name: String,
         username: String,
         email: String,
@@ -52,23 +72,43 @@ class AuthRepository(
         }
     }
 
-    suspend fun loginUser(
+    suspend fun loginAuth(
         email: String,
         password: String
-    ): UiState<String> {
+    ): UiState<Pair<String, String>> {
         return try {
-            val authResult = auth.signInWithEmailAndPassword(email, password).await()
-            if (authResult.user != null) {
-                UiState.Success("Berhasil Masuk!")
+
+            val userResult = suspendCoroutine { continuation ->
+                userRepository.getUserByEmail(email) { result ->
+                    continuation.resume(result)
+                }
+            }
+
+            if (userResult is UiState.Success) {
+                val isActive = userResult.data
+
+                if (isActive) {
+                    val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                    val user = authResult.user
+                    if (user != null) {
+                        val userId = user.uid
+                        UiState.Success(Pair(userId, "Berhasil Masuk!"))
+                    } else {
+                        UiState.Error("Gagal Masuk", "Autentikasi gagal.")
+                    }
+                } else {
+                    UiState.Error("Gagal Masuk", "Akun tidak aktif.")
+                }
             } else {
-                UiState.Error("Gagal Masuk", "Email atau kata sandi tidak sesuai.")
+                val errorMessage = if (userResult is UiState.Error) userResult.message else "Email tidak ditemukan."
+                UiState.Error("Gagal Masuk", errorMessage)
             }
         } catch (e: Exception) {
             UiState.Error("Terjadi kesalahan", e.message.toString())
         }
     }
 
-    fun signOutUser(): UiState<String> {
+    fun signOutAuth(): UiState<String> {
         return try {
             auth.signOut()
             UiState.Success("Berhasil Logout!")
@@ -76,23 +116,4 @@ class AuthRepository(
             UiState.Error("Gagal Logout!", e.message.toString())
         }
     }
-
-    suspend fun getCurrentUser(): UiState<UserModel> {
-        return try {
-            val userId = auth.currentUser?.uid
-            if (userId != null) {
-                val userState = userRepository.getUserById(userId)
-                if (userState is UiState.Success) {
-                    UiState.Success(userState.data)
-                } else {
-                    UiState.Error("Pengguna tidak ditemukan", "Tidak ada data untuk pengguna.")
-                }
-            } else {
-                UiState.Error("Tidak ada pengguna yang masuk", "Pengguna tidak terautentikasi.")
-            }
-        } catch (e: Exception) {
-            UiState.Error("Terjadi kesalahan", e.message.toString())
-        }
-    }
-
 }

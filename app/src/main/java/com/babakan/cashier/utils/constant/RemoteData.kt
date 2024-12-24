@@ -1,6 +1,8 @@
 package com.babakan.cashier.utils.constant
 
 object RemoteData {
+    const val LIMIT_TRANSACTION = 50L
+
     const val COLLECTION_USERS = "users"
     const val COLLECTION_PRODUCTS = "products"
     const val COLLECTION_CATEGORIES = "categories"
@@ -22,9 +24,6 @@ object RemoteData {
     const val FIELD_IS_ACTIVE = "isActive"
     const val FIELD_IMAGE_URL = "imageUrl"
     const val FIELD_ICON_URL = "iconUrl"
-    const val FIELD_PRODUCT_OUT = "productOut"
-    const val FIELD_PRODUCT = "product"
-    const val FIELD_CATEGORY = "category"
     const val FIELD_QUANTITY = "quantity"
     const val FIELD_PRICE = "price"
     const val FIELD_TOTAL_PRICE = "totalPrice"

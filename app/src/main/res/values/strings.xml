@@ -39,7 +39,8 @@
     <string name="showingResult">%d hasil</string>
     <string name="updateMenu">Perbarui Menu</string>
     <string name="updateCategory">Perbarui Kategori</string>
-    <string name="updateUser">Perbarui Pengguna</string>
+    <string name="updateUser">Perbarui Profil Pengguna</string>
+    <string name="updateProfile">Perbarui Profil Anda</string>
     <string name="addMenu">Tambah Menu</string>
     <string name="addCategory">Tambah Kategori</string>
     <string name="addUser">Tambah Pengguna</string>
@@ -64,11 +65,17 @@
     <string name="emptyCartMessage">Anda belum menambahkan menu ke keranjang</string>
     <string name="transactionSuccess">Transaksi berhasil</string>
     <string name="transactionFailed">Transaksi gagal</string>
+    <string name="registered">Akun Terdaftar</string>
+    <string name="registeredMessage">Akun anda telah terdaftar, silakan hubungi admin untuk mengaktifkan akun</string>
+    <string name="limitTransaction">Transaksi yang ditampilkan telah mencapai batas</string>
+    <string name="limitTransactionMessage">Gunakan fitur pencarian untuk memuat transaksi lama</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="defaultPassword">Password Default</string>
+    <string name="defaultPasswordMessage">Ini adalah password default</string>
     <string name="showPassword">Tampilkan Password</string>
     <string name="confirmPassword">Konfirmasi Password</string>
     <string name="status">Status</string>

@@ -1,5 +1,6 @@
 package com.babakan.cashier.data.repository.user
 
+import android.util.Log
 import com.babakan.cashier.presentation.authentication.model.UserModel
 import com.babakan.cashier.utils.constant.RemoteData
 import com.babakan.cashier.data.state.UiState
@@ -169,16 +170,41 @@ class UserRepository(
         }
     }
 
-    fun listenCurrentUserIsActive(): Flow<Boolean> = callbackFlow {
+
+    fun getUserByEmail(
+        email: String,
+        callback: (UiState<Boolean>
+    ) -> Unit) {
+        userCollection.whereEqualTo(RemoteData.FIELD_EMAIL, email).limit(1).get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val isActive = documents.documents[0].getBoolean(RemoteData.FIELD_IS_ACTIVE) ?: false
+                    callback(UiState.Success(isActive))
+                } else {
+                    callback(UiState.Error("Pengguna tidak ditemukan", "Pengguna dengan email $email tidak ditemukan"))
+                }
+            }
+            .addOnFailureListener { e ->
+                callback(UiState.Error("Terjadi kesalahan", e.message.toString()))
+            }
+    }
+
+
+    fun listenCurrentUserIsActive(
+        userId: String
+    ): Flow<Boolean> = callbackFlow {
         val listenerRegistration: ListenerRegistration = userCollection
-            .document(currentUserId)
+            .document(userId)
             .addSnapshotListener { snapshot, error ->
+                Log.e("UserRepository", "listenCurrentUserIsActive: CurrentId = $currentUserId", error)
                 if (error != null) {
+                    Log.e("UserRepository", "listenCurrentUserIsActive: error", error)
                     close(error)
                     return@addSnapshotListener
                 }
                 if (snapshot != null && snapshot.exists()) {
                     val isActive = snapshot.getBoolean(RemoteData.FIELD_IS_ACTIVE) ?: false
+                    Log.d("UserRepository", "listenCurrentUserIsActive: $isActive")
                     trySend(isActive)
                 }
             }

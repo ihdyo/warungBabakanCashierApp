@@ -26,7 +26,7 @@ fun Login(
     onNavigateToRegister: () -> Unit
 ) {
     val context = LocalContext.current
-    val authState by authViewModel.authState.collectAsState()
+    val loginState by authViewModel.loginState.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -35,7 +35,7 @@ fun Login(
     var passwordError by remember { mutableStateOf<String?>(null) }
 
     Scaffold(snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
-        if (authState is UiState.Loading) { FullscreenLoading() }
+        if (loginState is UiState.Loading) { FullscreenLoading() }
         Column(
             Modifier
                 .fillMaxSize()

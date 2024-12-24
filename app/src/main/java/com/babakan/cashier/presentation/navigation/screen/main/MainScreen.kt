@@ -3,6 +3,7 @@ package com.babakan.cashier.presentation.navigation.screen.main
 import android.os.Process
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
@@ -38,7 +39,8 @@ fun MainScreen(
 
     val isLoading = remember { mutableStateOf(true) }
     val isUserActive by authViewModel.isUserActive.collectAsState()
-    val authState by authViewModel.authState.collectAsState()
+    val loginState by authViewModel.loginState.collectAsState()
+    val registerState by authViewModel.registerState.collectAsState()
     val isUserSignedIn by authViewModel.isUserSignedIn.collectAsState()
     val signOutState by authViewModel.signOutState.collectAsState()
 
@@ -46,6 +48,7 @@ fun MainScreen(
     val navController = rememberNavController()
 
     var showInactiveUserDialog by remember { mutableStateOf(false) }
+    var showRegisteredDialog by remember { mutableStateOf(false) }
     val isInternetAvailable = remember { derivedStateOf { isNetworkAvailable(context) } }
 
     val toSingleMain = {
@@ -79,18 +82,27 @@ fun MainScreen(
         isLoading.value = false
     }
 
-    LaunchedEffect(authState) {
-        when (authState) {
+    LaunchedEffect(registerState) {
+        when (registerState) {
             is UiState.Success -> {
-                if (isUserActive == false) {
-                    showInactiveUserDialog = true
-                } else {
-                    val success = (authState as UiState.Success)
-                    snackBarHostState.showSnackbar(success.data)
-                }
+                showRegisteredDialog = true
             }
             is UiState.Error -> {
-                val error = (authState as UiState.Error)
+                val error = (registerState as UiState.Error)
+                snackBarHostState.showSnackbar(error.message)
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is UiState.Success -> {
+                val success = (loginState as UiState.Success)
+                snackBarHostState.showSnackbar(success.data.second)
+            }
+            is UiState.Error -> {
+                val error = (loginState as UiState.Error)
                 snackBarHostState.showSnackbar(error.message)
             }
             else -> {}
@@ -100,14 +112,51 @@ fun MainScreen(
     LaunchedEffect(signOutState) {
         when (signOutState) {
             is UiState.Success -> {
+                if (!showRegisteredDialog && !showInactiveUserDialog) {
+                    snackBarHostState.showSnackbar(
+                        getString(context, R.string.logoutSuccess)
+                    )
+                }
+            }
+            is UiState.Error -> {
                 snackBarHostState.showSnackbar(
-                    getString(context, R.string.logoutSuccess)
+                    getString(context, R.string.logoutFailed)
                 )
             }
-            is UiState.Error -> snackBarHostState.showSnackbar(
-                getString(context, R.string.logoutFailed)
-            )
             else -> {}
+        }
+    }
+
+    if (!isInternetAvailable.value) {
+        OneWayDialog(
+            icon = Icons.Default.WifiOff,
+            title = stringResource(R.string.noConnection),
+            body = stringResource(R.string.noConnectionMessage),
+            confirmText = stringResource(R.string.exit)
+        ) {
+            Process.killProcess(Process.myPid())
+        }
+    }
+    if (showInactiveUserDialog) {
+        OneWayDialog(
+            icon = Icons.Default.Block,
+            title = stringResource(R.string.inactive),
+            body = stringResource(R.string.inactiveMessage),
+            confirmText = stringResource(R.string.exit)
+        ) {
+            scope.launch { authViewModel.signOutUser() }
+            showInactiveUserDialog = false
+        }
+    }
+    if (showRegisteredDialog) {
+        OneWayDialog(
+            icon = Icons.Default.Check,
+            title = stringResource(R.string.registered),
+            body = stringResource(R.string.registeredMessage),
+            confirmText = stringResource(R.string.ok)
+        ) {
+            navController.navigate(RouteState.LOGIN.name)
+            showRegisteredDialog = false
         }
     }
 
@@ -140,27 +189,6 @@ fun MainScreen(
                     snackBarHostState = snackBarHostState
                 )
             }
-        }
-    }
-    if (!isInternetAvailable.value) {
-        OneWayDialog(
-            icon = Icons.Default.WifiOff,
-            title = stringResource(R.string.noConnection),
-            body = stringResource(R.string.noConnectionMessage),
-            confirmText = stringResource(R.string.exit)
-        ) {
-            Process.killProcess(Process.myPid())
-        }
-    }
-    if (showInactiveUserDialog) {
-        OneWayDialog(
-            icon = Icons.Default.Block,
-            title = stringResource(R.string.inactive),
-            body = stringResource(R.string.inactiveMessage),
-            confirmText = stringResource(R.string.exit)
-        ) {
-            scope.launch { authViewModel.signOutUser() }
-            showInactiveUserDialog = false
         }
     }
 }

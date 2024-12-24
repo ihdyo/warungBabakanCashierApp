@@ -34,14 +34,16 @@ import com.babakan.cashier.utils.constant.SizeChart
 @Composable
 fun UserItem(
     authViewModel: AuthViewModel = viewModel(),
-    index: Int,
     userItem: UserModel,
     isAdmin: Boolean = false,
     onAdminEdit: (UserModel) -> Unit = {}
 ) {
     val currentUserState by authViewModel.currentUserState.collectAsState()
 
-    val isCurrentUser = currentUserState is UiState.Success && userItem.id == (currentUserState as UiState.Success<UserModel>).data.id
+    val isCurrentUser = when (val state = currentUserState) {
+        is UiState.Success -> state.data.id == userItem.id
+        else -> false
+    }
 
     val isActive = userItem.isActive
     val isOwner = userItem.isOwner

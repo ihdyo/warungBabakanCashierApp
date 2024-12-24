@@ -22,6 +22,7 @@ class TransactionRepository(
     suspend fun getTransactions(): UiState<List<TransactionModel>> {
         return try {
             val snapshot = transactionCollection
+                .limit(RemoteData.LIMIT_TRANSACTION)
                 .get()
                 .await()
 
@@ -118,6 +119,7 @@ class TransactionRepository(
             val snapshot = transactionCollection
                 .whereGreaterThanOrEqualTo(RemoteData.FIELD_CREATED_AT, startDate)
                 .whereLessThanOrEqualTo(RemoteData.FIELD_CREATED_AT, endDate)
+                .limit(RemoteData.LIMIT_TRANSACTION)
                 .get()
                 .await()
 

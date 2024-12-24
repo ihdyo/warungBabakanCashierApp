@@ -41,7 +41,8 @@ fun UserAuditForm(
     emailError: String?,
     onEmailChange: (String) -> Unit,
     isActive: Boolean,
-    onIsActiveChange: (Boolean) -> Unit
+    onIsActiveChange: (Boolean) -> Unit,
+    isCurrentUser: Boolean,
 ) {
     Column {
         OutlinedTextField(
@@ -99,47 +100,49 @@ fun UserAuditForm(
                 ),
                 modifier = Modifier.weight(1f)
             )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
-            ) {
-                Text(
-                    stringResource(R.string.status),
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            if (!isCurrentUser) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
+                ) {
+                    Text(
+                        stringResource(R.string.status),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     )
-                )
-                Switch(
-                    checked = isActive,
-                    onCheckedChange = { onIsActiveChange(it) },
-                    thumbContent = if (isActive) {
-                        {
-                            Icon(
-                                Icons.Default.Check,
-                                stringResource(R.string.active),
-                                tint = MaterialTheme.colorScheme.primaryContainer,
-                                modifier = Modifier.size(SwitchDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        {
-                            Icon(
-                                Icons.Default.Close,
-                                stringResource(R.string.inactive),
-                                tint = MaterialTheme.colorScheme.errorContainer,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                        checkedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                        uncheckedThumbColor = MaterialTheme.colorScheme.onErrorContainer,
-                        uncheckedTrackColor = MaterialTheme.colorScheme.errorContainer,
-                        uncheckedBorderColor = MaterialTheme.colorScheme.errorContainer
+                    Switch(
+                        checked = isActive,
+                        onCheckedChange = { onIsActiveChange(it) },
+                        thumbContent = if (isActive) {
+                            {
+                                Icon(
+                                    Icons.Default.Check,
+                                    stringResource(R.string.active),
+                                    tint = MaterialTheme.colorScheme.primaryContainer,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            {
+                                Icon(
+                                    Icons.Default.Close,
+                                    stringResource(R.string.inactive),
+                                    tint = MaterialTheme.colorScheme.errorContainer,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                )
+                            }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                            checkedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onErrorContainer,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.errorContainer,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.errorContainer
+                        )
                     )
-                )
+                }
             }
         }
     }
