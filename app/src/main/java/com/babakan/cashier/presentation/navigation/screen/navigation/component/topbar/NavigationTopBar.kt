@@ -57,7 +57,6 @@ import com.babakan.cashier.utils.animation.slideInLeftAnimation
 import com.babakan.cashier.utils.animation.slideOutRightAnimation
 import com.babakan.cashier.utils.animation.slideOutTopAnimation
 import com.babakan.cashier.utils.constant.AuditState
-import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -214,7 +213,7 @@ fun NavigationTopBar(
                             selected = pagerState.currentPage == index,
                             onClick = {
                                 scope.launch {
-                                    pagerState.animateScrollToPage(index)
+                                    pagerState.scrollToPage(index)
                                 }
                             },
                             text = { Text(stringResource(name)) }
