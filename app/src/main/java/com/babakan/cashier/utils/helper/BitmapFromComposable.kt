@@ -5,14 +5,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Picture
 import android.net.Uri
-import android.os.Environment
-import java.io.File
 import android.content.Intent
 import android.content.Intent.createChooser
-import android.media.MediaScannerConnection
 import android.provider.MediaStore
-import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
+import com.babakan.cashier.R
 
 fun createBitmapFromPicture(picture: Picture): Bitmap {
     val bitmap = Bitmap.createBitmap(
@@ -27,58 +23,39 @@ fun createBitmapFromPicture(picture: Picture): Bitmap {
     return bitmap
 }
 
-suspend fun Bitmap.saveToDisk(
+fun Bitmap.saveToDisk(
     context: Context,
-    transactionId: String
-): Uri {
+    transactionId: String,
+    onResult: (Boolean, Uri?) -> Unit
+) {
     val contentValues = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, "${transactionId}.png")
         put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/WKB")
+        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/babakan")
     }
 
     val uri = context.contentResolver.insert(
         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
-    ) ?: throw Exception("Failed to create new MediaStore entry")
+    )
 
-    context.contentResolver.openOutputStream(uri).use { outputStream ->
-        if (outputStream != null) {
-            compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.flush()
-        }
+    if (uri == null) {
+        onResult(false, null)
+        return
     }
 
-    return uri
-}
-
-
-suspend fun scanFilePath(
-    context: Context,
-    filePath: String
-): Uri? {
-    return suspendCancellableCoroutine { continuation ->
-        MediaScannerConnection.scanFile(
-            context,
-            arrayOf(filePath),
-            arrayOf("image/png")
-        ) { _, scannedUri ->
-            if (scannedUri == null) {
-                continuation.cancel(Exception("File $filePath could not be scanned"))
+    try {
+        context.contentResolver.openOutputStream(uri).use { outputStream ->
+            if (outputStream != null) {
+                compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                outputStream.flush()
+                onResult(true, uri)
             } else {
-                continuation.resume(scannedUri)
+                onResult(false, null)
             }
         }
-    }
-}
-
-fun File.writeBitmap(
-    bitmap: Bitmap,
-    format: Bitmap.CompressFormat,
-    quality: Int
-) {
-    outputStream().use { out ->
-        bitmap.compress(format, quality, out)
-        out.flush()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        onResult(false, null)
     }
 }
 
@@ -91,5 +68,5 @@ fun shareBitmap(
         putExtra(Intent.EXTRA_STREAM, uri)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
-    context.startActivity(createChooser(intent, "Share your image"))
+    context.startActivity(createChooser(intent, context.getString(R.string.shareInvoice)))
 }

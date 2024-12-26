@@ -70,11 +70,12 @@
     <string name="limitTransaction">Transaksi yang ditampilkan telah mencapai batas</string>
     <string name="limitTransactionMessage">Gunakan fitur pencarian untuk memuat transaksi lama</string>
     <string name="printTransaction">Cetak Transaksi</string>
-    <string name="saveToDeviceSuccess">Berhasil menyimpan gambar ke perangkat</string>
+    <string name="saveToDeviceSuccess">Gambar tersimpan di %1$s</string>
     <string name="saveToDeviceFailed">Gagal menyimpan gambar ke perangkat</string>
     <string name="shareSuccess">Berhasil dibagikan</string>
     <string name="shareFailed">Gagal dibagikan</string>
     <string name="invoice">Bukti Transaksi</string>
+    <string name="shareInvoice">Bagikan Bukti Transaksi</string>
 
     <string name="name">Nama</string>
     <string name="username">Nama Pengguna</string>

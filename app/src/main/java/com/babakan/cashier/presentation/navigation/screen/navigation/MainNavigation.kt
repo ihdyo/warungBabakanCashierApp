@@ -264,14 +264,32 @@ fun MainNavigation(
         }
     )
 
-    fun shareBitmapFromComposable(pictureViewModel: PictureViewModel) {
+    fun shareBitmapFromComposable(
+        pictureViewModel: PictureViewModel,
+        isShare: Boolean
+    ) {
         if (writeStorageAccessState.allPermissionsGranted) {
             scope.launch(Dispatchers.IO) {
                 val bitmap = createBitmapFromPicture(pictureViewModel.picture ?: return@launch)
                 pictureViewModel.setBitmap(bitmap)
 
-                val uri = bitmap.saveToDisk(context, successTransactionId)
-                shareBitmap(context, uri)
+                bitmap.saveToDisk(
+                    context = context,
+                    transactionId = successTransactionId
+                ) { success, uri ->
+                    if (success) {
+                        scope.launch(Dispatchers.Main) {
+                            snackBarHostState.showSnackbar(context.getString(R.string.saveToDeviceSuccess, uri))
+                        }
+                        if (isShare) {
+                            shareBitmap(context, uri!!)
+                        }
+                    } else {
+                        scope.launch(Dispatchers.Main) {
+                            snackBarHostState.showSnackbar(context.getString(R.string.saveToDeviceFailed))
+                        }
+                    }
+                }
             }
         } else if (writeStorageAccessState.shouldShowRationale) {
             scope.launch {
@@ -358,7 +376,12 @@ fun MainNavigation(
                     onAuditSheetStateChange = { auditSheetState = it },
                     onAddNewItemChange = { isAddNewItem = true },
                     triggerEvent = { cartTriggerEvent = it },
-                    shareBitmapFromComposable = { shareBitmapFromComposable(pictureViewModel) }
+                    shareBitmapFromComposable = {
+                        shareBitmapFromComposable(
+                            pictureViewModel = pictureViewModel,
+                            isShare = it
+                        )
+                    }
                 )
             },
             bottomBar = {
@@ -421,7 +444,6 @@ fun MainNavigation(
                             snackBarHostState = snackBarHostState,
                             isScrolledDown = isScrolledDown,
                             cartTriggerEvent = { cartTriggerEvent = it },
-                            getSuccessTransactionId = { successTransactionId = it },
                             onClickToPreview = {
                                 navController.navigate(
                                     "${MainScreenState.INVOICE.name}/${successTransactionId}"
@@ -437,9 +459,9 @@ fun MainNavigation(
                         val savedPicture = pictureViewModel.picture ?: Picture()
 
                         Invoice(
+                            picture = savedPicture,
                             transactionId = transactionId,
-                            picture = savedPicture
-                        )
+                        ) { successTransactionId = it }
                     }
                 }
             }

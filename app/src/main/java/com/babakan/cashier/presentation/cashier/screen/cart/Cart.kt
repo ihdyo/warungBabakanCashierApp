@@ -80,7 +80,6 @@ fun Cart(
     snackBarHostState: SnackbarHostState,
     isScrolledDown: Boolean,
     cartTriggerEvent: (Boolean) -> Unit,
-    getSuccessTransactionId: (String) -> Unit,
     onClickToPreview: () -> Unit
 ) {
     val productsState by productViewModel.fetchProductsState.collectAsState()
@@ -128,8 +127,6 @@ fun Cart(
         } else if (createTransactionState is UiState.Success) {
             cartViewModel.clearCart()
             cartTriggerEvent(true)
-
-            getSuccessTransactionId(successTransactionId)
 
             showLoading = false
             dialogState = true

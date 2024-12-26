@@ -56,8 +56,9 @@ fun Invoice(
     userViewModel: UserViewModel = viewModel(),
     transactionViewModel: TransactionViewModel = viewModel(),
     productOutViewModel: ProductOutViewModel = viewModel(),
+    picture: Picture,
     transactionId: String,
-    picture: Picture
+    getSuccessTransactionId: (String) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val userByIdState by userViewModel.fetchUserByIdState.collectAsState()
@@ -68,6 +69,8 @@ fun Invoice(
     LaunchedEffect(transactionId) {
         transactionViewModel.fetchTransactionById(transactionId)
         productOutViewModel.fetchProductOut(transactionId)
+
+        getSuccessTransactionId(transactionId)
     }
 
     val transaction = when (val state = transactionByIdState) {
@@ -97,6 +100,7 @@ fun Invoice(
         Box(
             Modifier
                 .verticalScroll(scrollState)
+                .padding(bottom = SizeChart.FAB_HEIGHT.dp)
                 .onGloballyPositioned { coordinates ->
                     contentHeight = coordinates.size.height
                 }

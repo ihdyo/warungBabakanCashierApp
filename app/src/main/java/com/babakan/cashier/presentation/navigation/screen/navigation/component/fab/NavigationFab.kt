@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -66,7 +67,7 @@ fun NavigationFab(
     onAuditSheetStateChange: (AuditState) -> Unit,
     onAddNewItemChange: (Boolean) -> Unit,
     triggerEvent: (Boolean) -> Unit,
-    shareBitmapFromComposable: () -> Unit
+    shareBitmapFromComposable: (Boolean) -> Unit
 ) {
     val addCartState by cartViewModel.addCartState.collectAsState()
 
@@ -113,8 +114,8 @@ fun NavigationFab(
             ) {
                 SmallFloatingActionButton(
                     { temporaryCartViewModel.clearTemporaryCart() },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.tertiary
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ) {
                     Icon(
                         Icons.Default.Clear,
@@ -191,13 +192,26 @@ fun NavigationFab(
         }
     }
     AnimatedVisibility(isInvoice) {
-        FloatingActionButton(
-            onClick = { shareBitmapFromComposable() },
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(SizeChart.SMALL_SPACE.dp)
         ) {
-            Icon(
-                Icons.Default.Share,
-                stringResource(R.string.share)
-            )
+            SmallFloatingActionButton(
+                { shareBitmapFromComposable(false) },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ) {
+                Icon(
+                    Icons.Default.SaveAlt,
+                    stringResource(R.string.saveToDevice)
+                )
+            }
+            FloatingActionButton({ shareBitmapFromComposable(true) }) {
+                Icon(
+                    Icons.Default.Share,
+                    stringResource(R.string.share)
+                )
+            }
         }
     }
 }
