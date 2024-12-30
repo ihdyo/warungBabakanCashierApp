@@ -96,4 +96,16 @@ class TransactionViewModel(
             _searchTransactionDateRangeState.value = transactionRepository.searchTransactionsByDateRange(startDate, endDate)
         }
     }
+
+    fun clearTransactionByTransactionId() {
+        _searchTransactionIdState.value = UiState.Idle
+    }
+
+    fun clearTransactionByUserName() {
+        _searchTransactionNameState.value = UiState.Idle
+    }
+
+    fun clearTransactionByDateRange() {
+        _searchTransactionDateRangeState.value = UiState.Idle
+    }
 }

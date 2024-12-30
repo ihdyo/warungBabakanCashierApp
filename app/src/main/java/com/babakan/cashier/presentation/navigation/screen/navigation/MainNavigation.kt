@@ -355,8 +355,7 @@ fun MainNavigation(
                             is AdminItem.User -> AuditState.USER
                         }
                     },
-                    triggerEvent = { cartTriggerEvent = it },
-                    picture = picture
+                    triggerEvent = { cartTriggerEvent = it }
                 )
             },
             floatingActionButton = {

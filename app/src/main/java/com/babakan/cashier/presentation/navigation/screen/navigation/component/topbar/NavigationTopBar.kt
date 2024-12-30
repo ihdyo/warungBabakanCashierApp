@@ -34,7 +34,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.platform.LocalContext
@@ -91,8 +90,7 @@ fun NavigationTopBar(
     navController : NavController,
     onAuditStateChange: (AuditState) -> Unit,
     onItemSelected: (AdminItem) -> Unit,
-    triggerEvent: (Boolean) -> Unit,
-    picture : Picture
+    triggerEvent: (Boolean) -> Unit
 ) {
     val clearCartState by cartViewModel.clearCartState.collectAsState()
 
@@ -144,8 +142,7 @@ fun NavigationTopBar(
                 nestedScrollConnection = nestedScrollConnection,
                 isScrolledDown = isScrolledDown,
                 onAuditStateChange = onAuditStateChange,
-                onItemSelected = onItemSelected,
-                picture = picture,
+                onItemSelected = onItemSelected
             )
             AnimatedVisibility(
                 visible = isScrolledDown && isHome,

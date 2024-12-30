@@ -127,6 +127,7 @@
     <string name="numberOrder">No. %1$s</string>
     <string name="totalItem">Total (%1$s item)</string>
     <string name="countItem">x%1$s</string>
+    <string name="totalTransaction">Total (%1$s transaksi)</string>
 
     <string name="cancel">Batal</string>
     <string name="yes">Ya</string>

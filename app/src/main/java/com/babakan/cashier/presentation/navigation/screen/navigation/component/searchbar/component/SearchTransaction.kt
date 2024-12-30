@@ -1,18 +1,32 @@
 package com.babakan.cashier.presentation.navigation.screen.navigation.component.searchbar.component
 
-import android.graphics.Picture
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.babakan.cashier.R
 import com.babakan.cashier.common.list.TransactionList
 import com.babakan.cashier.common.ui.FullscreenLoading
 import com.babakan.cashier.data.state.UiState
 import com.babakan.cashier.presentation.owner.viewmodel.TransactionViewModel
 import com.babakan.cashier.presentation.owner.viewmodel.UserViewModel
+import com.babakan.cashier.utils.constant.SizeChart
+import com.babakan.cashier.utils.formatter.Formatter
 import com.google.firebase.Timestamp
 import java.util.Date
 
@@ -35,20 +49,27 @@ fun SearchTransaction(
     val searchTransactionByDateRange by transactionViewModel.searchTransactionDateRangeState.collectAsState()
     val usersState by userViewModel.fetchUsersState.collectAsState()
 
-    LaunchedEffect(query, dateRange, isSearchActive) {
+    LaunchedEffect(query, dateRange, isSearchActive, isReportByTransactionNumber, isReportByCashier, isReportByDate) {
         if (isSearchActive) {
             if (isReportByTransactionNumber) {
                 transactionViewModel.searchTransactionsByTransactionId(query)
-            }
-            if (isReportByCashier) {
+
+                transactionViewModel.clearTransactionByUserName()
+                transactionViewModel.clearTransactionByDateRange()
+            } else if (isReportByCashier) {
                 transactionViewModel.searchTransactionsByUserName(query)
-            }
-            if (isReportByDate) {
+
+                transactionViewModel.clearTransactionByTransactionId()
+                transactionViewModel.clearTransactionByDateRange()
+            } else if (isReportByDate) {
                 if (dateRange != null) {
                     transactionViewModel.searchTransactionsByDateRange(
                         Timestamp(Date(dateRange.first!!)),
                         Timestamp(Date(dateRange.second!!))
                     )
+
+                    transactionViewModel.clearTransactionByTransactionId()
+                    transactionViewModel.clearTransactionByUserName()
                 }
             }
         } else {
@@ -87,11 +108,32 @@ fun SearchTransaction(
     onResultCountChange(transactions.size)
 
     if (showLoading) { FullscreenLoading() }
-    TransactionList(
-        transactions = transactions,
-        users = users,
-        nestedScrollConnection = nestedScrollConnection,
-        navController = navController
-    )
+
+    Column {
+        AnimatedVisibility(transactions.isNotEmpty() && dateRange != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = SizeChart.DEFAULT_SPACE.dp)
+            ) {
+                Text(
+                    stringResource(R.string.totalTransaction, transactions.size)
+                )
+                Text(
+                    Formatter.currency(transactions.sumOf { it.totalPrice }),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+            }
+        }
+        TransactionList(
+            transactions = transactions,
+            users = users,
+            nestedScrollConnection = nestedScrollConnection,
+            navController = navController
+        )
+    }
+
 
 }

@@ -60,8 +60,11 @@ import com.babakan.cashier.utils.animation.slideOutRightAnimation
 import com.babakan.cashier.utils.constant.AuditState
 import com.babakan.cashier.utils.constant.MainScreenState
 import com.babakan.cashier.utils.constant.SizeChart
+import com.babakan.cashier.utils.formatter.Formatter
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @ExperimentalMaterial3Api
 @Composable
@@ -82,8 +85,7 @@ fun MainSearchBar(
     nestedScrollConnection: NestedScrollConnection,
     isScrolledDown: Boolean,
     onAuditStateChange: (AuditState) -> Unit,
-    onItemSelected: (AdminItem) -> Unit,
-    picture: Picture
+    onItemSelected: (AdminItem) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -127,7 +129,13 @@ fun MainSearchBar(
                     isTransaction -> when {
                         isReportByTransactionNumber -> stringResource(R.string.transactionSearch)
                         isReportByCashier -> stringResource(R.string.cashierSearch)
-                        isReportByDate -> stringResource(R.string.dateSearch)
+                        isReportByDate -> {
+                            val startTimestamp = selectedDateRange?.first?.let { Timestamp(Date(it)) } ?: Timestamp(Date())
+                            val endTimestamp = selectedDateRange?.second?.let { Timestamp(Date(it)) } ?: Timestamp(Date())
+
+                            if (selectedDateRange == null) stringResource(R.string.dateSearch)
+                            else "${Formatter.date(startTimestamp)} - ${Formatter.date(endTimestamp)}"
+                        }
                         else -> stringResource(R.string.search)
                     }
                     isAdmin -> when {
